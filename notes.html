@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>מצגת חומר הלימוד – אבטחת מידע</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<style>
+  :root{ --fs: 26px; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; height:100%; }
+  body{ background:#0f172a; color:#e7ecf3; font-family:"Noto Sans Hebrew","Segoe UI",Arial,sans-serif; }
+  /* top bar */
+  #bar{ position:sticky; top:0; z-index:20; display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+        background:#111c33; border-bottom:2px solid #1f3a63; padding:8px 14px; }
+  #bar select,#bar button{ background:#1e293b; color:#e7ecf3; border:1px solid #3b5480; border-radius:8px;
+        padding:8px 12px; font-size:16px; font-family:inherit; cursor:pointer; }
+  #bar button:hover,#bar select:hover{ background:#334155; }
+  #bar .sp{ flex:1; }
+  #bar .title{ color:#8fc0ff; font-weight:bold; font-size:17px; }
+  /* content */
+  #wrap{ max-width:1100px; margin:0 auto; padding:34px 40px 120px; }
+  #md{ font-size:var(--fs); line-height:1.7; }
+  #md h1{ font-size:2.05em; color:#8fc0ff; border-bottom:3px solid #2563eb; padding-bottom:.2em; margin:.2em 0 .5em; }
+  #md h2{ font-size:1.5em; color:#7dd3fc; border-right:6px solid #2563eb; padding:.15em .5em; margin:1.1em 0 .4em; background:#132749; border-radius:6px; }
+  #md h3{ font-size:1.2em; color:#fcd34d; margin:.8em 0 .3em; }
+  #md h4{ font-size:1.05em; color:#cbd5e1; margin:.6em 0 .2em; }
+  #md p{ margin:.5em 0; }
+  #md ul,#md ol{ margin:.4em 0; padding-inline-start:1.4em; }
+  #md li{ margin:.28em 0; }
+  #md strong{ color:#fff; }
+  #md em{ color:#cbd5e1; }
+  #md code{ background:#1e293b; color:#fde68a; padding:.05em .4em; border-radius:5px; font-family:"DejaVu Sans Mono",Consolas,monospace;
+        direction:ltr; unicode-bidi:embed; display:inline-block; }
+  #md pre{ background:#0b1220; border:1px solid #334155; border-radius:10px; padding:.7em 1em; overflow:auto;
+        direction:ltr; text-align:left; }
+  #md pre code{ background:none; color:#e5e7eb; padding:0; font-size:.8em; line-height:1.5; }
+  #md blockquote{ margin:.7em 0; padding:.6em 1em; background:#152238; border-right:6px solid #f59e0b;
+        border-radius:8px; color:#fde9c8; }
+  #md blockquote p:first-child{ margin-top:0; } #md blockquote p:last-child{ margin-bottom:0; }
+  #md table{ border-collapse:collapse; width:100%; margin:.6em 0; font-size:.9em; }
+  #md th,#md td{ border:1px solid #3b5480; padding:.4em .7em; text-align:right; vertical-align:top; }
+  #md th{ background:#1e3a8a; color:#fff; }
+  #md tr:nth-child(even) td{ background:#13233f; }
+  #md hr{ border:none; border-top:1px solid #334155; margin:1.2em 0; }
+  #md a{ color:#67e8f9; }
+  #hint{ color:#94a3b8; text-align:center; padding:10px; font-size:14px; }
+  @media (max-width:600px){ #wrap{ padding:20px 16px 100px; } }
+</style>
+</head>
+<body>
+<div id="bar">
+  <span class="title">אבטחת מידע — חומר הלימוד</span>
+  <select id="chapter" title="בחירת פרק"></select>
+  <span class="sp"></span>
+  <button id="minus" title="הקטן טקסט">א−</button>
+  <button id="plus" title="הגדל טקסט">א+</button>
+  <button id="fs" title="מסך מלא (F)">⛶ מסך מלא</button>
+</div>
+<div id="wrap"><div id="md"></div><div id="hint">בחרו פרק מהתפריט · מקש F למסך מלא · גלגלת לגלילה</div></div>
+
+<script>
+const CH = [
+  ["Chapter_00_Overview","0 · סקירה ותכנון שנתי"],
+  ["Chapter_00b_Networking_Reminder","0.5 · תזכורת רשתות תקשורת"],
+  ["Chapter_01_Network_Threats","1 · מבוא לאיומי רשת"],
+  ["Chapter_02_Device_Security","2 · אבטחת אביזרי רשת"],
+  ["Chapter_03_AAA","3 · מודל ה-AAA"],
+  ["Chapter_04_Firewalls","4 · חומות אש ו-ACL"],
+  ["Chapter_05_IDS_IPS","5 · IDS / IPS"],
+  ["Chapter_06_LAN_Security","6 · אבטחת הרשת המקומית"],
+  ["Chapter_07_Cryptography","7 · הצפנה וקריפטולוגיה"],
+  ["Chapter_08_VPN","8 · מערכות VPN"],
+  ["Chapter_09_Security_Management","9 · ניהול אבטחה מתקדם"],
+];
+const sel=document.getElementById('chapter'), md=document.getElementById('md'), hint=document.getElementById('hint');
+CH.forEach(([f,t])=>{ const o=document.createElement('option'); o.value=f; o.textContent=t; sel.appendChild(o); });
+
+async function load(folder){
+  hint.style.display='none';
+  md.innerHTML='<p style="text-align:center;color:#94a3b8">טוען…</p>';
+  try{
+    const r=await fetch('./'+folder+'/study_material.md',{cache:'no-cache'});
+    if(!r.ok) throw new Error(r.status);
+    let text=await r.text();
+    // the .md already carries a <div dir="rtl"> wrapper; marked renders it fine
+    md.innerHTML=marked.parse(text);
+    window.scrollTo(0,0);
+    location.hash=folder;
+    sel.value=folder;
+    document.title=(CH.find(c=>c[0]===folder)||[,folder])[1]+' – אבטחת מידע';
+  }catch(e){
+    md.innerHTML='<p style="color:#fca5a5;text-align:center">לא ניתן לטעון את הפרק. אם פתחתם את הקובץ מהמחשב ישירות (file://), פתחו אותו דרך אתר הקורס ב-GitHub Pages.</p>';
+  }
+}
+sel.onchange=()=>load(sel.value);
+document.getElementById('plus').onclick=()=>bump(2);
+document.getElementById('minus').onclick=()=>bump(-2);
+function bump(d){ const s=getComputedStyle(document.documentElement).getPropertyValue('--fs');
+  const v=Math.max(16,Math.min(48,parseInt(s)+d)); document.documentElement.style.setProperty('--fs',v+'px'); }
+document.getElementById('fs').onclick=toggleFS;
+function toggleFS(){ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }
+addEventListener('keydown',e=>{ if(e.target.tagName==='SELECT')return;
+  if(e.key==='f'||e.key==='F') toggleFS();
+  else if(e.key==='+'||e.key==='=') bump(2);
+  else if(e.key==='-') bump(-2); });
+
+const start=(location.hash||'').replace('#','');
+load(CH.some(c=>c[0]===start)?start:CH[2][0]);  // default to Chapter 1
+</script>
+</body>
+</html>
