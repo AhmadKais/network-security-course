@@ -466,6 +466,18 @@ R1\# \textcolor{cbold}{\textbf{show archive log config all}}
 \item צרו משתמש ברמה \enLR{5} שיכול רק \code{show running-config}; בדקו שאינו יכול להיכנס ל-\enLR{configure terminal.}
 \end{enumerate}
 
+\sectionheading{עוד דוגמאות מהעולם האמיתי}
+
+\begin{storybox}\boxtitle{\enLR{VPNFilter (2018)} – חצי מיליון נתבים ביתיים נחטפו}\par  נוזקה בשם \enLR{VPNFilter} הדביקה מעל \enLR{500,000} נתבים ביתיים וקטנים בעולם \enLR{(Linksys, MikroTik, Netgear, TP-Link} ועוד). היכולות שלה: ריגול אחר כל התעבורה שעוברת בנתב, גניבת סיסמאות, ואף "הריגת" הנתב \enLR{(bricking)} בפקודה אחת. ה-\enLR{FBI} ייחס אותה לתקיפה מדינתית והשתלט על שרת השליטה \enLR{(C2)} שלה כדי לעצור אותה. \textbf{איך היא נכנסה?} חולשות ידועות שלא עודכנו + סיסמאות ברירת מחדל שלא שונו. לקח: נתב ביתי הוא מחשב מלא – בלי הקשחה ועדכון הוא הדלת הקלה ביותר פנימה.\end{storybox}
+
+\begin{storybox}\boxtitle{הדגל האמריקאי על \enLR{168,000} נתבים \enLR{(Cisco Smart Install, 2018)}}\par  קבוצת האקרים ניצלה שירות ניהול של סיסקו בשם \textbf{\enLR{Smart Install}} (פורט \enLR{TCP 4786)} שנשאר \underline{פתוח וחשוף לאינטרנט} בעשרות אלפי ארגונים. הם מצאו את המכשירים החשופים דרך מנוע החיפוש \enLR{Shodan}, איפסו את הקונפיגורציה של כ-\enLR{168,000} נתבים, ובחלקם כתבו קונפיג עם דגל אמריקאי ב-\enLR{ASCII} וההודעה "\enLR{Don't mess with our elections".} נפגעו ספקיות אינטרנט באיראן וברוסיה. \textbf{לקח:} שירות ניהול מיותר שנשאר פתוח = הזמנה. זו בדיוק הסיבה שמכבים כל שירות שלא נחוץ (\code{no ...}) ומריצים \enLR{AutoSecure.}\end{storybox}
+
+\begin{storybox}\boxtitle{\enLR{Shodan} – "גוגל של המכשירים המחוברים"}\par  \enLR{Shodan} הוא מנוע חיפוש שסורק כל הזמן את האינטרנט ומקטלג מכשירים חשופים: נתבים, מתגים, מצלמות אבטחה, ואפילו בקרים תעשייתיים. אפשר לחפש בו מכשירים עם \enLR{SNMP "public"}, עם \enLR{Telnet} פתוח, או עם סיסמת ברירת מחדל – ולקבל רשימה של אלפים. תוקפים משתמשים בו לשלב הסיור (פרק \enLR{1)}; אנשי אבטחה משתמשים בו כדי לגלות מה \underline{הארגון שלהם} חושף בטעות. כל פעולה שעשינו בפרק הזה – \enLR{SSH} במקום \enLR{Telnet, SNMPv3}, כיבוי שירותים – מורידה אתכם מהרשימה של \enLR{Shodan.}\end{storybox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{5} – קישור סיפור להקשחה}\par  לכל סיפור מהעולם האמיתי לעיל, איזו פקודת/פעולת הקשחה מהפרק הייתה מונעת אותו? \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{VPNFilter}: שינוי סיסמת ברירת מחדל (\code{enable secret}, \code{username secret}) + עדכון \enLR{IOS. Cisco Smart Install}: כיבוי השירות המיותר (\code{no vstack} / כיבוי שירותים + \enLR{AutoSecure). Shodan: SSH} במקום \enLR{Telnet, SNMPv3}, וכיבוי כל שירות פתוח מיותר.\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{6} – תכנון הקשחה}\par  אתם מנהלי הרשת של בית ספר עם \enLR{3} נתבים. כתבו \enLR{6} צעדי הקשחה שתבצעו על כל נתב, לפי סדר עדיפות, ונמקו את הראשון. \par\vskip2pt\hrule\vskip3pt\textbf{}דוגמה: \enLR{1.} \code{enable secret} + \code{username ... secret} (בלי זה כל השאר חסר ערך – אין הגנה בסיסית). \enLR{2. SSH} בלבד (\code{transport input ssh} + \code{login local}), כיבוי \enLR{Telnet. 3.} \code{login block-for} נגד ניחוש סיסמאות. \enLR{4. syslog + NTP} לשרת מרכזי. \enLR{5. SNMPv3}, כיבוי \enLR{HTTP/CDP} מיותרים. \enLR{6. banner} אזהרה + גיבוי הקונפיג.\end{exbox}
+
 \sectionheading{בנק שאלות שתלמידים שואלים – ותשובות מוכנות}
 
 שאלות נפוצות בפרק הקשחת הנתב, עם תשובות מוכנות.\par

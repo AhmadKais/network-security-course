@@ -65,6 +65,14 @@
 <div class="box q fragment"><span class="t">שאלו</span>וירוס או תולעת? (תולעת – התפשטה לבד, בלי אף פעולת אדם)</div>
 <div class="notes">סיפור פתיחה מצוין לנושא הנוזקות. הוא גם ממחיש: לפעמים הנזק הוא מטעות, לא מכוונה. עברו ממנו ישר לסוגי הנוזקות.</div></section>
 
+<section class="slide"><h2>מהעולם האמיתי: תוקפים אמיתיים ושמותיהם</h2>
+<table><tr><th>סוג</th><th>דוגמה אמיתית</th></tr>
+<tr><td class="fragment"><b>Hacktivist</b></td><td class="fragment">Anonymous – השחתת אתרים ו-DDoS ממניעים פוליטיים</td></tr>
+<tr><td class="fragment"><b>פשע מאורגן</b></td><td class="fragment">כנופיות כופרה כמו REvil / LockBit – סוחטות מיליונים</td></tr>
+<tr><td class="fragment"><b>Insider</b></td><td class="fragment">אדוארד סנודן – עובד שהדליף מסמכי NSA סודיים</td></tr>
+<tr><td class="fragment"><b>מדינה</b></td><td class="fragment">Stuxnet – פגע בצנטריפוגות גרעיניות באיראן</td></tr></table>
+<div class="notes">שמות אמיתיים הופכים את הקטגוריות למוחשיות. הדגישו: אלה לא סיפורי מדע בדיוני – זה קרה.</div></section>
+
 <section class="slide section"><h1>חלק ג'<br>נוזקות (Malware)</h1></section>
 
 <section class="slide"><h2>שלושת הסוגים הקלאסיים</h2>
@@ -89,6 +97,14 @@
 <li class="fragment"><b>Botnet</b> – צבא של מחשבים נגועים ("זומבים") בשליטת התוקף</li></ul>
 <div class="notes">Botnet מקשר לשקף ה-DDoS ולסיפור Mirai בהמשך. ספרו: המחשב שלכם יכול להיות "חייל" בצבא של פושע בלי שתדעו.</div></section>
 
+
+<section class="slide story"><h2>מהעולם האמיתי: הכופרה שלא הייתה כופרה (NotPetya, 2017)</h2>
+<ul><li class="fragment">נראתה כמו כופרה – אבל למעשה <u>מחקה</u> את המידע לצמיתות (Wiper)</li>
+<li class="fragment">התפשטה דרך עדכון של תוכנת הנהלת חשבונות אוקראינית (מתקפת שרשרת אספקה)</li>
+<li class="fragment">חברות ענק נפגעו: Maersk, Merck, FedEx – שיתקה נמלים ומפעלים</li>
+<li class="fragment">הנזק: כ-10 מיליארד דולר – מהמתקפה היקרה בהיסטוריה</li></ul>
+<div class="box warn fragment"><span class="t">הלקח</span>נוזקה יכולה להיכנס דרך תוכנה "לגיטימית" שמתעדכנת – ולא רק דרך קליק שלכם</div>
+<div class="notes">ממחיש מתקפת שרשרת אספקה ותוקף מדינתי. גם מראה שלא כל מה שנראה ככופרה דורש כסף – לפעמים המטרה היא הרס.</div></section>
 <section class="slide story"><h2>סיפור אמיתי: בית החולים שביטל ניתוחים (WannaCry, 2017)</h2>
 <ul><li class="fragment">בוקר אחד, מסכי מחשב ב-80 בתי חולים באנגליה הפכו אדומים</li>
 <li class="fragment">"הקבצים שלך הוצפנו. שלם 300$ בביטקוין"</li>
@@ -158,6 +174,14 @@
 <div class="box q fragment"><span class="t">שאלו</span>איזה <u>נוהל</u> פשוט היה מונע את זה? (אישור כפול + אימות טלפוני)</div>
 <div class="notes">בלי נוזקה, בלי פריצה – רק פסיכולוגיה: סמכות + דחיפות + סודיות. מראה שהגנה היא גם נהלים, לא רק טכנולוגיה.</div></section>
 
+
+<section class="slide story"><h2>מהעולם האמיתי: פריצת טוויטר של המפורסמים (2020)</h2>
+<ul><li class="fragment">בני נוער התקשרו לעובדי טוויטר והתחזו לצוות ה-IT (הנדסה חברתית בטלפון)</li>
+<li class="fragment">שכנעו אותם למסור גישה לכלי הניהול הפנימי של טוויטר</li>
+<li class="fragment">השתלטו על חשבונות אובמה, מאסק, ביל גייטס, אפל – ופרסמו הונאת ביטקוין</li>
+<li class="fragment">גרפו ~118,000$ תוך שעות – בלי לפרוץ אף מחשב, רק לשכנע אנשים</li></ul>
+<div class="box warn fragment"><span class="t">הלקח</span>גם החברות הגדולות בעולם נופלות ל<b>הנדסה חברתית</b> – האדם הוא החוליה החלשה</div>
+<div class="notes">דוגמה מושלמת: אין כאן האקינג טכני, רק שכנוע. חיבור ישיר ל-insider tools ולהנדסה חברתית.</div></section>
 <section class="slide"><h2>3 סוגי הגנות (בקרות)</h2>
 <div class="cols"><div class="fragment"><div class="box"><span class="t">מנהלית</span>נהלים, מדיניות, הדרכות</div></div>
 <div class="fragment"><div class="box"><span class="t">פיזית</span>מנעול על חדר שרתים, מצלמות</div></div>
@@ -170,6 +194,13 @@
 <div><ul><li>אבטחת מתג (פרק 6)</li><li>הצפנה (פרק 7)</li><li>VPN (פרק 8)</li><li>ניהול סיכונים (פרק 9)</li></ul></div></div>
 <div class="box tip fragment"><span class="t">הרעיון</span>כל פרק בקורס עונה על איום שראינו היום</div>
 <div class="notes">סוגרים מעגל: התחלנו באיומים, עכשיו רואים שכל הקורס הוא סדרת תשובות לאיומים האלה.</div></section>
+
+<section class="slide q"><h2>תרגילים – עם פתרונות</h2>
+<div class="box ex fragment"><span class="t">תרגיל 1</span>סווגו לפי CIA: (א) מישהו שינה ציון במערכת. (ב) אתר ההרשמה קרס. (ג) רשימת טלפונים דלפה.</div>
+<div class="answer fragment">א. שלמות · ב. זמינות · ג. סודיות</div>
+<div class="box ex fragment"><span class="t">תרגיל 2</span>מחשב "לא מעניין" – תנו 2 סיבות שבגללן גם הוא מטרה.</div>
+<div class="answer fragment">להפוך אותו ל-bot ב-botnet · לגנוב סיסמאות שחוזרות באתרים אחרים · כקרש קפיצה לרשת · כופרה אוטומטית</div>
+<div class="notes">תנו לכיתה לפתור לפני החשיפה. אלה בדיוק סוגי השאלות בבגרות. יש עוד תרגילים בחומר העיון.</div></section>
 
 <section class="slide"><h2>סיכום פרק 1</h2><ul>
 <li class="fragment">מגנים על <b>סודיות · שלמות · זמינות</b> (CIA)</li>
