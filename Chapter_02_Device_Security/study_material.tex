@@ -105,6 +105,23 @@ R1(config)\# username admin \textcolor{cbold}{\textbf{secret}} P@ss   \textcolor
 
 למה \code{secret} עדיף? כי הוא נשמר כ\textbf{גיבוב \enLR{(hash)}} – טביעת אצבע חד-כיוונית של הסיסמה, שממנה אי אפשר לשחזר את הסיסמה המקורית (נרחיב על גיבוב בפרק \enLR{7).} לעומת זאת \code{password} נשמר בטקסט גלוי, וגם הפקודה \code{service password-encryption} שמסתירה אותו משתמשת בהצפנה חלשה מאוד (מה שנקרא "\enLR{type 7")} שנשברת בשנייה באתרים חינמיים באינטרנט. לכן \code{service password-encryption} מגן רק מפני מישהו שמציץ מעבר לכתף בזמן שאתם צופים בקונפיג – לא מפני תוקף אמיתי. ההגנה האמיתית היא ה-\code{secret}.\par
 
+\subheading{הגנה מפני ניחוש סיסמאות}
+
+סיסמה חזקה היא רק חצי מהסיפור – כדאי גם למנוע מתוקף לנסות \underline{אינספור} ניחושים. ל-\enLR{IOS} יש מנגנון מובנה לכך: אחרי מספר ניסיונות כושלים בפרק זמן נתון, הנתב "ננעל" לזמן מה ולא מקבל ניסיונות חדשים. זה הופך התקפת ברוט-פורס (ניחוש שיטתי) מבלתי-מעשית.\par
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+R1(config)\# \textcolor{cbold}{\textbf{login block-for 120 attempts 3 within 60}}  \textcolor{ccom}{\texthebrew{! \enLR{3} כישלונות תוך \enLR{60} שנ' → נעילה ל-\enLR{120} שנ'}}\\
+R1(config)\# login delay 2                              \textcolor{ccom}{\texthebrew{! השהיה של \enLR{2} שנ' בין ניסיונות}}\\
+R1(config)\# login on-failure log                       \textcolor{ccom}{\texthebrew{! רשום כל כישלון ליומן}}
+\end{english}\end{codebox}
+
+בנוסף, כדאי להגדיר \textbf{\enLR{exec-timeout}} על קווי הגישה – ניתוק אוטומטי אחרי כמה דקות של חוסר פעילות, כדי שמסך פתוח ונטוש לא יישאר גישה פתוחה למי שיעבור לידו:\par
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+R1(config)\# line vty 0 4\\
+R1(config-line)\# \textcolor{cbold}{\textbf{exec-timeout 5 0}}   \textcolor{ccom}{\texthebrew{! ניתוק אחרי \enLR{5} דקות ללא פעילות}}
+\end{english}\end{codebox}
+
 \sectionheading{\enLR{2.4 Telnet} מול \enLR{SSH} – ההבדל שמציל אתכם}
 
 כדי לנהל נתב מרחוק (מבלי להתחבר אליו פיזית בכבל), מתחברים אליו דרך הרשת. יש לכך שני פרוטוקולים, ואחד מהם מסוכן מאוד.\par
@@ -150,6 +167,29 @@ R1(config)\# \textcolor{cbold}{\textbf{banner motd \#}}\\
 
 \begin{storybox}\boxtitle{מהעולם האמיתי: הדגל האמריקאי על \enLR{168,000} נתבים \enLR{(2018)}}\par  קבוצת האקרים גילתה שירות ניהול של סיסקו בשם \enLR{Smart Install} שנשאר פתוח וחשוף לאינטרנט אצל עשרות אלפי ארגונים. הם מצאו את הנתבים החשופים דרך מנוע חיפוש בשם \enLR{Shodan}, איפסו את הקונפיגורציה של כ-\enLR{168,000} נתבים, ובחלקם השאירו הודעה עם דגל אמריקאי וכיתוב "אל תתעסקו עם הבחירות שלנו". נפגעו ספקיות אינטרנט באיראן וברוסיה. הלקח ישיר: שירות ניהול מיותר שנשאר פתוח הוא הזמנה – ולכן מכבים כל שירות שלא נחוץ (הנושא של סעיף \enLR{2.7).}\end{storybox}
 
+\subheading{רמות הרשאה בפירוט, ותצוגות תפקיד}
+
+הרחבנו קודם שיש \enLR{16} רמות הרשאה. בפועל משתמשים בשלוש: רמה \enLR{1} (המשתמש הרגיל – רק צפייה), רמה \enLR{15} (מנהל מלא), ורמות ביניים שאליהן אפשר "להעביר" פקודות מסוימות. לדוגמה, אפשר ליצור רמה \enLR{5} שמותר לה גם לאתחל את הנתב ולצפות בהגדרות, ולתת אותה לצוות התמיכה:\par
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+R1(config)\# \textcolor{cbold}{\textbf{privilege exec level 5 reload}}            \textcolor{ccom}{\texthebrew{! רמה \enLR{5} יכולה לאתחל}}\\
+R1(config)\# \textcolor{cbold}{\textbf{enable secret level 5}} Lvl5-P@ss\\
+R1(config)\# \textcolor{cbold}{\textbf{username helpdesk privilege 5 secret}} Help-P@ss
+\end{english}\end{codebox}
+
+לרמות ההרשאה יש חיסרון: רמה גבוהה מקבלת אוטומטית גם את כל מה שמותר ברמות שמתחתיה, ואין שליטה מדויקת. פתרון מדויק יותר הוא \textbf{תצוגת תפקיד \enLR{(Role-Based CLI View)}} – "תצוגה" שמכילה רשימת פקודות מדויקת שהמשתמש רשאי להריץ, ותו לא. כך אפשר לתת לכל תפקיד בדיוק את מה שהוא צריך (עיקרון "מינימום הרשאות"). הגדרת תצוגות דורשת שמנגנון ה-\enLR{AAA} יופעל (נלמד עליו בפרק \enLR{3).}\par
+
+\subheading{שמירה והגנה על ההגדרות וה-\enLR{IOS}}
+
+תוקף שהצליח להיכנס עלול למחוק את מערכת ההפעלה \enLR{(IOS)} ואת קובץ ההגדרות כדי לשתק את הנתב לגמרי. תכונת \textbf{\enLR{IOS Resilient Configuration}} שומרת עותק מוגן שלא ניתן למחוק דרך שורת הפקודה – מעין "גיבוי חסין" בתוך הנתב עצמו:\par
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+R1(config)\# \textcolor{cbold}{\textbf{secure boot-image}}    \textcolor{ccom}{\texthebrew{! מגן על קובץ מערכת ההפעלה}}\\
+R1(config)\# \textcolor{cbold}{\textbf{secure boot-config}}   \textcolor{ccom}{\texthebrew{! מגן על קובץ ההגדרות}}
+\end{english}\end{codebox}
+
+בנוסף לגיבוי החסין, נהוג לגבות את ההגדרות באופן שוטף לשרת חיצוני (\code{copy running-config tftp:}) ולתעד מי שינה מה – מה שנקרא \textbf{ביקורת \enLR{(Auditing)}}. תיעוד כזה עונה על השאלה החשובה "מי הקליד את הפקודה הזו ומתי?", ומשלים את ה-\enLR{syslog} שנכיר מיד.\par
+
 \sectionheading{\enLR{2.6} ניטור: לדעת מה קורה בנתב}
 
 אבטחה טובה היא לא רק חסימה – היא גם לדעת מה קורה. לשם כך יש שלושה שירותים שכדאי להפעיל.\par
@@ -178,6 +218,14 @@ R1(config)\# \textcolor{cbold}{\textbf{ntp server 10.0.0.5}}
 \textbf{\enLR{SNMP}} הוא פרוטוקול שמאפשר לתחנת ניהול מרכזית לאסוף נתונים מהנתב (כמה תעבורה עוברת, עומס המעבד). הבעיה: בגרסאות הישנות \enLR{(v1, v2c)} הגישה מאובטחת רק ב"מחרוזת קהילה" \enLR{(community string)} שעוברת בטקסט גלוי, ולעיתים קרובות נשארת ברירת המחדל "\enLR{public".} רק \textbf{גרסה \enLR{3 (SNMPv3)}} מוסיפה אימות והצפנה אמיתיים. הכלל: אם משתמשים ב-\enLR{SNMP}, גרסה \enLR{3} בלבד.\par
 
 \begin{storybox}\boxtitle{מהעולם האמיתי: \enLR{Shodan} – "גוגל של המכשירים המחוברים"}\par  \enLR{Shodan} הוא מנוע חיפוש שסורק כל הזמן את האינטרנט ומקטלג מכשירים חשופים – נתבים, מתגים, מצלמות אבטחה. אפשר לחפש בו מכשירים עם \enLR{SNMP "public"}, עם \enLR{Telnet} פתוח, או עם סיסמת ברירת מחדל, ולקבל רשימה של אלפים. תוקפים משתמשים בו לשלב הסיור (פרק \enLR{1)}; אנשי אבטחה משתמשים בו כדי לגלות מה הארגון שלהם חושף בטעות. כל פעולת הקשחה שאנחנו לומדים בפרק הזה מורידה אתכם מהרשימה של \enLR{Shodan.}\end{storybox}
+
+\subheading{עוד על שלושת שירותי הניטור}
+
+\textbf{שמונה רמות החומרה של \enLR{Syslog}} – כדאי להכיר אותן, כי בוחרים לפיהן מה לשלוח לשרת. הן, מהחמורה ביותר לפחותה: \enLR{0} – \enLR{Emergency} (המערכת אינה שמישה), \enLR{1} – \enLR{Alert} (נדרשת פעולה מיידית), \enLR{2} – \enLR{Critical, 3} – \enLR{Error} (למשל ממשק שנפל), \enLR{4} – \enLR{Warning, 5} – \enLR{Notification} (אירוע רגיל אך חשוב, כמו שינוי הגדרות), \enLR{6} – \enLR{Informational, 7} – \enLR{Debugging} (פלט מפורט מאוד לאיתור תקלות). מנמוניקה נפוצה לזכירת הסדר באנגלית: \enLR{Every Awesome Cisco Engineer Will Need Ice-cream Daily}.\par
+
+ל-\textbf{\enLR{NTP}} יש מושג בשם \textbf{\enLR{Stratum}} – "מרחק" ממקור הזמן המדויק. \enLR{Stratum 0} הוא שעון אטומי או \enLR{GPS, Stratum 1} הוא שרת שמחובר אליו ישירות, וכן הלאה. ככל שה-\enLR{Stratum} נמוך יותר, המקור אמין יותר. חשוב גם \underline{לאמת} את מקור הזמן (\code{ntp authenticate}), אחרת תוקף יכול לזייף לנתב את השעה ובכך לשבש לוגים ותעודות.\par
+
+ב-\textbf{\enLR{SNMPv3}} יש שלוש רמות אבטחה שכדאי להכיר: \textbf{\enLR{noAuthNoPriv}} (בלי אימות ובלי הצפנה – החלש), \textbf{\enLR{authNoPriv}} (אימות בלבד), ו-\textbf{\enLR{authPriv}} (גם אימות וגם הצפנה – המומלץ). המילה "\enLR{auth"} מציינת אימות (מי שולח) ו-"\enLR{priv"} מציינת פרטיות/הצפנה (שאף אחד לא יקרא). זה ההבדל המהותי מ-\enLR{v1/v2c}, שאין בהם לא אימות אמיתי ולא הצפנה.\par
 
 \sectionheading{\enLR{2.7} כיבוי שירותים מיותרים ו-\enLR{AutoSecure}}
 

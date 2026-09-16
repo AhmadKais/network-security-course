@@ -1,234 +1,107 @@
 <h1>פרק 3 – מודל ה-AAA <small>11 שעות עיוני + 3 מעשי · שבועות 7–9</small></h1>
-<div class="meta"><span><b>מטרות:</b> מודל AAA · שרתי AAA (ACS/ISE) · TACACS+ ו-RADIUS עם מפתחות מוצפנים</span><span><b>בבגרות:</b> הגדרת שלושת השירותים, <code>aaa new-model</code>, RADIUS מול TACACS+</span></div>
-<div class="box def"><span class="t">לפני שמתחילים – מה זו בכלל "הזדהות"? (למי שאין רקע)</span>
-כשאתם נכנסים לחשבון (מייל, בנק, נתב) קורים שלושה דברים שאנשים נוטים לבלבל – וזה בדיוק מה שמודל AAA מסדר:
+
+<div class="box def"><span class="t">איך לקרוא את הפרק הזה</span>
+בפרק הקודם הקשחנו נתב אחד ונתנו לו סיסמה מקומית. אבל מה עושים כשיש עשרות נתבים ומתגים ועשרות אנשים שצריכים גישה? כאן נכנס מודל ה-AAA. הפרק כתוב לקריאה רציפה: נתחיל מהבעיה שהמודל בא לפתור, נבין את שלוש ה-A במילים פשוטות, ורק אז נגיע לפרוטוקולים ולפקודות. כל מונח מוסבר בפעם הראשונה שהוא מופיע.</div>
+
+<h2>3.1 הבעיה: איך מנהלים גישה בעשרות מכשירים?</h2>
+<p>נזכיר מהפרק הקודם: הגדרנו על הנתב <b>משתמש מקומי (local user)</b> – שם וסיסמה ששמורים בתוך הנתב עצמו. זה עובד מצוין לנתב אחד. אבל דמיינו רשת של בית ספר או חברה עם 50 נתבים ומתגים, ו-10 אנשי צוות שצריכים לנהל אותם. אם כל מכשיר מחזיק את רשימת המשתמשים שלו, נוצרות שתי בעיות כואבות: ראשית, כדי להוסיף עובד חדש צריך להיכנס ידנית ל-50 מכשירים; שנית – וזה החמור – כשעובד <u>עוזב</u>, צריך לזכור למחוק אותו מכל 50 המכשירים, ואם שוכחים אפילו אחד, נשארת דלת פתוחה.</p>
+<p>הפתרון: <b>ניהול מרכזי</b>. במקום שכל מכשיר יחזיק רשימת משתמשים משלו, יש <u>מקום אחד</u> – שרת מרכזי – שכל המכשירים שואלים אותו "האם להכניס את המשתמש הזה, ומה מותר לו?". הוספה או מחיקה של עובד נעשית פעם אחת, במקום אחד, ומשפיעה על כל הרשת. זו בדיוק המסגרת שנקראת <b>AAA</b>.</p>
+
+<h2>3.2 שלוש ה-A: מה קורה כשמתחברים</h2>
+<p>כשאתם נכנסים לחשבון כלשהו – מייל, בנק, נתב – קורים שלושה דברים נפרדים שאנשים נוטים לבלבל ביניהם. מודל AAA (שלושה ראשי תיבות באנגלית) בדיוק מסדר אותם:</p>
 <ul>
-<li><b>הזדהות (Authentication)</b> – להוכיח <u>מי אתה</u> (שם משתמש + סיסמה). כמו להראות תעודת זהות.</li>
-<li><b>הרשאה (Authorization)</b> – לקבוע <u>מה מותר לך</u> אחרי שנכנסת (לצפות בלבד? לשנות הכול?). כמו דרגת גישה בעבודה.</li>
-<li><b>רישום (Accounting)</b> – לתעד <u>מה עשית</u> (מתי נכנסת, אילו פקודות הקלדת). כמו יומן מעקב.</li>
+<li><b>אימות (Authentication)</b> – עונה על השאלה <u>"מי אתה?"</u>. זהו שלב הוכחת הזהות, למשל בעזרת שם משתמש וסיסמה.</li>
+<li><b>הרשאה (Authorization)</b> – עונה על השאלה <u>"מה מותר לך לעשות?"</u>. אחרי שידוע מי אתה, ההרשאה קובעת מה מותר – האם רק לצפות, או גם לשנות הכול? לאילו מכשירים יש לך גישה?</li>
+<li><b>רישום (Accounting)</b> – עונה על השאלה <u>"מה עשית, ומתי?"</u>. זהו תיעוד של פעולות המשתמש: מתי נכנס, אילו פקודות הקליד, מתי יצא.</li>
 </ul>
-<b>למה מרכזי?</b> בלי מערכת מרכזית, כל נתב מחזיק רשימת משתמשים משלו. אם יש 50 נתבים ועובד עוזב – צריך למחוק אותו מ-50 מקומות. מודל AAA מאפשר "מקום אחד" שכל הנתבים שואלים אותו (שרת). זה כל הרעיון.
-<br><b>מושג שיחזור:</b> <b>שרת</b> = מחשב מרכזי שנותן שירות (כאן: שירות "מי מורשה"). <b>לקוח</b> של השרת הזה = הנתב עצמו, ששואל את השרת "האם להכניס את המשתמש הזה?".</div>
+<div class="box tip"><span class="t">המשל שעוזר לזכור: שדה התעופה</span>
+דמיינו כניסה לטיסה. <b>אימות</b> = בדיקת הדרכון בכניסה – מוודאים שאתם מי שאתם טוענים שאתם. <b>הרשאה</b> = כרטיס הטיסה – גם אחרי שידוע מי אתם, מותר לכם לעלות רק לטיסה שלכם, לא לכל מטוס בשדה. <b>רישום</b> = רשימת הנוסעים שהמדינה שומרת – מי עלה, מתי, עם כמה מזוודות. שימו לב לסדר ההגיוני: אי אפשר לתת הרשאה בלי לדעת קודם מי האדם (אימות), ואי אפשר לרשום פעולות של מישהו אלמוני.</div>
 
-<div class="box tip"><span class="t">הערה על תכנית הלימודים</span>
-רשימת הנושאים של פרק 3 בתכנית הרשמית הועתקה בטעות מפרק 2. הפרק כאן בנוי לפי <i>המטרות</i> של פרק 3 – שהן גם בדיוק מה שהבגרות שואלת.</div>
-
-<h2>3.1 שלוש ה-A</h2>
-<p>עד עכשיו כל האימות היה <b>מקומי</b>: שם משתמש וסיסמה בקונפיג של כל נתב. זה לא מתרחב: 50 נתבים × 10 מנהלים = 500 חשבונות לתחזק, ועובד שעוזב צריך להימחק מ-50 מקומות. <b>AAA</b> הוא המסגרת שפותרת את זה – בין אם המשתמשים מקומיים ובין אם בשרת מרכזי.</p>
-<table>
-<tr><th>שירות</th><th>השאלה שהוא עונה עליה</th><th>הגדרה (כפי שנדרש בבגרות)</th><th>דוגמה</th></tr>
-<tr><td><b>Authentication</b> (אימות)</td><td>מי אתה?</td><td><b>זיהוי ואימות משתמשים</b></td><td>שם משתמש + סיסמה, כרטיס חכם, טביעת אצבע</td></tr>
-<tr><td><b>Authorization</b> (הרשאה)</td><td>מה מותר לך לעשות?</td><td><b>ניהול הרשאות</b></td><td>רמה 15 או רק show; גישה ל-VLAN 10 בלבד; מותר reload?</td></tr>
-<tr><td><b>Accounting</b> (רישום/חיוב)</td><td>מה עשית, מתי וכמה?</td><td><b>רישום למעקב של פעולות המשתמש</b></td><td>נכנס ב-08:12, הקליד <code>reload</code> ב-08:14, ניתק ב-08:15; 2GB תעבורה</td></tr>
-</table>
-<div class="box faq"><span class="t">שאלת תלמיד: "מה ההבדל בין Authentication ל-Authorization? זה נשמע אותו דבר"</span>
-המשל שעובד: שדה תעופה. <b>אימות</b> = בדיקת הדרכון בכניסה – מוודאים שאתה מי שאתה טוען. <b>הרשאה</b> = כרטיס הטיסה – גם אחרי שידוע מי אתה, מותר לך לעלות רק לטיסה שלך ולא לכל מטוס. <b>Accounting</b> = רישום הנוסעים – מי עלה, מתי, עם כמה מזוודות. אי אפשר לעשות הרשאה בלי אימות קודם, אבל אימות לבד לא אומר שמותר לך הכול.</div>
-
-<h3>גורמי אימות (Authentication factors)</h3>
+<h3>גורמי אימות – שלוש דרכים להוכיח מי אתה</h3>
+<p>איך מוכיחים זהות? יש שלושה "גורמים" (factors), ולכל אחד יתרון וחיסרון:</p>
 <ul>
-<li><b>משהו שאתה יודע</b> – סיסמה, PIN.</li>
-<li><b>משהו שיש לך</b> – טלפון (OTP/SMS), טוקן, כרטיס חכם.</li>
-<li><b>משהו שאתה</b> – ביומטריה: טביעת אצבע, פנים.</li>
+<li><b>משהו שאתה יודע</b> – סיסמה, קוד PIN. קל לשימוש, אבל אפשר לגנוב או לנחש.</li>
+<li><b>משהו שיש לך</b> – הטלפון (שמקבל קוד חד-פעמי), כרטיס חכם, טוקן. קשה יותר לגנוב מרחוק.</li>
+<li><b>משהו שאתה</b> – ביומטריה: טביעת אצבע, זיהוי פנים. קשה מאוד לזייף.</li>
 </ul>
-<p><b>MFA / 2FA</b> – שילוב של שני גורמים <i>מסוגים שונים</i>. שתי סיסמאות אינן MFA.</p>
+<p>כשמשלבים <u>שני גורמים מסוגים שונים</u> מקבלים <b>אימות רב-שלבי (MFA)</b>, או במקרה של שניים בדיוק – <b>2FA</b>. זו הגנה חזקה מאוד: גם אם תוקף גנב את הסיסמה שלכם (משהו שאתם יודעים), עדיין חסר לו הטלפון (משהו שיש לכם). שימו לב: שתי סיסמאות אינן MFA – חייבים גורמים משני <i>סוגים</i> שונים.</p>
 
-<div class="box story"><span class="t">סיפור מהחיים: מנהל הרשת שפוטר ביום שלישי</span>
-בחברת שירותי אינטרנט בינונית פיטרו מנהל רשת. המנכ"ל ביקש מה-IT "לבטל לו את הגישה". ה-IT מחק את חשבון ה-Windows שלו. אבל ב-40 הנתבים והמתגים היו חשבונות <i>מקומיים</i> (<code>username</code> בקונפיג) – שהוא עצמו יצר. שלושה ימים אחר כך, ב-2 בלילה, כל הנתבים "אבדו" את הקונפיג. אף אחד לא ידע מי עשה את זה – כי לא היה Accounting, ובלוג היה רק "admin". עם AAA מבוסס שרת: לחיצה אחת ב-ISE הייתה מנתקת אותו מכל הציוד, וה-accounting היה מראה שם מלא, שעה ופקודה. זה בדיוק "למה AAA".</div>
+<h2>3.3 שני מצבים: AAA מקומי מול מבוסס-שרת</h2>
+<p>יש שתי דרכים להפעיל AAA. ב-<b>AAA מקומי (Local)</b> המכשיר מאמת מול רשימת משתמשים ששמורה בו עצמו – פשוט, מתאים לרשת קטנה, וגם משמש כ"גיבוי" למקרה שהשרת המרכזי לא זמין. ב-<b>AAA מבוסס-שרת (Server-based)</b> המכשיר פונה ל<u>שרת מרכזי</u> ושואל אותו – זו הגישה הנכונה לארגון, כי היא נותנת ניהול אחיד ורישום מרוכז.</p>
+<p>כדי לדבר על זה נכון צריך שני מושגים: המכשיר שפונה לשרת (הנתב או המתג) נקרא <b>NAS (Network Access Server)</b> או פשוט "לקוח ה-AAA". והחיבור בין הנתב לשרת מאובטח בעזרת <b>מפתח משותף (shared key / secret)</b> – סוד שמוגדר <u>גם בנתב וגם בשרת</u>, ומשמש להצפין את התקשורת ביניהם ולהוכיח לשרת שהנתב הוא לקוח מורשה שלו.</p>
+<div class="box mistake"><span class="t">בלבול נפוץ: המפתח אינו הסיסמה של המשתמש!</span>
+המפתח המשותף (key) הוא סוד בין <u>הנתב לשרת</u>. הסיסמאות של המשתמשים שמורות בשרת. אלה שני דברים שונים לגמרי: המפתח מאמת את הציוד, הסיסמה מאמתת את האדם. בתכנית הלימודים הביטוי "מפתחות מוצפנים" מתייחס למפתח המשותף הזה.</div>
+<div class="box story"><span class="t">מהעולם האמיתי: מנהל הרשת שפוטר ביום שלישי</span>
+בחברת שירותי אינטרנט פיטרו מנהל רשת. המנכ"ל ביקש מה-IT "לבטל לו את הגישה", וה-IT מחק את חשבון ה-Windows שלו. אבל ב-40 הנתבים והמתגים היו חשבונות <u>מקומיים</u> שהמנהל עצמו יצר. שלושה ימים אחר כך, ב-2 בלילה, כל הנתבים "איבדו" את ההגדרות שלהם – ואף אחד לא ידע מי עשה זאת, כי לא היה רישום (Accounting) וכל החשבונות נראו כמו "admin". עם AAA מבוסס-שרת, לחיצה אחת הייתה מנתקת אותו מכל הציוד, והרישום היה מראה שם מלא, שעה ופקודה. זה בדיוק ה"למה" של הפרק.</div>
 
-<h2>3.2 שני מצבי AAA: מקומי ומבוסס-שרת</h2>
-<table>
-<tr><th></th><th>AAA מקומי (Local / Self-contained)</th><th>AAA מבוסס שרת (Server-based)</th></tr>
-<tr><td>איפה המשתמשים</td><td>בקונפיג של הנתב (<code>username</code>)</td><td>בשרת מרכזי (Cisco ISE / ACS, FreeRADIUS, Windows NPS)</td></tr>
-<tr><td>פרוטוקול</td><td>–</td><td>RADIUS או TACACS+ בין הנתב לשרת</td></tr>
-<tr><td>מתאים ל</td><td>רשתות קטנות, גיבוי (fallback) כשהשרת לא זמין</td><td>ארגונים: ניהול מרכזי, מדיניות אחידה, לוג מרכזי</td></tr>
-</table>
-<p>בטרמינולוגיה: הנתב/מתג/ASA שפונה לשרת נקרא <b>NAS</b> (Network Access Server) או <b>AAA client</b>. השרת מחזיק את מסד המשתמשים – או פונה בעצמו ל-Active Directory / LDAP.</p>
-
-<h2>3.3 AAA מקומי – הפקודות</h2>
-<pre><span class="c">! 1. הפעלת המודל – מרגע זה כל ה-lines משתמשות ב-AAA (ולא ב-login / login local)</span>
-R1(config)# <b>aaa new-model</b>
-<span class="c">! 2. משתמש מקומי</span>
-R1(config)# username admin privilege 15 secret Adm1n-P@ss
-<span class="c">! 3. רשימת שיטות אימות ברירת מחדל: local</span>
-R1(config)# <b>aaa authentication login default local</b>
-<span class="c">! 4. רשימה בשם – למשל לקונסול: ללא אימות (זהירות!) או enable password</span>
-R1(config)# <b>aaa authentication login CONSOLE-LIST local-case</b>
-R1(config)# line console 0
-R1(config-line)# <b>login authentication CONSOLE-LIST</b></pre>
-<div class="box mistake"><span class="t">הטעות המסוכנת ביותר בפרק</span>
-<code>aaa new-model</code> משנה מיד את התנהגות כל הקווים. אם הקלדתם אותה בלי משתמש מקומי ובלי <code>aaa authentication login default</code> ואז התנתקתם – <b>ננעלתם בחוץ</b> (ברירת המחדל אחרי aaa new-model היא local, ואם אין username – אין כניסה). כלל ברזל: <b>קודם <code>username</code>, אחר כך <code>aaa new-model</code>, ותמיד להשאיר חלון SSH אחד פתוח עד שבודקים בחלון שני.</b></div>
-<p><b>שיטות אימות (methods) אפשריות ברשימה:</b> <code>local</code>, <code>local-case</code> (תלוי רישיות), <code>enable</code> (סיסמת enable), <code>group radius</code>, <code>group tacacs+</code>, <code>group שם</code>, <code>none</code> (ללא אימות – רק לקונסול בבדיקות). ניתן לשרשר: הנתב מנסה את הראשונה; <b>רק אם היא לא זמינה</b> (שרת לא עונה) הוא עובר לבאה. תשובת "סיסמה שגויה" מהשרת <u>לא</u> גורמת למעבר לשיטה הבאה.</p>
-
-<h2>3.4 RADIUS מול TACACS+ – הטבלה שחייבים לדעת</h2>
+<h2>3.4 RADIUS מול TACACS+ – שני הפרוטוקולים</h2>
+<p>כשהנתב פונה לשרת המרכזי, הוא מדבר איתו באחד משני פרוטוקולים (שפות). שניהם עושים AAA, אבל יש ביניהם הבדלים חשובים שנשאלים כמעט תמיד בבגרות. נכיר כל אחד, ואז נשווה.</p>
+<p><b>RADIUS</b> הוא תקן פתוח (לא שייך לחברה מסוימת). הוא רץ על פרוטוקול התעבורה <b>UDP</b> (פרוטוקול מהיר וחסר-חיבור), ומצפין <u>רק את שדה הסיסמה</u> בבקשה – שאר הפרטים (כולל שם המשתמש) עוברים גלויים. RADIUS גם <u>משלב</u> את האימות וההרשאה יחד: כשהשרת מאשר את המשתמש, התשובה כוללת כבר גם את ההרשאות. השימוש האופייני שלו: <b>גישת משתמשים לרשת</b> – למשל אימות ל-Wi-Fi ארגוני (802.1X) או ל-VPN מרחוק.</p>
+<p><b>TACACS+</b> הוא פרוטוקול של חברת סיסקו. הוא רץ על <b>TCP</b> (פרוטוקול אמין שמנהל "שיחה"), פורט 49, ומצפין את <u>כל</u> גוף החבילה – לא רק הסיסמה. הוא גם <u>מפריד</u> בין שלושת השירותים, כך שאפשר, למשל, לאמת מול מקור אחד ולאשר כל פקודה בנפרד מול השרת. השימוש האופייני שלו: <b>ניהול ציוד רשת</b> – מנהלים שמתחברים לנתבים ולמתגים, עם אפשרות לאשר כל פקודה שהם מקלידים.</p>
 <table>
 <tr><th></th><th>RADIUS</th><th>TACACS+</th></tr>
-<tr><td><b>מי פיתח / תקן</b></td><td>תקן פתוח (IETF, RFC 2865)</td><td>Cisco (קנייני, אך מפורסם)</td></tr>
-<tr><td><b>שכבת תעבורה</b></td><td><b>UDP</b> – פורטים 1812 (אימות) ו-1813 (accounting); ישן: 1645/1646</td><td><b>TCP</b> – פורט 49</td></tr>
-<tr><td><b>הצפנה</b></td><td><b>רק שדה הסיסמה</b> מוצפן בבקשת הגישה (Access-Request); שם המשתמש ושאר המידע גלויים</td><td><b>כל גוף החבילה</b> מוצפן (רק הכותרת גלויה)</td></tr>
-<tr><td><b>הפרדת השירותים</b></td><td>אימות והרשאה <b>משולבים</b> בתגובה אחת (Access-Accept מכיל גם את ההרשאות). לא ניתן לבצע הרשאה ללא אימות</td><td>שלושת השירותים <b>נפרדים</b> – ניתן לבצע אימות מול AD והרשאה מול TACACS+</td></tr>
-<tr><td><b>הרשאה לכל פקודה</b></td><td>לא נתמך</td><td>נתמך – כל פקודה ש-המנהל מקליד נשלחת לאישור בשרת</td></tr>
-<tr><td><b>Accounting</b></td><td>מפורט וחזק – פותח לחיוב (ISP)</td><td>קיים, לרוב לרישום פקודות</td></tr>
-<tr><td><b>ריבוי פרוטוקולים</b></td><td>IP בלבד (בעיקר)</td><td>תומך גם ב-AppleTalk, NetBIOS וכו' (היסטורי)</td></tr>
-<tr><td><b>שימוש אופייני</b></td><td><b>גישת משתמשים לרשת</b>: Wi-Fi/802.1X, VPN מרחוק, דיאל-אפ</td><td><b>ניהול ציוד</b> (device administration): מנהלי רשת שמתחברים לנתבים ולמתגים</td></tr>
+<tr><td>מי פיתח</td><td>תקן פתוח (IETF)</td><td>סיסקו</td></tr>
+<tr><td>תעבורה</td><td>UDP (1812/1813)</td><td>TCP (פורט 49)</td></tr>
+<tr><td>הצפנה</td><td>רק שדה הסיסמה</td><td>כל גוף החבילה</td></tr>
+<tr><td>הפרדת השירותים</td><td>אימות והרשאה משולבים</td><td>שלושתם נפרדים</td></tr>
+<tr><td>אישור לכל פקודה</td><td>לא נתמך</td><td>נתמך</td></tr>
+<tr><td>שימוש אופייני</td><td>גישת משתמשים (Wi-Fi/VPN)</td><td>ניהול ציוד</td></tr>
 </table>
-<div class="box exam"><span class="t">בבגרות (שאלה 4ה) – נכון/לא נכון</span>
-1. RADIUS מצפין רק את הסיסמה כשהוא שולח "בקשת גישה" – <b>נכון</b>.<br>
-2. RADIUS מבצע אימות משתמשים ולא מתייחס לניהול הרשאות – <b>נכון</b> (במובן שאין הפרדה/הרשאה עצמאית; ההרשאות מגיעות רק כחלק מתשובת האימות).<br>
-3. TACACS+ משתמש רק ב-UDP – <b>לא נכון</b> (TCP 49).<br>
-4. TACACS+ מספק שירות AAA – <b>נכון</b>.</div>
-<div class="box faq"><span class="t">שאלת תלמיד: "למה RADIUS על UDP אם TCP אמין יותר?"</span>
-RADIUS תוכנן ב-1991 לשרתי דיאל-אפ עם אלפי חיבורים; UDP קל, ללא לחיצת יד, והלקוח פשוט שולח שוב אם לא קיבל תשובה. TACACS+ בחר TCP כי הוא מנהל <i>שיחה</i> רב-שלבית (שאלה–תשובה–שאלה) ורוצה לדעת מיד אם השרת נפל. שניהם עובדים היום; ההבדל המעשי החשוב הוא ההצפנה והפרדת השירותים.</div>
+<div class="box tip"><span class="t">למה RADIUS על UDP אם TCP אמין יותר?</span>
+שאלה טובה שתלמידים שואלים. RADIUS תוכנן ב-1991 לשרתי דיאל-אפ עם אלפי חיבורים בו-זמנית; UDP קל ומהיר, והלקוח פשוט שולח שוב אם לא קיבל תשובה. TACACS+ בחר TCP כי הוא מנהל שיחה רב-שלבית (שאלה–תשובה–שאלה) ורוצה לדעת מיד אם השרת נפל. שניהם עובדים מצוין היום; ההבדל המעשי החשוב הוא ההצפנה המלאה והפרדת השירותים של TACACS+.</div>
 
-<h3>שיחה אופיינית – RADIUS</h3>
-<div class="box def"><span class="t">משתמש → NAS (נתב) → שרת RADIUS</span>
-1. המשתמש מקליד שם וסיסמה. 2. הנתב שולח <b>Access-Request</b> (הסיסמה מוצפנת עם ה-shared secret + MD5). 3. השרת עונה <b>Access-Accept</b> (עם attributes – VLAN, רמת הרשאה) / <b>Access-Reject</b> / <b>Access-Challenge</b> (נדרש גורם נוסף). 4. הנתב שולח <b>Accounting-Request (start)</b>, ובסוף (stop).</div>
-<h3>שיחה אופיינית – TACACS+</h3>
-<div class="box def"><span class="t">שלוש שיחות נפרדות</span>
-Authentication: START → REPLY (GETUSER) → CONTINUE (שם) → REPLY (GETPASS) → CONTINUE (סיסמה) → REPLY (PASS/FAIL). Authorization: REQUEST (הפקודה שהוקלדה) → RESPONSE (PASS_ADD/FAIL). Accounting: REQUEST (start/stop/watchdog) → REPLY.</div>
+<h2>3.5 השרתים בפועל: ACS ו-ISE</h2>
+<p>מי מריץ את שירות ה-AAA? אצל סיסקו, השרת ההיסטורי נקרא <b>ACS (Access Control Server)</b>, והיורש המודרני שלו נקרא <b>ISE (Identity Services Engine)</b> – שרת מדיניות שעושה AAA, מנהל 802.1X, ואפילו בודק את מצב המכשירים שמתחברים. יש גם חלופות שאינן של סיסקו: <b>FreeRADIUS</b> (קוד פתוח) ו-<b>Windows NPS</b> (שרת RADIUS שמובנה ב-Windows Server). היתרון הגדול: השרת יכול לאמת מול מאגר המשתמשים הקיים של הארגון (Active Directory), כך שהמורים משתמשים באותו שם וסיסמה בכל מקום.</p>
 
-<div class="box story"><span class="t">סיפור מהחיים: למה ה-Wi-Fi באוניברסיטה שואל שם משתמש – ובבית קפה סיסמה</span>
-ברשת eduroam (שפועלת גם באוניברסיטאות בישראל) סטודנט מחיפה מתחבר ל-Wi-Fi באוניברסיטה בברלין עם החשבון של הטכניון. איך? המחשב שולח שם משתמש ל-Access Point (802.1X), ה-AP הוא רק Authenticator ומעביר את הבקשה לשרת RADIUS בברלין, שרואה "@technion.ac.il" ומעביר לשרת RADIUS בטכניון, שמאמת ומחזיר Access-Accept. שרת RADIUS אחד לא צריך להכיר את כל המשתמשים בעולם – רק לדעת למי להעביר. זו הסיבה ש-RADIUS הוא "פרוטוקול גישת המשתמשים לרשת", ו-TACACS+ נשאר לניהול הציוד.</div>
-
-<h2>3.5 Cisco ACS ו-ISE</h2>
-<p><b>ACS</b> (Access Control Server) – שרת ה-AAA ההיסטורי של סיסקו (התכנית מזכירה אותו). תמך ב-RADIUS וב-TACACS+, עם GUI לניהול משתמשים, קבוצות ומדיניות. הוחלף ב-<b>ISE</b> (Identity Services Engine) – שרת מדיניות שעושה AAA, 802.1X, NAC, פרופיילינג של מכשירים ו-BYOD. חלופות חינמיות: <b>FreeRADIUS</b>, <b>TACACS+ daemon</b>, ו-<b>Windows NPS</b> (RADIUS על Windows Server). ב-Packet Tracer יש שרת AAA מובנה שתומך בשניהם.</p>
-
-<h2>3.6 הגדרת AAA מבוסס-שרת ב-CLI</h2>
-<h3>TACACS+</h3>
-<pre>R1(config)# aaa new-model
-<span class="c">! תחביר חדש (IOS 15+):</span>
-R1(config)# <b>tacacs server ISE1</b>
-R1(config-server-tacacs)# <b>address ipv4 10.0.0.5</b>
-R1(config-server-tacacs)# <b>key T@cacsK3y</b>            <span class="c">! shared secret – חייב להיות זהה בשרת</span>
-R1(config-server-tacacs)# single-connection          <span class="c">! חיבור TCP אחד לכל השיחות</span>
-R1(config-server-tacacs)# exit
-<span class="c">! תחביר ישן (וב-Packet Tracer):</span>
-R1(config)# <b>tacacs-server host 10.0.0.5 key T@cacsK3y</b>
-<span class="c">! אימות: קודם TACACS+, ואם השרת לא זמין – מקומי</span>
+<h2>3.6 הגדרה בפועל – שלב אחר שלב</h2>
+<p>עכשיו שהבנו את הרעיון, נראה איך מגדירים. הצעד הראשון תמיד: להפעיל את מנגנון ה-AAA בפקודה <code>aaa new-model</code>. מרגע זה, כל קווי הגישה מתחילים להשתמש ב-AAA במקום בשיטה הישנה.</p>
+<pre>R1(config)# username admin secret P@ss        <span class="c">! משתמש מקומי – גיבוי, קודם כול!</span>
+R1(config)# <b>aaa new-model</b>                    <span class="c">! מפעיל את מסגרת ה-AAA</span>
+R1(config)# tacacs-server host 10.0.0.5 key Key123  <span class="c">! שרת TACACS+ והמפתח המשותף</span>
 R1(config)# <b>aaa authentication login default group tacacs+ local</b></pre>
-<h3>RADIUS</h3>
-<pre>R1(config)# <b>radius server NPS1</b>
-R1(config-radius-server)# <b>address ipv4 10.0.0.6 auth-port 1812 acct-port 1813</b>
-R1(config-radius-server)# <b>key R@diusK3y</b>
-R1(config-radius-server)# exit
-<span class="c">! תחביר ישן (וב-Packet Tracer):</span>
-R1(config)# <b>radius-server host 10.0.0.6 key R@diusK3y</b>
+<p>השורה האחרונה היא "רשימת שיטות" (method list): היא אומרת "כדי לאמת התחברות, נסה קודם את שרת ה-TACACS+; ואם הוא <u>לא זמין</u> – השתמש במשתמש המקומי". הגיבוי המקומי (<code>local</code>) קריטי: בלעדיו, אם השרת נופל, אף אחד לא יוכל להיכנס.</p>
+<div class="box mistake"><span class="t">הטעות המסוכנת ביותר בפרק – היזהרו!</span>
+הפקודה <code>aaa new-model</code> משנה מיד את התנהגות כל הקווים. אם תקלידו אותה <u>בלי</u> להגדיר קודם משתמש מקומי ובלי גיבוי <code>local</code> ברשימת השיטות, ואז תתנתקו – <b>תינעלו מחוץ לנתב</b>. כלל ברזל: קודם הגדירו <code>username</code>, אחר כך <code>aaa new-model</code>, תמיד סיימו את רשימת השיטות ב-<code>local</code>, והשאירו חלון חיבור פתוח עד שווידאתם בחלון שני שהכול עובד.</div>
+<p>נקודה חשובה שנשאלת בבגרות: מעבר לשיטה הבאה ברשימה קורה <u>רק</u> כאשר השיטה הקודמת <b>אינה זמינה</b> (השרת לא עונה). אם השרת עונה "סיסמה שגויה" – המשתמש נדחה, ואין מעבר לשיטה הבאה. כלומר <code>local</code> הוא גיבוי לתקלת-שרת, לא "ניסיון שני" אחרי סיסמה שגויה.</p>
+<p>הגדרת שרת RADIUS דומה מאוד, רק עם מילת המפתח <code>radius</code>:</p>
+<pre>R1(config)# radius-server host 10.0.0.6 key R@diusK3y
 R1(config)# aaa authentication login default group radius local</pre>
-<h3>קבוצת שרתים (server group) – כמה שרתים, ולפי סדר</h3>
-<pre>R1(config)# <b>aaa group server tacacs+ MY-TACACS</b>
-R1(config-sg-tacacs+)# server name ISE1
-R1(config-sg-tacacs+)# server name ISE2
-R1(config)# aaa authentication login default <b>group MY-TACACS</b> local</pre>
-<div class="box faq"><span class="t">שאלת תלמיד: "מה זה ה-key? זה הסיסמה של המשתמש?"</span>
-לא. ה-<b>key (shared secret)</b> הוא סוד משותף בין <i>הנתב</i> ל<i>שרת</i>, שמשמש להצפנת התקשורת ביניהם ולאימות שהנתב הוא באמת לקוח מורשה של השרת. סיסמאות המשתמשים נמצאות בשרת. שני מפתחות שונים לגמרי: המפתח בין הציוד לשרת, והסיסמה של האדם. "מפתחות מוצפנים" בתכנית הלימודים = ה-key הזה.</div>
 
-<h2>3.7 Authorization – הרשאות</h2>
-<pre><span class="c">! מי רשאי לקבל shell (EXEC) ובאיזו רמה</span>
-R1(config)# <b>aaa authorization exec default group tacacs+ local</b>
-<span class="c">! אישור כל פקודה ברמה 15 מול השרת (TACACS+ בלבד)</span>
-R1(config)# <b>aaa authorization commands 15 default group tacacs+ local</b>
-<span class="c">! הרשאות לשירותי רשת (PPP, VPN) – בדרך כלל RADIUS</span>
-R1(config)# <b>aaa authorization network default group radius</b>
-<span class="c">! שהפקודות בקונפיג עצמו (config mode) גם יאושרו</span>
-R1(config)# aaa authorization config-commands</pre>
-<p>שימו לב: אחרי <code>aaa authorization exec</code>, אם השרת מחזיר privilege 15 – המשתמש נכנס ישירות ל-<code>R1#</code> בלי enable. זה נוח ומאובטח (אין סיסמת enable משותפת).</p>
+<h3>הרשאה ורישום</h3>
+<p>עד כה עסקנו באימות (ה-A הראשון). מוסיפים את שני האחרים בשתי שורות דומות. <b>הרשאה (Authorization)</b> קובעת מה מותר למשתמש לעשות אחרי שנכנס – למשל, האם הוא מקבל גישת מנהל (רמה 15) ישירות:</p>
+<pre>R1(config)# aaa authorization exec default group tacacs+ local</pre>
+<p><b>רישום (Accounting)</b> מתעד את הפעולות. למשל, לתעד כל פקודה ברמה 15 (מנהל) – כדי שתמיד נדע "מי הקליד reload?":</p>
+<pre>R1(config)# aaa accounting commands 15 default start-stop group tacacs+</pre>
 
-<h2>3.8 Accounting – רישום</h2>
-<pre><span class="c">! רישום התחלה וסיום של כל session</span>
-R1(config)# <b>aaa accounting exec default start-stop group tacacs+</b>
-<span class="c">! רישום כל פקודה ברמה 15 – "מי הקליד reload?"</span>
-R1(config)# <b>aaa accounting commands 15 default start-stop group tacacs+</b>
-<span class="c">! חיבורי רשת (VPN/PPP) – חיוב לפי זמן/נפח</span>
-R1(config)# <b>aaa accounting network default start-stop group radius</b></pre>
-<p>אפשרויות: <code>start-stop</code> (רשומה בהתחלה ובסוף), <code>stop-only</code> (רק בסיום, עם סיכום), <code>none</code>.</p>
+<h2>3.7 802.1X – AAA שמגן על שקע ברשת</h2>
+<p>RADIUS משמש גם לדבר חשוב נוסף: לאמת <u>מכשיר</u> לפני שהוא בכלל מקבל גישה לרשת. התקן שעושה זאת נקרא <b>802.1X</b>, ויש בו שלושה תפקידים: ה-<b>Supplicant</b> (המחשב או הטלפון שרוצה להתחבר), ה-<b>Authenticator</b> (המתג או נקודת הגישה, ש<u>חוסם את הפורט</u> עד שהאימות מצליח), וה-<b>שרת האימות</b> (RADIUS). בקצרה: אי אפשר סתם לחבר מחשב לשקע ולקבל גישה – המתג חוסם אותך עד שאתה מאמת את עצמך מול השרת. זהו הבסיס ל-Wi-Fi ארגוני (WPA2-Enterprise) ולבקרת גישה לרשת (NAC), שנרחיב עליהם בפרק 6.</p>
+<div class="box story"><span class="t">מהעולם האמיתי: למה ה-Wi-Fi באוניברסיטה שואל שם משתמש</span>
+ברשת eduroam (שפועלת באוניברסיטאות בעולם, כולל בישראל) סטודנט מחיפה יכול להתחבר ל-Wi-Fi באוניברסיטה בברלין עם החשבון של הטכניון. איך? המחשב שולח שם משתמש לנקודת הגישה (Authenticator), היא מעבירה את הבקשה לשרת RADIUS בברלין, שרואה את הסיומת "@technion.ac.il" ומעביר את השאלה לשרת RADIUS בטכניון, שמאמת ומחזיר "אשר". אף שרת לא צריך להכיר את כל המשתמשים בעולם – רק לדעת למי להעביר. זו בדיוק הסיבה ש-RADIUS הוא "פרוטוקול גישת המשתמשים", בעוד TACACS+ נשאר לניהול הציוד.</div>
 
-<h2>3.9 802.1X – AAA לפורט של מתג (הצצה לפרק 6)</h2>
-<p>RADIUS משמש גם לאימות <i>מכשירים</i> לפני שמקבלים גישה לרשת: תקן <b>IEEE 802.1X</b>. שלושה תפקידים: <b>Supplicant</b> (המחשב/הטלפון), <b>Authenticator</b> (המתג או ה-Access Point – חוסם את הפורט עד לאימות), <b>Authentication Server</b> (RADIUS). הפרוטוקול בין ה-supplicant למתג: EAP over LAN (EAPOL); בין המתג לשרת: RADIUS. זה הבסיס ל-NAC (פרק 6) ול-WPA2-Enterprise.</p>
-<pre>S1(config)# aaa new-model
-S1(config)# radius-server host 10.0.0.6 key R@diusK3y
-S1(config)# <b>aaa authentication dot1x default group radius</b>
-S1(config)# <b>dot1x system-auth-control</b>
-S1(config)# interface f0/1
-S1(config-if)# switchport mode access
-S1(config-if)# <b>authentication port-control auto</b>
-S1(config-if)# <b>dot1x pae authenticator</b></pre>
+<h2>3.8 בדיקה ופתרון תקלות</h2>
+<p>אחרי שמגדירים, איך יודעים שהכול עובד – ואיך מאבחנים כשלא? הנה הכלים המרכזיים ותקלות נפוצות:</p>
+<pre>R1# <b>show aaa sessions</b>                       <span class="c">! מי מחובר כרגע דרך AAA</span>
+R1# <b>test aaa group tacacs+ admin P@ss legacy</b>  <span class="c">! בודק אימות בלי להתחבר בפועל</span>
+R1# <b>debug aaa authentication</b>                <span class="c">! מעקב חי אחר תהליך האימות</span></pre>
+<ul>
+<li><b>הנתב "נתקע" כמה שניות ואז מקבל את המשתמש המקומי:</b> סימן שהשרת אינו נגיש (בדקו כתובת, ACL, ושהשירות פועל). הגיבוי ל-<code>local</code> עבד – זה תקין, אבל צריך לתקן את הקשר לשרת.</li>
+<li><b>"אימות נכשל" מיד, גם עם סיסמה נכונה:</b> לרוב המפתח המשותף (key) אינו זהה בין הנתב לשרת, או שהשרת לא מכיר את כתובת הנתב כלקוח מורשה.</li>
+<li><b>המשתמש נכנס אך לא מקבל הרשאת מנהל:</b> חסרה שורת ה-<code>aaa authorization exec</code>, או שהשרת לא מחזיר את רמת ההרשאה.</li>
+</ul>
 
-<h2>3.10 בדיקה ופתרון תקלות</h2>
-<pre>R1# <b>show aaa sessions</b>
-R1# <b>show aaa user all</b>
-R1# <b>show tacacs</b>
-R1# <b>show radius statistics</b>
-R1# <b>test aaa group tacacs+ admin Adm1n-P@ss legacy</b>   <span class="c">! בודק אימות מול השרת בלי להתחבר</span>
-R1# <b>debug aaa authentication</b>
-R1# <b>debug tacacs</b>
-R1# <b>debug radius</b></pre>
-<table>
-<tr><th>תסמין</th><th>סיבה נפוצה</th></tr>
-<tr><td>הנתב "נתקע" 10–20 שניות ואז מקבל את המשתמש המקומי</td><td>השרת לא נגיש (IP/ACL/שירות כבוי) – ה-fallback ל-local עבד. בדקו ping לשרת ו-<code>debug tacacs</code>.</td></tr>
-<tr><td>"Authentication failed" מיד, גם עם סיסמה נכונה</td><td>ה-key לא תואם בין הנתב לשרת; או שהשרת לא מכיר את ה-IP של הנתב כלקוח (AAA client). ב-Packet Tracer: בדקו ב-Server → AAA → Client Name/IP/Secret.</td></tr>
-<tr><td>המשתמש נכנס אבל לא מקבל רמה 15</td><td>חסר <code>aaa authorization exec</code>, או שהשרת לא מחזיר את ה-attribute (shell:priv-lvl=15 ב-TACACS+; Service-Type / cisco-avpair ב-RADIUS).</td></tr>
-<tr><td>הקונסול דורש אימות שרת ואין שרת</td><td>שכחו רשימה נפרדת לקונסול. תמיד: <code>aaa authentication login CONSOLE local</code> + <code>login authentication CONSOLE</code> על line con 0.</td></tr>
-</table>
-
-<h2>3.11 מדריך פקודות מרוכז – פרק 3</h2>
-<table>
-<tr><th>פקודה</th><th>תפקיד</th></tr>
-<tr><td><code>aaa new-model</code></td><td>הפעלת AAA (בבגרות: "הפקודה שתגרום לנתב לעבוד עם מודל AAA")</td></tr>
-<tr><td><code>aaa authentication login default group tacacs+ local</code></td><td>רשימת אימות: שרת ואז מקומי</td></tr>
-<tr><td><code>aaa authentication login NAME …</code> + <code>login authentication NAME</code> (ב-line)</td><td>רשימה בשם לקו ספציפי</td></tr>
-<tr><td><code>tacacs-server host IP key K</code> / <code>tacacs server NAME</code></td><td>הגדרת שרת TACACS+</td></tr>
-<tr><td><code>radius-server host IP key K</code> / <code>radius server NAME</code></td><td>הגדרת שרת RADIUS</td></tr>
-<tr><td><code>aaa group server tacacs+ G</code></td><td>קבוצת שרתים</td></tr>
-<tr><td><code>aaa authorization exec default …</code></td><td>הרשאת shell</td></tr>
-<tr><td><code>aaa authorization commands 15 default …</code></td><td>הרשאה לכל פקודה</td></tr>
-<tr><td><code>aaa accounting exec/commands/network default start-stop …</code></td><td>רישום</td></tr>
-<tr><td><code>show aaa sessions</code>, <code>debug aaa authentication</code>, <code>test aaa</code></td><td>בדיקה</td></tr>
-</table>
-
-<h2>3.12 תרגילים לתלמידים</h2>
+<h2>3.9 תרגילים – עם פתרונות</h2>
 <div class="box ex"><span class="t">תרגיל 1 – איזה A?</span>
-לכל משפט – Authentication, Authorization או Accounting:<br>
-א. "המשתמש dana ניסתה להקליד <code>configure terminal</code> ונדחתה." &nbsp; ב. "החשבון של yossi נעול אחרי 3 ניסיונות." &nbsp; ג. "בדוח החודשי: 4,200 חיבורי VPN, ממוצע 38 דקות." &nbsp; ד. "המשתמש הזדהה עם טביעת אצבע." &nbsp; ה. "המורה יכולה לראות ציונים אבל לא לשנות."
-<div class="ans">א. Authorization &nbsp; ב. Authentication &nbsp; ג. Accounting &nbsp; ד. Authentication &nbsp; ה. Authorization</div></div>
+לכל משפט, ציינו אם מדובר באימות, הרשאה או רישום: (א) "המשתמש dana ניסתה להקליד <code>configure terminal</code> ונדחתה". (ב) "החשבון של yossi נעול אחרי 3 ניסיונות כושלים". (ג) "בדוח החודשי: 4,200 חיבורי VPN, ממוצע 38 דקות".
+<div class="ans">(א) הרשאה (נבדק מה מותר לה לעשות). (ב) אימות (הוכחת זהות בכניסה). (ג) רישום (תיעוד פעולות).</div></div>
 <div class="box ex"><span class="t">תרגיל 2 – מה יקרה?</span>
-נתב עם: <code>aaa authentication login default group tacacs+ group radius local none</code>. תארו את סדר הפעולות כאשר: (א) שרת ה-TACACS+ עונה "FAIL". (ב) שרת ה-TACACS+ לא עונה, ושרת ה-RADIUS עונה Accept. (ג) שני השרתים לא עונים ואין username בקונפיג.
-<div class="ans">(א) המשתמש נדחה – לא עוברים לשיטה הבאה אחרי דחייה. (ב) אחרי timeout של TACACS+ הנתב פונה ל-RADIUS ומקבל את המשתמש. (ג) TACACS+ timeout → RADIUS timeout → local (אין משתמשים ⇒ השיטה "לא זמינה", לא "דחייה") → none ⇒ המשתמש נכנס בלי אימות! לכן <code>none</code> מסוכן.</div></div>
+נתב מוגדר: <code>aaa authentication login default group tacacs+ local</code>. (א) שרת ה-TACACS+ עונה "סיסמה שגויה". (ב) שרת ה-TACACS+ לא עונה כלל, ויש משתמש מקומי. מה קורה בכל מקרה?
+<div class="ans">(א) המשתמש נדחה – אין מעבר ל-local אחרי דחייה מפורשת. (ב) אחרי timeout הנתב עובר ל-local ומאמת מולו – כי השרת "לא זמין".</div></div>
 <div class="box ex"><span class="t">תרגיל 3 – בחירת פרוטוקול</span>
-לכל תרחיש בחרו RADIUS או TACACS+ ונמקו במשפט:<br>
-א. אימות 2,000 תלמידים ל-Wi-Fi של בית הספר. &nbsp; ב. 5 מנהלי רשת שמנהלים 60 מתגים, ורוצים שמתמחה יוכל להקליד רק show. &nbsp; ג. ספק אינטרנט שמחייב לקוחות לפי נפח. &nbsp; ד. חברה שהרגולטור דורש ממנה תיעוד של כל פקודת קונפיגורציה.
-<div class="ans">א. RADIUS (גישת משתמשים, 802.1X). ב. TACACS+ (הרשאה לכל פקודה). ג. RADIUS (accounting מפורט לנפח). ד. TACACS+ (command accounting).</div></div>
+לכל תרחיש בחרו RADIUS או TACACS+ ונמקו: (א) אימות 2,000 תלמידים ל-Wi-Fi של בית הספר. (ב) 5 מנהלי רשת שרוצים שמתמחה יוכל להקליד רק פקודות <code>show</code>.
+<div class="ans">(א) RADIUS – גישת משתמשים לרשת (802.1X). (ב) TACACS+ – הוא היחיד שתומך באישור נפרד לכל פקודה.</div></div>
 <div class="box ex"><span class="t">תרגיל 4 – תקלה</span>
-מנהל הקליד <code>aaa new-model</code> ואז <code>aaa authentication login default group tacacs+</code> (בלי local). השרת נפל. המנהל מתנתק. מה קרה, ואיך מתקנים?
-<div class="ans">ננעל בחוץ – אין שיטת גיבוי. תיקון: גישה פיזית לקונסול (אם לקונסול לא הוגדרה רשימה אחרת – גם הוא נעול!) ⇒ password recovery דרך ROMMON (register 0x2142), ואז להוסיף <code>local</code> לרשימה ומשתמש מקומי. לקח: תמיד <code>… local</code> בסוף, ורשימה נפרדת לקונסול.</div></div>
-
-<h2>3.13 שאלות בסגנון בגרות</h2>
-<div class="box exam"><span class="t">שאלה 1</span>
-התאימו: (1) רישום הפקודות שהקליד המנהל (2) בדיקה אם מותר למשתמש להקליד reload (3) בדיקת שם משתמש וסיסמה. אפשרויות: Authentication / Authorization / Accounting.
-<div class="ans">(1) Accounting (2) Authorization (3) Authentication</div></div>
-<div class="box exam"><span class="t">שאלה 2</span>
-מנהל הגדיר: <code>aaa authentication login default group radius local</code>. שרת ה-RADIUS זמין ומשיב "סיסמה שגויה". מה יקרה?
-<div class="ans">המשתמש יידחה. המעבר ל-local קורה רק כששרת ה-RADIUS <i>לא זמין</i> (timeout), לא כשהוא דוחה.</div></div>
-<div class="box exam"><span class="t">שאלה 3</span>
-איזה פרוטוקול מתאים יותר לניהול ציוד רשת (device administration) עם אישור לכל פקודה, ומדוע?
-<div class="ans">TACACS+ – מפריד בין אימות להרשאה ותומך בהרשאה לכל פקודה (per-command authorization); RADIUS משלב אימות והרשאה ואינו תומך בכך.</div></div>
-<div class="box exam"><span class="t">שאלה 4</span>
-השלימו: פרוטוקול ______ משתמש ב-TCP פורט ______ ומצפין את ______ החבילה; פרוטוקול ______ משתמש ב-UDP פורטים ______ ומצפין רק את ______.
-<div class="ans">TACACS+ · 49 · כל גוף · RADIUS · 1812/1813 · הסיסמה</div></div>
-<div class="box exam"><span class="t">שאלה 5</span>
-כתבו את הפקודות שמגדירות שרת TACACS+ בכתובת 192.168.1.10 עם מפתח <code>Key123</code>, ואימות ברירת מחדל מולו עם גיבוי מקומי.
-<div class="ans"><code>aaa new-model</code> · <code>tacacs-server host 192.168.1.10 key Key123</code> · <code>aaa authentication login default group tacacs+ local</code></div></div>
-<div class="box exam"><span class="t">שאלה 6</span>
-ב-802.1X – מה תפקיד המתג?
-<div class="ans">Authenticator – חוסם את הפורט עד שה-supplicant מאומת מול שרת ה-RADIUS, ומתווך בין EAPOL ל-RADIUS.</div></div>
-
-<h2>3.14 מעבדה (3 שעות) – AAA ב-Packet Tracer</h2>
-<ol>
-<li>טופולוגיה: PC-Admin — SW — R1 — Server (AAA). בשרת: Services → AAA → On; Client Name: R1, Client IP: כתובת R1, Secret: <code>Key123</code>, ServerType: Tacacs (ואחר כך Radius). הוסיפו User: admin / cisco123.</li>
-<li>ב-R1: משתמש מקומי גיבוי, <code>aaa new-model</code>, <code>tacacs-server host … key Key123</code>, <code>aaa authentication login default group tacacs+ local</code>, SSH לפי פרק 2.</li>
-<li>התחברו ב-SSH מה-PC עם admin/cisco123 – הצליח? כבו את שירות ה-AAA בשרת ונסו שוב – ה-fallback למשתמש המקומי אמור לעבוד אחרי השהיה.</li>
-<li>שנו את ה-secret בשרת בלבד – ראו את הכישלון; הריצו <code>debug aaa authentication</code> וקראו את הפלט.</li>
-<li>חזרו על התרגיל עם RADIUS. השוו ב-Simulation mode את החבילות: ב-RADIUS רואים UDP; ב-TACACS+ רואים TCP.</li>
-<li>הוסיפו רשימה בשם לקונסול עם <code>local</code> בלבד, וודאו שהקונסול לא פונה לשרת.</li>
-</ol>
+מנהל הקליד <code>aaa new-model</code> ואז <code>aaa authentication login default group tacacs+</code> (בלי <code>local</code>). השרת נפל, והמנהל התנתק. מה קרה, ואיך מונעים זאת?
+<div class="ans">הוא ננעל מחוץ לנתב – אין שיטת גיבוי כשהשרת לא זמין. השחזור דורש גישה פיזית לקונסול והליך שחזור סיסמה. המניעה: תמיד לסיים את רשימת השיטות ב-<code>local</code> ולהגדיר משתמש מקומי מראש.</div></div>
 
 <h2>בנק שאלות שתלמידים שואלים – ותשובות מוכנות</h2>
 <p>שאלות נפוצות בפרק ה-AAA, עם תשובות מוכנות.</p>
@@ -268,3 +141,4 @@ R1# <b>debug radius</b></pre>
 <tr><td><b>Supplicant / Authenticator</b></td><td>ב-802.1X: המכשיר המבקש גישה (supplicant) והמתג שחוסם (authenticator).</td></tr>
 <tr><td><b>MFA / 2FA</b></td><td>אימות רב-שלבי – שילוב גורמים מסוגים שונים (יודע/יש/הוא).</td></tr>
 </table>
+
