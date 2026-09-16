@@ -150,6 +150,21 @@ def build_book():
     _lualatex('Full_Course.tex', ROOT, passes=3)
     print("book:", "OK" if os.path.exists(os.path.join(ROOT,'Full_Course.pdf')) else "FAILED")
 
+
+def build_md():
+    import html2md
+    from html2md import DOM as _D  # ensure import path
+    from html2md import convert as _conv
+    from html2tex import DOM
+    for folder,stem,_,_ in CH:
+        src=os.path.join(GH, stem+'.html')
+        if not os.path.exists(src):
+            print(f"md {folder}: SKIP (no html)"); continue
+        d=os.path.join(ROOT, folder); os.makedirs(d, exist_ok=True)
+        dom=DOM(); dom.feed(read(src))
+        write(os.path.join(d,'study_material.md'), _conv(dom.root))
+        print(f"md {folder}: OK")
+
 if __name__=='__main__':
     args=sys.argv[1:]
     what=args[0] if args else 'all'
@@ -158,5 +173,6 @@ if __name__=='__main__':
     elif what=='slides':     build_slides()
     elif what=='latex':      build_latex()
     elif what=='book':       build_book()
-    elif what=='all':        build_slides(); build_latex(); build_book()
+    elif what=='md':         build_md()
+    elif what=='all':        build_slides(); build_latex(); build_book(); build_md()
     else: print(__doc__)
