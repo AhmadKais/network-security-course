@@ -1,354 +1,121 @@
 <h1>פרק 2 – אבטחת אביזרי רשת <small>10 שעות עיוני + 2 מעשי · שבועות 4–6</small></h1>
-<div class="meta"><span><b>מטרות:</b> הקשחת נתב ב-CLI · אבטחת גישה · SSH · syslog/NTP/SNMP · AutoSecure</span><span><b>בבגרות:</b> line vty / login local / secret, מפתחות RSA ל-SSH, פקודת logging</span></div>
-<div class="box def"><span class="t">לפני שמתחילים – איך בכלל מדברים עם נתב? (למי שאין רקע)</span>
-כל הפרק הזה עוסק ב"הקשחת נתב" – אבל איך פונים לנתב מלכתחילה? הנה הבסיס:
+
+<div class="box def"><span class="t">איך לקרוא את הפרק הזה</span>
+בפרק הקודם הבנו מפני מה מגנים ומי התוקפים. בפרק הזה מתחילים להגן בפועל – על הרכיב הראשון והחשוב ביותר ברשת: הנתב. הפרק כתוב לקריאה רציפה גם למי שלא ראה מעולם ציוד רשת. נתחיל מהבסיס ממש (מה זה נתב, איך "מדברים" איתו), ורק אז נראה פקודות. כל פקודה מוסברת במילים לפני שהיא מופיעה.</div>
+
+<h2>2.1 למה מתחילים דווקא מהנתב?</h2>
+<p>נזכיר מהפרק הקודם: <b>נתב (Router)</b> הוא המכשיר שמעביר את התעבורה בין רשתות שונות – למשל בין הרשת של בית הספר לבין האינטרנט. הנתב שיושב על הגבול הזה נקרא <b>נתב קצה (Edge Router)</b>, והוא נקודת המפגש בין הרשת שלנו לעולם החיצון.</p>
+<p>למה הוא המטרה הראשונה של תוקפים? כי מי ששולט בנתב שולט בכל מה שעובר דרכו. הוא יכול לצותת לכל התעבורה, לחסום אותה, להטות אותה למקום אחר, או לפתוח דרכה דלת אל תוך הרשת. במילים אחרות, הנתב הוא כמו השומר בשער: אם הוא נפרץ, כל שאר ההגנות שמאחוריו כבר לא עוזרות. לכן הצעד הראשון בכל רשת מאובטחת הוא "להקשיח" את הנתב.</p>
+<p><b>הקשחה (Hardening)</b> פירושה להפוך מכשיר מהגדרת ברירת המחדל ה"פתוחה" שלו למצב מאובטח: לתת סיסמאות חזקות, לאפשר גישה מוצפנת בלבד, לכבות שירותים מיותרים, ולהפעיל ניטור. את כל אלה נלמד בפרק. נהוג לחלק את אבטחת הנתב לשלושה תחומים: אבטחה <b>פיזית</b> (מי בכלל יכול לגעת בו – חדר נעול), אבטחת <b>מערכת ההפעלה</b> (גרסה עדכנית וגיבוי), ו<b>הקשחה</b> של ההגדרות (לב הפרק).</p>
+<div class="box story"><span class="t">מהעולם האמיתי: חצי מיליון נתבים נחטפו (VPNFilter, 2018)</span>
+נוזקה בשם VPNFilter הדביקה מעל 500,000 נתבים ביתיים וקטנים בעולם. היכולות שלה היו מפחידות: לרגל אחר כל התעבורה שעוברת בנתב, לגנוב סיסמאות, ואף "להרוג" את הנתב בפקודה אחת. ה-FBI ייחס אותה לתקיפה מדינתית והשתלט על שרת השליטה שלה כדי לעצור אותה. איך היא נכנסה? דרך חולשות ידועות שלא עודכנו וסיסמאות ברירת מחדל שלא שונו. הלקח: נתב הוא מחשב מלא לכל דבר, ובלי הקשחה הוא הדלת הקלה ביותר פנימה.</div>
+
+<h2>2.2 איך בכלל "מדברים" עם נתב?</h2>
+<p>בניגוד למחשב רגיל, לנתב אין מסך, עכבר וחלונות. מנהלים אותו בעזרת <b>CLI (Command Line Interface)</b> – "ממשק שורת פקודה", כלומר מקלידים פקודות טקסט והנתב מגיב. מערכת ההפעלה של ציוד סיסקו נקראת <b>IOS</b> (כמו ש-Windows היא מערכת ההפעלה של המחשב, IOS היא מערכת ההפעלה של הנתב), וה-CLI הוא הדרך לדבר איתה.</p>
+<h3>מצבי העבודה – והסימן שאומר לכם איפה אתם</h3>
+<p>ל-CLI יש כמה "מצבים" (רמות), וכל אחד מאפשר דברים אחרים. הדבר החשוב: <u>הסימן שמופיע על המסך תמיד אומר לכם באיזה מצב אתם נמצאים</u>. הסימן בנוי משלושה חלקים: שם הנתב, ואחריו – בסוגריים – החלק שאתם מגדירים כרגע, ואחריו הסימן <code>&gt;</code> או <code>#</code>. הסימן <code>&gt;</code> אומר "אתם רק יכולים להסתכל", והסימן <code>#</code> אומר "אתם מנהלים ומותר לכם לשנות" (חשבו על <code>#</code> כמו על מנהל/root).</p>
 <ul>
-<li><b>CLI (Command Line Interface)</b> – ממשק שורת פקודה. במקום עכבר וחלונות, מקלידים פקודות טקסט. כל ציוד סיסקו מנוהל כך.</li>
-<li><b>IOS</b> – מערכת ההפעלה של ציוד סיסקו (כמו Windows למחשב, רק לנתב). ה-CLI הוא הדרך לדבר איתה.</li>
-<li><b>מצבי עבודה (Modes)</b> – ל-CLI יש "רמות". הסימן שאחרי שם הנתב מראה איפה אתם:
-  <ul>
-  <li><code>R1&gt;</code> – מצב בסיסי (User) – רק צפייה.</li>
-  <li><code>R1#</code> – מצב מנהל (Privileged) – אחרי הקלדת <code>enable</code>. אפשר הכול.</li>
-  <li><code>R1(config)#</code> – מצב הגדרות – אחרי <code>configure terminal</code>. כאן משנים הגדרות.</li>
-  <li><code>R1(config-if)#</code> – מצב ממשק – מגדירים כרטיס רשת ספציפי.</li>
-  </ul></li>
-<li><b>קונפיגורציה (Configuration)</b> – כל ההגדרות של הנתב. יש <b>running-config</b> (הפעילה כרגע בזיכרון, נמחקת בכיבוי) ו-<b>startup-config</b> (השמורה, נטענת באתחול). שומרים עם <code>copy running-config startup-config</code> או <code>write</code>.</li>
-<li><b>ממשק (Interface)</b> – כרטיס רשת/פורט פיזי בנתב, למשל <code>GigabitEthernet0/0</code> (בקיצור g0/0).</li>
+<li><code>R1&gt;</code> – <b>מצב משתמש (User)</b>. זה מה שרואים מיד בכניסה. אפשר רק להסתכל: פקודות <code>show</code> בסיסיות, <code>ping</code>.</li>
+<li><code>R1#</code> – <b>מצב מנהל (Privileged)</b>. מגיעים אליו בהקלדת <code>enable</code>. כאן מותר הכול, כולל לצפות בכל ההגדרות ולאתחל את הנתב.</li>
+<li><code>R1(config)#</code> – <b>מצב הגדרות (Global config)</b>. מגיעים אליו בהקלדת <code>configure terminal</code>. כאן משנים הגדרות של הנתב כולו (שם, משתמשים, ניתוב).</li>
+<li><code>R1(config-if)#</code> – <b>מצב ממשק (Interface)</b>. מגיעים אליו בהקלדת למשל <code>interface g0/0</code>, ומגדירים פורט מסוים. (<b>ממשק / Interface</b> הוא פשוט פורט/כרטיס רשת בנתב, למשל <span class="en">GigabitEthernet0/0</span>, בקיצור g0/0.)</li>
 </ul>
-<b>דוגמה – כניסה והגדרה ראשונה:</b>
-<pre>Router&gt; enable                 <span class="c">! מעבר למצב מנהל</span>
-Router# configure terminal     <span class="c">! מעבר למצב הגדרות</span>
-Router(config)# hostname R1    <span class="c">! שינוי שם הנתב</span>
-R1(config)# exit
-R1# write                      <span class="c">! שמירת ההגדרות</span></pre></div>
+<div class="box tip"><span class="t">מושג חשוב: איפה נשמרות ההגדרות?</span>
+לנתב יש שני "עותקים" של ההגדרות. <b>running-config</b> הוא הקונפיגורציה הפעילה כרגע – אבל היא נמצאת בזיכרון זמני ו<u>נמחקת בכיבוי</u>. <b>startup-config</b> היא הקונפיגורציה השמורה, שנטענת מחדש בכל הדלקה. לכן אחרי שמסיימים להגדיר – חייבים לשמור, בפקודה <code>write</code> (או <code>copy running-config startup-config</code>). מי ששוכח לשמור מגלה שכל עבודתו נעלמה אחרי אתחול.</div>
+<p>הנה "סיפור" קצר של פקודות. קראו את הסימן בתחילת כל שורה כדי לעקוב איפה אנחנו נמצאים:</p>
+<pre>Router&gt; <b>enable</b>                 <span class="c">! ממצב "רק להסתכל" למצב "מנהל"</span>
+Router# <b>configure terminal</b>     <span class="c">! נכנסים למצב הגדרות</span>
+Router(config)# <b>hostname R1</b>    <span class="c">! נותנים לנתב שם – שימו לב שהסימן משתנה מיד</span>
+R1(config)# <b>interface g0/0</b>     <span class="c">! נכנסים לפורט מסוים</span>
+R1(config-if)# <b>no shutdown</b>     <span class="c">! מדליקים את הפורט</span>
+R1(config-if)# <b>end</b>             <span class="c">! חוזרים ישר למצב מנהל</span>
+R1# <b>write</b>                       <span class="c">! שומרים! (אחרת ההגדרות ייעלמו בכיבוי)</span></pre>
 
+<h2>2.3 סיסמאות: מה חזק, מה חלש, ולמה</h2>
+<p>הצעד הבסיסי בהקשחה הוא סיסמאות טובות. ב-IOS יש כמה סוגים של סיסמאות, וההבדל ביניהן קריטי. הכלל הפשוט: תמיד להשתמש במילה <code>secret</code>, אף פעם לא במילה <code>password</code>.</p>
+<pre>R1(config)# <b>enable secret</b> Str0ng-P@ss   <span class="c">! סיסמת מצב מנהל – מאוחסנת מגובבת (בטוח)</span>
+R1(config)# enable password weak         <span class="c">! מאוחסנת בטקסט גלוי – לא להשתמש!</span>
+R1(config)# <b>service password-encryption</b>  <span class="c">! מסתיר את הסיסמאות הגלויות בקונפיג</span>
+R1(config)# username admin <b>secret</b> P@ss   <span class="c">! משתמש מקומי עם סיסמה מגובבת</span></pre>
+<p>למה <code>secret</code> עדיף? כי הוא נשמר כ<b>גיבוב (hash)</b> – טביעת אצבע חד-כיוונית של הסיסמה, שממנה אי אפשר לשחזר את הסיסמה המקורית (נרחיב על גיבוב בפרק 7). לעומת זאת <code>password</code> נשמר בטקסט גלוי, וגם הפקודה <code>service password-encryption</code> שמסתירה אותו משתמשת בהצפנה חלשה מאוד (מה שנקרא "type 7") שנשברת בשנייה באתרים חינמיים באינטרנט. לכן <code>service password-encryption</code> מגן רק מפני מישהו שמציץ מעבר לכתף בזמן שאתם צופים בקונפיג – לא מפני תוקף אמיתי. ההגנה האמיתית היא ה-<code>secret</code>.</p>
 
-<h2>2.1 למה הנתב הוא המטרה הראשונה</h2>
-<p><b>נתב הקצה</b> (Edge router) הוא הנקודה שבה רשת הארגון פוגשת את האינטרנט. מי ששולט בו יכול לנתב תעבורה לאן שירצה, להאזין לה, לחסום אותה או לפתוח פתח פנימה. שלוש גישות לתכנון:</p>
-<ul>
-<li><b>נתב יחיד</b> – הנתב הוא גם חומת האש (ACL, ZPF). מתאים לעסק קטן (SOHO).</li>
-<li><b>הגנה לעומק (Defense in depth)</b> – נתב קצה מסנן גס ⇒ חומת אש ייעודית (ASA) ⇒ נתב פנימי. כל שכבה עצמאית.</li>
-<li><b>DMZ</b> – אזור מפורז בין שתי חומות אש (או בין שני ממשקים של אותה חומה) ובו השרתים הציבוריים (web, mail). אם שרת ב-DMZ נפרץ, התוקף עדיין לא בפנים.</li>
-</ul>
-<p>אבטחת הנתב עצמו כוללת שלושה תחומים: <b>אבטחה פיזית</b> (חדר נעול, UPS – מי שיש לו גישה פיזית לקונסול יכול לאפס סיסמה דרך password recovery), <b>אבטחת מערכת ההפעלה</b> (גרסת IOS עדכנית, זיכרון מספיק, גיבוי של ה-image והקונפיגורציה) ו<b>הקשחה</b> (hardening) – סגירת שירותים מיותרים, סיסמאות, גישה מוצפנת, ניטור. זה ליבת הפרק.</p>
+<h2>2.4 Telnet מול SSH – ההבדל שמציל אתכם</h2>
+<p>כדי לנהל נתב מרחוק (מבלי להתחבר אליו פיזית בכבל), מתחברים אליו דרך הרשת. יש לכך שני פרוטוקולים, ואחד מהם מסוכן מאוד.</p>
+<p><b>Telnet</b> (פורט 23) הוא הפרוטוקול הישן. הבעיה שלו חמורה: הוא מעביר את <u>הכול</u> בטקסט גלוי, כולל את שם המשתמש והסיסמה. כל מי ש"מקשיב" לרשת יכול לראות אותם. <b>SSH (Secure Shell)</b> (פורט 22) הוא הפרוטוקול המאובטח: הוא <u>מצפין</u> את כל התקשורת, כך שמאזין רואה רק ג'יבריש, וגם מוודא שאתם מדברים באמת עם הנתב הנכון. משתמשים ב-SSH גרסה 2 בלבד.</p>
+<div class="box story"><span class="t">מהעולם האמיתי: Telnet שנלכד בבית חולים</span>
+בבדיקת חדירה מוזמנת, הבודק חיבר מחשב נייד לשקע רשת בחדר המתנה והריץ תוכנה שמקשיבה לתעבורה (Wireshark). תוך 40 דקות הוא לכד תקשורת Telnet של טכנאי שהתחבר למתג הראשי – ושם המשתמש והסיסמה השתקפו על מסכו בטקסט גלוי. עם הסיסמה הזו הוא קיבל שליטה בכל המתגים בבניין. הטכנאי לא עשה שום דבר "לא נכון" – הוא פשוט השתמש בכלי הישן שהיה זמין. ההגנה מפני כל התרחיש הזה היא שורה אחת שחוסמת Telnet ומחייבת SSH.</div>
+<h3>הגדרת SSH – חמישה שלבים, כל אחד מוסבר</h3>
+<p>כדי ש-SSH יעבוד, הנתב צריך לייצר לעצמו <b>זוג מפתחות RSA</b> – מפתח ציבורי ומפתח פרטי (נבין אותם לעומק בפרק 7). המפתחות האלה הם מה שמצפין את החיבור. כדי לייצר אותם, הנתב חייב קודם שם מלא, שמורכב מהשם שלו (hostname) ומשם דומיין. לכן שני אלה חייבים לבוא ראשונים:</p>
+<pre>R1(config)# <b>hostname R1</b>                       <span class="c">! 1. שם לנתב</span>
+R1(config)# <b>ip domain-name school.local</b>       <span class="c">! 2. שם דומיין (חובה לפני יצירת מפתחות)</span>
+R1(config)# <b>crypto key generate rsa</b> modulus 2048  <span class="c">! 3. ייצור זוג מפתחות RSA</span>
+R1(config)# username admin privilege 15 secret P@ss <span class="c">! 4. משתמש שאיתו נתחבר</span>
+R1(config)# ip ssh version 2                         <span class="c">! SSHv2 בלבד</span>
+R1(config)# <b>line vty 0 4</b>                          <span class="c">! 5. הגדרת קווי הגישה מרחוק</span>
+R1(config-line)# <b>login local</b>                      <span class="c">! אימות מול המשתמש המקומי</span>
+R1(config-line)# <b>transport input ssh</b>              <span class="c">! רק SSH – חוסם Telnet</span></pre>
+<div class="box mistake"><span class="t">הטעות הנפוצה ביותר</span>
+אם שוכחים את שורת <code>ip domain-name</code> (או משאירים את שם הנתב כברירת המחדל "Router"), הפקודה <code>crypto key generate rsa</code> נכשלת עם ההודעה "Please define a domain-name first". זכרו: השם והדומיין חייבים לבוא <u>לפני</u> יצירת המפתחות, כי שם המפתח נגזר מהם.</div>
+<p>הערה על <code>line vty 0 4</code>: "VTY" הם קווי הגישה הווירטואליים שדרכם מתחברים מרחוק (יש חמישה כאלה, ממוספרים 0 עד 4). עליהם אנחנו קובעים שני דברים: <code>login local</code> – שהאימות ייעשה מול מסד המשתמשים המקומי (כלומר יידרש גם שם וגם סיסמה), ו-<code>transport input ssh</code> – שמותר להתחבר רק ב-SSH ולא ב-Telnet.</p>
+<div class="box tip"><span class="t">login מול login local – הבחנה שנשאלת בבגרות</span>
+<code>login</code> (לבד) מבקש רק סיסמה אחת משותפת של הקו, בלי שם משתמש. <code>login local</code> מבקש גם שם משתמש וגם סיסמה, ומאמת אותם מול מסד המשתמשים המקומי (<code>username ... secret</code>). מכיוון ש-SSH דורש שם משתמש, הוא חייב <code>login local</code> – ולכן זו התשובה הנכונה בשאלות בגרות על התחברות מאובטחת.</div>
 
-<div class="box story"><span class="t">סיפור מהחיים: הנתבים שנשארו עם admin/admin</span>
-ב-2016 רשת Mirai הדביקה 600,000 מכשירים – מצלמות אבטחה, ראוטרים ביתיים, מקליטי DVR – בשיטה פרימיטיבית להדהים: היא ניסתה 62 צירופים של שם משתמש וסיסמה מברירת המחדל של היצרנים (admin/admin, root/12345, admin/password). זהו. בלי פגיעות מתוחכמת. עם הצבא הזה הופלו ב-DDoS של 1.2 טרה-ביט/שנייה שירות ה-DNS של Dyn, ואיתו Twitter, Netflix, Spotify ו-PayPal ליום שלם. כל מה שנלמד בפרק הזה – סיסמה חזקה, SSH במקום Telnet, כיבוי שירותים – היה מונע את ההדבקה. שאלו: כמה מכם שינו את הסיסמה של הראוטר בבית?</div>
-
-<h2>2.2 שלוש דרכי ניהול לנתב</h2>
-<table>
-<tr><th>ממשק</th><th>איך מתחברים</th><th>אבטחה</th></tr>
-<tr><td><b>Console</b></td><td>כבל קונסול פיזי, <code>line console 0</code></td><td>מי שמגיע פיזית – שולט. חובה סיסמה + exec-timeout.</td></tr>
-<tr><td><b>AUX</b></td><td>פורט עזר למודם (ישן), <code>line aux 0</code></td><td>לרוב מכבים: <code>no exec</code> / <code>transport input none</code></td></tr>
-<tr><td><b>VTY</b> (Virtual Terminal)</td><td>Telnet/SSH דרך הרשת, <code>line vty 0 4</code> (5 קווים וירטואליים 0–4; ב-IOS חדש 0–15)</td><td>הנקודה הרגישה ביותר – חייבים SSH בלבד + אימות משתמשים.</td></tr>
-</table>
-<div class="box def"><span class="t">In-band מול Out-of-band (OOB)</span>
-<b>In-band</b> – ניהול דרך אותה רשת שמעבירה את תעבורת המשתמשים (SSH מהמשרד לנתב). זול, אבל אם הרשת נופלת – אין ניהול, ואם התוקף ברשת – הוא רואה את תעבורת הניהול.<br>
-<b>Out-of-band (OOB)</b> – רשת ניהול נפרדת פיזית או לוגית: שרת קונסולים, VLAN ניהול ייעודי, מודם/LTE לחירום. עדיף לארגונים; לפחות VLAN ניהול נפרד.</div>
-
-<h2>2.3 סיסמאות בנתב – מה ההבדל בין כל הסוגים</h2>
-<pre><span class="c">! מדיניות מינימום</span>
-R1(config)# <b>security passwords min-length 10</b>
-<span class="c">! סיסמת מצב enable – תמיד secret, לעולם לא password</span>
-R1(config)# <b>enable secret</b> Str0ng-P@ss
-<span class="c">! קונסול</span>
-R1(config)# line console 0
-R1(config-line)# password C0ns0le-P@ss
-R1(config-line)# <b>login</b>
-R1(config-line)# <b>exec-timeout 5 0</b>        <span class="c">! ניתוק אחרי 5 דק' חוסר פעילות</span>
-R1(config-line)# logging synchronous      <span class="c">! שהודעות לוג לא ישברו את השורה שמקלידים</span>
-<span class="c">! הצפנת כל הסיסמאות בטקסט גלוי בקונפיג (type 7 – חלשה, אבל עדיף מכלום)</span>
-R1(config)# <b>service password-encryption</b></pre>
-<table>
-<tr><th>פקודה</th><th>איך נשמר בקונפיג</th><th>חוזק</th></tr>
-<tr><td><code>enable password X</code></td><td>טקסט גלוי (type 0)</td><td>אפס. לא להשתמש.</td></tr>
-<tr><td><code>service password-encryption</code></td><td>Vigenère "type 7"</td><td>חלש – מפוענח באתרים אונליין בשנייה. מגן רק מהצצה מעבר לכתף.</td></tr>
-<tr><td><code>enable secret X</code></td><td>MD5 (type 5), ב-IOS חדש scrypt (type 9)</td><td>גיבוב חד-כיווני – לא ניתן לשחזר. <b>זה מה שמשתמשים בו.</b></td></tr>
-<tr><td><code>username admin secret X</code></td><td>גיבוב כמו enable secret</td><td>חזק – לחשבונות מקומיים.</td></tr>
-<tr><td><code>username admin password X</code></td><td>גלוי / type 7</td><td>חלש – לא להשתמש.</td></tr>
-</table>
-<div class="box faq"><span class="t">שאלת תלמיד: "אם הגדרתי גם enable password וגם enable secret – מה קובע?"</span>
-ה-secret. ה-IOS מתעלם מ-enable password כשקיים enable secret (ומזהיר אם הן זהות). למען הסדר – פשוט לא מגדירים enable password.</div>
-<div class="box faq"><span class="t">שאלת תלמיד: "מה ההבדל בין login ל-login local?"</span>
-<code>login</code> – מבקש רק את הסיסמה שהוגדרה בקו עצמו (<code>password</code> בתוך line). כולם משתמשים באותה סיסמה, אין שמות, אין מעקב מי נכנס.<br>
-<code>login local</code> – מבקש שם משתמש וסיסמה ומאמת מול מסד המשתמשים המקומי (<code>username … secret …</code>). <b>SSH דורש שם משתמש ולכן חייב login local (או AAA).</b> זה בדיוק מה שנשאל בבגרות שאלה 2א: התשובה הנכונה היא <code>username admin privilege 15 secret …</code> + <code>login local</code>.</div>
-
-<h2>2.4 Telnet מול SSH – והגדרת SSH צעד אחר צעד</h2>
-<p><b>Telnet</b> (TCP 23) מעביר הכול – כולל שם משתמש וסיסמה – בטקסט גלוי. כל מי שמאזין לרשת (Wireshark) רואה אותם. <b>SSH</b> (Secure Shell, TCP 22) מצפין את כל ההפעלה ומאמת את השרת. SSH גרסה 2 בלבד (גרסה 1 פגיעה).</p>
-<p>כדי ש-SSH יעבוד, הנתב צריך <b>זוג מפתחות RSA</b> (פרק 7 יסביר לעומק: מפתח ציבורי שנשלח ללקוח ומפתח פרטי שנשאר בנתב). כדי לייצר מפתח הנתב צריך שם מלא (FQDN) = hostname + domain-name, כי השם נכנס למפתח.</p>
-<pre><span class="c">! 1. שם ייחודי ודומיין – חובה לפני יצירת מפתחות</span>
-Router(config)# <b>hostname R1</b>
-R1(config)# <b>ip domain-name school.local</b>
-<span class="c">! 2. יצירת זוג מפתחות RSA (2048 ביט ומעלה)</span>
-R1(config)# <b>crypto key generate rsa general-keys modulus 2048</b>
-The name for the keys will be: R1.school.local
-<span class="c">! 3. משתמש מקומי</span>
-R1(config)# <b>username admin privilege 15 secret Adm1n-P@ss</b>
-<span class="c">! 4. פרמטרים של SSH</span>
-R1(config)# <b>ip ssh version 2</b>
-R1(config)# <b>ip ssh time-out 60</b>              <span class="c">! זמן לסיום ההזדהות</span>
-R1(config)# <b>ip ssh authentication-retries 2</b>
-<span class="c">! 5. קווי VTY – רק SSH, אימות מקומי</span>
-R1(config)# <b>line vty 0 4</b>
-R1(config-line)# <b>login local</b>
-R1(config-line)# <b>transport input ssh</b>          <span class="c">! חוסם Telnet לחלוטין</span>
-R1(config-line)# exec-timeout 5 0
-<span class="c">! בדיקה</span>
-R1# <b>show ip ssh</b>
-R1# <b>show ssh</b>                                  <span class="c">! חיבורים פעילים</span>
-R1# <b>show crypto key mypubkey rsa</b>
-<span class="c">! חיבור מנתב אחר / ממחשב</span>
-R2# ssh -l admin 10.0.0.1
-PC&gt; ssh -l admin 10.0.0.1</pre>
-<div class="box mistake"><span class="t">טעויות נפוצות בהגדרת SSH</span>
-• שכחו <code>ip domain-name</code> ⇒ הפקודה <code>crypto key generate rsa</code> נכשלת ("Please define a domain-name first").<br>
-• השאירו hostname "Router" ⇒ אותה שגיאה.<br>
-• הגדירו <code>login</code> במקום <code>login local</code> ⇒ SSH דוחה ("Password required, but none set" / אין אימות בשם משתמש).<br>
-• מפתח קטן מ-768 ביט לא מאפשר SSHv2. משתמשים ב-1024 לפחות; מומלץ 2048.<br>
-• <code>transport input ssh</code> חוסם Telnet – אם התלמיד היה מחובר ב-Telnet הוא לא יינתק, אבל חיבור הבא ייכשל. זה מכוון.</div>
-<div class="box exam"><span class="t">בבגרות (שאלה 5ב)</span>
-"מנהל רשת הפיק מפתחות RSA בנתב. מה ניתן לעשות כעת עם המפתחות?" – <b>ניתן להשתמש בהם לצורך חיבור SSH</b> (ללא צורך באיפוס). Telnet לא משתמש במפתחות כלל.</div>
-
-<div class="box story"><span class="t">סיפור מהחיים: Telnet בבית חולים</span>
-בבדיקת חדירה בבית חולים (סיפור שמופיע בדוחות של חברות אבטחה רבות), הבודקים חיברו מחשב נייד לשקע רשת בחדר המתנה, הריצו Wireshark, וחיכו. תוך 40 דקות הם לכדו session של Telnet של טכנאי שהתחבר למתג הראשי – שם משתמש וסיסמה בטקסט גלוי. עם הסיסמה הזו הם קיבלו שליטה בכל המתגים בבניין. הטכנאי לא עשה שום דבר "לא נכון" – הוא פשוט השתמש בכלי שהיה זמין. ההגנה: <code>transport input ssh</code> – שורה אחת.</div>
-
-<h2>2.5 רמות הרשאה (Privilege Levels) ותצוגות תפקיד (Role-Based CLI Views)</h2>
-<p>ל-IOS יש 16 רמות הרשאה (0–15). בפועל משתמשים בשלוש:</p>
-<table>
-<tr><th>רמה</th><th>שם</th><th>מה מותר</th></tr>
-<tr><td>0</td><td>–</td><td>רק disable, enable, exit, help, logout</td></tr>
-<tr><td>1</td><td>User EXEC (<code>R1&gt;</code>)</td><td>פקודות show בסיסיות, ping. ברירת מחדל אחרי login.</td></tr>
-<tr><td>2–14</td><td>מותאם אישית</td><td>מה שהמנהל מעביר אליהן בעזרת <code>privilege</code></td></tr>
-<tr><td>15</td><td>Privileged EXEC (<code>R1#</code>)</td><td>הכול, כולל configure terminal</td></tr>
-</table>
-<pre><span class="c">! רמה 5: מותר גם reload ו-show running-config</span>
-R1(config)# <b>privilege exec level 5 reload</b>
-R1(config)# <b>privilege exec level 5 show running-config</b>
-R1(config)# <b>enable secret level 5 Lvl5-P@ss</b>
-R1(config)# <b>username helpdesk privilege 5 secret Help-P@ss</b>
-<span class="c">! כניסה לרמה</span>
-R1&gt; <b>enable 5</b>
-R1# <b>show privilege</b>
-Current privilege level is 5</pre>
-<p><b>מגבלות של רמות:</b> אין שליטה "בין רמות" (רמה 5 מקבלת אוטומטית גם כל מה שמותר ב-1–4), ופקודות show מסוימות חושפות הרבה. הפתרון המדויק יותר: <b>Role-Based CLI Views</b> – "תצוגה" שמכילה רשימת פקודות מדויקת. דורש AAA מופעל.</p>
-<pre>R1(config)# <b>aaa new-model</b>
-R1(config)# exit
-R1# <b>enable view</b>                                <span class="c">! נכנסים ל-root view (מבקש enable secret)</span>
-R1# configure terminal
-R1(config)# <b>parser view MONITOR</b>
-R1(config-view)# <b>secret Mon-P@ss</b>
-R1(config-view)# <b>commands exec include show ip interface brief</b>
-R1(config-view)# <b>commands exec include show ip route</b>
-R1(config-view)# <b>commands exec include ping</b>
-R1(config-view)# exit
-<span class="c">! משתמש שמשויך לתצוגה</span>
-R1(config)# username noc view MONITOR secret Noc-P@ss
-<span class="c">! בדיקה</span>
-R1# enable view MONITOR
-R1# <b>show parser view</b>
-Current view is 'MONITOR'</pre>
-<p><b>Superview</b> – תצוגה שמאגדת כמה תצוגות (<code>parser view ADMIN superview</code> ⇒ <code>view MONITOR</code>).</p>
-
-<h2>2.6 Banner – אזהרה משפטית</h2>
+<h2>2.5 עוד כלי הקשחה: רמות הרשאה ו-Banner</h2>
+<p><b>רמות הרשאה (Privilege Levels):</b> לפעמים רוצים לתת למישהו גישה חלקית – למשל למתמחה שיוכל רק לצפות, בלי לשנות. ל-IOS יש 16 רמות הרשאה (0 עד 15). רמה 1 היא ברירת המחדל (רק צפייה), רמה 15 היא הרשאת מנהל מלאה, ואת הרמות שביניהן אפשר להתאים אישית ולהעביר אליהן פקודות מסוימות. כך אפשר לתת לכל תפקיד בדיוק את מה שהוא צריך – עיקרון שנקרא "מינימום הרשאות".</p>
+<p><b>Banner:</b> זוהי הודעת אזהרה שמופיעה בכניסה לנתב. מטרתה משפטית – להבהיר שהגישה מיועדת למורשים בלבד ושהפעילות מנוטרת.</p>
 <pre>R1(config)# <b>banner motd #</b>
-*** UNAUTHORIZED ACCESS IS PROHIBITED ***
-This system is for authorized personnel only.
-All activity is monitored and logged.
+*** גישה בלתי מורשית אסורה. הפעילות מנוטרת ומתועדת. ***
 #</pre>
-<div class="box tip"><span class="t">טיפ: מה לא לכתוב בבאנר</span>
-לא "Welcome" (בית משפט בארה"ב קיבל טענה של פורץ ש"הוזמן"), לא שם החברה, לא דגם הנתב, לא שם המנהל. רק אזהרה ותו לא. ה-motd מוצג לפני ההזדהות; <code>banner login</code> מוצג אחרי motd ולפני בקשת שם משתמש; <code>banner exec</code> אחרי הכניסה.</div>
+<div class="box mistake"><span class="t">מה לא לכתוב בבאנר</span>
+לא לכתוב "Welcome" (ברוכים הבאים) – במקרה משפטי בארה"ב פורץ טען שהבאנר "הזמין" אותו להיכנס. לא לכתוב את שם החברה ולא את דגם הנתב – זה רק עוזר לתוקף. הבאנר צריך רק להזהיר, לא לקבל את פני האורח.</div>
+<div class="box story"><span class="t">מהעולם האמיתי: הדגל האמריקאי על 168,000 נתבים (2018)</span>
+קבוצת האקרים גילתה שירות ניהול של סיסקו בשם Smart Install שנשאר פתוח וחשוף לאינטרנט אצל עשרות אלפי ארגונים. הם מצאו את הנתבים החשופים דרך מנוע חיפוש בשם Shodan, איפסו את הקונפיגורציה של כ-168,000 נתבים, ובחלקם השאירו הודעה עם דגל אמריקאי וכיתוב "אל תתעסקו עם הבחירות שלנו". נפגעו ספקיות אינטרנט באיראן וברוסיה. הלקח ישיר: שירות ניהול מיותר שנשאר פתוח הוא הזמנה – ולכן מכבים כל שירות שלא נחוץ (הנושא של סעיף 2.7).</div>
 
-<h2>2.7 Logging ו-Syslog</h2>
-<p>הנתב מייצר הודעות על אירועים (ממשק עלה/ירד, כניסה כושלת, ACL שחסם). ניתן לשלוח אותן ל: <b>קונסול</b> (ברירת מחדל), <b>קווי VTY</b> (<code>terminal monitor</code>), <b>חוצץ בזיכרון</b> (buffer – נמחק ב-reload), ו<b>שרת syslog</b> (UDP 514) – היעד הנכון לארגון, כי הלוגים נשמרים גם אם הנתב נפרץ או אופס.</p>
-<h3>מבנה הודעה</h3>
-<pre>*Mar  1 00:12:45.123: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to down
- ^זמן                  ^facility ^severity ^mnemonic  ^תיאור</pre>
-<h3>8 רמות חומרה (Severity) – חובה לזכור</h3>
-<table>
-<tr><th>רמה</th><th>שם</th><th>משמעות</th></tr>
-<tr><td>0</td><td>Emergencies</td><td>המערכת אינה שמישה</td></tr>
-<tr><td>1</td><td>Alerts</td><td>נדרשת פעולה מיידית</td></tr>
-<tr><td>2</td><td>Critical</td><td>מצב קריטי</td></tr>
-<tr><td>3</td><td>Errors</td><td>שגיאה (ממשק נפל)</td></tr>
-<tr><td>4</td><td>Warnings</td><td>אזהרה</td></tr>
-<tr><td>5</td><td>Notifications</td><td>אירוע רגיל אך משמעותי (ממשק עלה, config שונה)</td></tr>
-<tr><td>6</td><td>Informational</td><td>מידע (ACL match)</td></tr>
-<tr><td>7</td><td>Debugging</td><td>פלט debug – עצום, רק לפתרון תקלות</td></tr>
-</table>
-<p>מנמוניקה באנגלית: <b>E</b>very <b>A</b>wesome <b>C</b>isco <b>E</b>ngineer <b>W</b>ill <b>N</b>eed <b>I</b>ce-cream <b>D</b>aily. כשמגדירים רמה – מקבלים אותה <b>וכל מה שחמור ממנה</b> (רמה 4 = 0–4).</p>
-<pre>R1(config)# <b>logging host 2.9.20.22</b>       <span class="c">! או בקיצור: logging 2.9.20.22 (זו התשובה בבגרות שאלה 2ח)</span>
-R1(config)# <b>logging trap warnings</b>        <span class="c">! שלח לשרת רמות 0–4 (אפשר לכתוב 4)</span>
-R1(config)# <b>logging source-interface loopback 0</b>
-R1(config)# <b>logging buffered 16384 informational</b>   <span class="c">! חוצץ 16KB, רמות 0–6</span>
-R1(config)# <b>service timestamps log datetime msec</b>  <span class="c">! חותמת זמן – חסר טעם בלי NTP!</span>
-R1(config)# <b>logging on</b>
-R1# <b>show logging</b></pre>
+<h2>2.6 ניטור: לדעת מה קורה בנתב</h2>
+<p>אבטחה טובה היא לא רק חסימה – היא גם לדעת מה קורה. לשם כך יש שלושה שירותים שכדאי להפעיל.</p>
+<h3>Syslog – יומן האירועים</h3>
+<p>הנתב מייצר כל הזמן הודעות על אירועים: ממשק שעלה או נפל, ניסיון כניסה כושל, חבילה שנחסמה. <b>Syslog</b> הוא המנגנון ששולח את ההודעות האלה ל<b>שרת מרכזי</b> (על פורט UDP 514). למה שרת מרכזי ולא רק בנתב עצמו? כי תוקף חכם שמצליח להיכנס לנתב ימחק את היומן המקומי כדי לטשטש עקבות – אבל אין לו גישה לשרת החיצוני, ושם הראיות נשמרות.</p>
+<pre>R1(config)# <b>logging host 10.0.0.5</b>       <span class="c">! שולח את היומן לשרת</span>
+R1(config)# <b>logging trap warnings</b>       <span class="c">! שולח רמות 0 עד 4</span></pre>
+<p>להודעות היומן יש <b>8 רמות חומרה</b>, מ-0 (Emergency, החמור ביותר) עד 7 (Debug, מידע פנימי מפורט). כשבוחרים רמה מקבלים אותה וכל מה שחמור ממנה – למשל אם בוחרים רמה 4 (warnings) מקבלים את רמות 0 עד 4.</p>
+<h3>NTP – למה זמן מדויק הוא עניין של אבטחה</h3>
+<p><b>NTP (Network Time Protocol)</b> מסנכרן את השעון של כל הציוד ברשת למקור זמן אחד. זה נשמע טכני ומשעמם, אבל הוא קריטי לאבטחה: בלי זמן מסונכרן, אי אפשר לשחזר את סדר האירועים בזמן חקירה. אם הנתב מראה שעה אחת והשרת שעה אחרת, לא תדעו אם הכניסה הכושלת לנתב קרתה לפני החדירה לשרת או אחריה. חוץ מזה, גם תעודות דיגיטליות ומפתחות VPN תלויים בשעון נכון.</p>
+<pre>R1(config)# <b>ntp server 10.0.0.5</b></pre>
+<h3>SNMP – ניטור מצב הציוד</h3>
+<p><b>SNMP</b> הוא פרוטוקול שמאפשר לתחנת ניהול מרכזית לאסוף נתונים מהנתב (כמה תעבורה עוברת, עומס המעבד). הבעיה: בגרסאות הישנות (v1, v2c) הגישה מאובטחת רק ב"מחרוזת קהילה" (community string) שעוברת בטקסט גלוי, ולעיתים קרובות נשארת ברירת המחדל "public". רק <b>גרסה 3 (SNMPv3)</b> מוסיפה אימות והצפנה אמיתיים. הכלל: אם משתמשים ב-SNMP, גרסה 3 בלבד.</p>
+<div class="box story"><span class="t">מהעולם האמיתי: Shodan – "גוגל של המכשירים המחוברים"</span>
+Shodan הוא מנוע חיפוש שסורק כל הזמן את האינטרנט ומקטלג מכשירים חשופים – נתבים, מתגים, מצלמות אבטחה. אפשר לחפש בו מכשירים עם SNMP "public", עם Telnet פתוח, או עם סיסמת ברירת מחדל, ולקבל רשימה של אלפים. תוקפים משתמשים בו לשלב הסיור (פרק 1); אנשי אבטחה משתמשים בו כדי לגלות מה הארגון שלהם חושף בטעות. כל פעולת הקשחה שאנחנו לומדים בפרק הזה מורידה אתכם מהרשימה של Shodan.</div>
 
-<h2>2.8 NTP – למה זמן מדויק הוא עניין של אבטחה</h2>
-<p>לוגים בלי זמן נכון חסרי ערך: אי אפשר לשחזר סדר אירועים בין נתב, חומת אש ושרת. גם תעודות דיגיטליות (פרק 7) ומפתחות IPsec (פרק 8) תלויים בזמן. <b>NTP</b> (Network Time Protocol, UDP 123) מסנכרן את כל הציוד למקור אחד. <b>Stratum</b> – מרחק ממקור הזמן (stratum 0 = שעון אטומי/GPS, stratum 1 = שרת שמחובר אליו ישירות…).</p>
-<pre><span class="c">! נתב כלקוח NTP</span>
-R1(config)# <b>ntp server 10.0.0.5</b>
-R1(config)# clock timezone IST 2
-<span class="c">! אימות NTP – שלא יזייפו לנו את הזמן</span>
-R1(config)# <b>ntp authenticate</b>
-R1(config)# <b>ntp authentication-key 1 md5 NtpK3y</b>
-R1(config)# <b>ntp trusted-key 1</b>
-R1(config)# ntp server 10.0.0.5 key 1
-<span class="c">! נתב כשרת NTP לרשת הפנימית</span>
-R1(config)# <b>ntp master 3</b>
-R1# <b>show ntp status</b>
-R1# <b>show ntp associations</b>
-R1# show clock</pre>
+<h2>2.7 כיבוי שירותים מיותרים ו-AutoSecure</h2>
+<p>נתב מגיע מהמפעל עם הרבה שירותים דלוקים שהיו שימושיים פעם והיום הם רק שטח תקיפה מיותר. עיקרון ההקשחה פשוט: <b>כל שירות שלא צריך – כבה אותו</b>. כל שירות פתוח הוא דלת אפשרית (זכרו את סיפור Cisco Smart Install!).</p>
+<pre>R1(config)# no ip http server      <span class="c">! ממשק ניהול web מיותר</span>
+R1(config)# no cdp run             <span class="c">! פרוטוקול שחושף דגם וגרסה לשכנים</span></pre>
+<p>כדי לחסוך זמן, קיימת פקודה אחת שמבצעת חלק גדול מההקשחה אוטומטית: <b>AutoSecure</b>. היא מכבה שירותים מסוכנים, מפעילה ניטור, ומקשיחה את הנתב בכמה שאלות פשוטות.</p>
+<pre>R1# <b>auto secure</b></pre>
+<div class="box mistake"><span class="t">זהירות עם AutoSecure</span>
+היא "עיוורת" – עלולה לכבות דברים שהרשת בכל זאת צריכה (למשל CDP שהמתגים משתמשים בו). לכן מריצים אותה, בודקים מה היא שינתה בעזרת <code>show auto secure config</code>, ומכווננים לפי הצורך.</div>
 
-<h2>2.9 SNMP – ניטור ציוד, ולמה גרסה 3</h2>
-<p><b>SNMP</b> (Simple Network Management Protocol, UDP 161/162) מאפשר לתחנת ניהול (NMS – PRTG, SolarWinds, Zabbix) לקרוא נתונים מהנתב (GET – תעבורה, CPU) ואף לשנות (SET). הנתב יכול גם לשלוח התראות יזומות (<b>trap</b>). הנתונים מאורגנים ב-<b>MIB</b> (עץ של משתנים, כל אחד עם מזהה OID).</p>
-<table>
-<tr><th>גרסה</th><th>אימות</th><th>הצפנה</th><th>הערכה</th></tr>
-<tr><td>SNMPv1</td><td>Community string בטקסט גלוי ("public"/"private")</td><td>אין</td><td>לא לשימוש</td></tr>
-<tr><td>SNMPv2c</td><td>Community string בטקסט גלוי</td><td>אין</td><td>נפוץ, אך חלש – לפחות read-only + ACL</td></tr>
-<tr><td><b>SNMPv3</b></td><td>שם משתמש + HMAC (MD5/SHA)</td><td>DES/AES</td><td><b>היחיד המומלץ</b>. רמות: noAuthNoPriv, authNoPriv, authPriv</td></tr>
-</table>
-<pre><span class="c">! v2c מוגבל (אם חייבים): קריאה בלבד ורק מ-NMS</span>
-R1(config)# access-list 5 permit host 10.0.0.50
-R1(config)# <b>snmp-server community S3cr3tRO ro 5</b>
-<span class="c">! v3 – הדרך הנכונה</span>
-R1(config)# <b>snmp-server group ADMINS v3 priv</b>
-R1(config)# <b>snmp-server user monitor ADMINS v3 auth sha AuthP@ss priv aes 128 PrivP@ss</b>
-R1(config)# snmp-server host 10.0.0.50 version 3 priv monitor
-R1(config)# snmp-server enable traps
-R1# <b>show snmp</b></pre>
+<h2>2.8 עוד דוגמאות מהעולם האמיתי</h2>
+<p>שלושת הסיפורים בפרק – VPNFilter, הדגל האמריקאי (Cisco Smart Install) ו-Shodan – אינם אנקדוטות; הם ההוכחה החיה לכל מה שלמדנו. בכל אחד מהם, נתב או שירות שלא הוקשח היה הדלת פנימה: סיסמת ברירת מחדל שלא שונתה, שירות מיותר שנשאר פתוח, או ניהול לא מוצפן שנחשף. שורת המחץ של הפרק: הקשחה הופכת את הנתב משער פתוח לשער נעול.</p>
 
-<h2>2.10 שירותים שסוגרים ו-AutoSecure</h2>
-<p>ה-IOS מגיע עם שירותים שהיו נחוצים פעם והיום הם רק שטח תקיפה. רשימת הקשחה ידנית:</p>
-<pre>R1(config)# <b>no cdp run</b>                 <span class="c">! CDP חושף דגם, IOS וכתובות לשכנים (השאירו על קישורים פנימיים אם צריך)</span>
-R1(config)# <b>no ip http server</b>          <span class="c">! ממשק web – או ip http secure-server אם חייבים</span>
-R1(config)# no ip finger
-R1(config)# no ip bootp server
-R1(config)# no service tcp-small-servers
-R1(config)# no service udp-small-servers
-R1(config)# no ip source-route            <span class="c">! מונע מהשולח להכתיב מסלול</span>
-R1(config)# no service pad
-R1(config)# interface g0/0
-R1(config-if)# <b>no ip redirects</b>
-R1(config-if)# <b>no ip proxy-arp</b>
-R1(config-if)# no ip unreachables
-R1(config-if)# no ip directed-broadcast   <span class="c">! נגד Smurf (ברירת מחדל כבר כך)</span></pre>
-<p><b>AutoSecure</b> – פקודה אחת שעושה את רוב זה: מכבה שירותים מסוכנים, מפעילה שירותי אבטחה (logging, login block), מקשיחה ממשקים, ומציעה להגדיר SSH ו-CBAC. במצב אינטראקטיבי שואלת שאלות; במצב <code>no-interact</code> משתמשת בברירות מחדל.</p>
-<pre>R1# <b>auto secure</b>
-R1# auto secure no-interact
-R1# <b>show auto secure config</b></pre>
-<div class="box faq"><span class="t">שאלת תלמיד: "אז למה לא פשוט להריץ auto secure תמיד?"</span>
-כי הוא "עיוור": יכול לכבות CDP שהמתגים צריכים, להפעיל חומת אש (CBAC) שתחסום תעבורה לגיטימית, ואי אפשר לבטל אותו בפקודה אחת (<code>no auto secure</code> לא קיים – צריך לשחזר config). מומלץ להריץ אותו, לבדוק את מה שהוא שינה עם <code>show auto secure config</code>, ולכוונן.</div>
-
-<h2>2.11 שמירה על ה-IOS והקונפיג – Resilient Configuration</h2>
-<p>תוקף שהשיג גישה יכול למחוק את ה-IOS ואת ה-startup-config ולהשבית את הנתב. תכונת <b>IOS Resilient Configuration</b> שומרת עותק מוגן (bootset) שלא ניתן למחוק מה-CLI, גם לא ב-<code>format flash:</code>.</p>
-<pre>R1(config)# <b>secure boot-image</b>
-R1(config)# <b>secure boot-config</b>
-R1# <b>show secure bootset</b>
-<span class="c">! שחזור: ROMMON &gt; boot flash:&lt;image&gt;  ואז  R1(config)# secure boot-config restore flash:rescue-cfg</span></pre>
-<p>גיבוי שוטף: <code>copy running-config tftp:</code> / <code>archive</code> + <code>path</code> + <code>time-period</code> לגיבוי אוטומטי.</p>
-
-<h2>2.12 ביקורת חשבונות (Auditing)</h2>
-<p>לדעת <i>מי</i> עשה <i>מה</i> ומתי. הכלים בפרק זה: <code>login on-failure log</code> / <code>login on-success log</code>, <code>archive log config</code> (רישום כל פקודת config עם שם המשתמש), syslog מרכזי, ו-<code>show users</code> לראות מי מחובר עכשיו. הרחבה מלאה – Accounting של AAA בפרק 3.</p>
-<pre>R1(config)# <b>archive</b>
-R1(config-archive)# <b>log config</b>
-R1(config-archive-log-cfg)# <b>logging enable</b>
-R1(config-archive-log-cfg)# hidekeys      <span class="c">! לא לרשום סיסמאות</span>
-R1# <b>show archive log config all</b></pre>
-
-<h2>2.13 SDM / CCP – מה זה ומה אומרים לתלמידים</h2>
-<p>תכנית הלימודים מזכירה "SDM לוריפיקציה". <b>SDM</b> (Security Device Manager) היה ממשק גרפי מבוסס Java שרץ בדפדפן מול הנתב והציע אשפים (wizards) ל-SSH, חומת אש, VPN ו-"Security Audit" – סריקה שמציגה רשימת שירותים מסוכנים ומציעה לתקן בלחיצה ("One-step lockdown", המקבילה הגרפית של AutoSecure). SDM הוחלף ב-CCP (Cisco Configuration Professional) ב-2009, ו-CCP הופסק ב-2015. <b>הבגרות בודקת CLI בלבד.</b> אמרו לתלמידים: "קיימים ממשקים גרפיים; אנחנו לומדים CLI כי הוא אוניברסלי, מדויק ונשאל בבחינה".</p>
-
-<h2>2.14 מדריך פקודות מרוכז – פרק 2</h2>
-<table>
-<tr><th>פקודה</th><th>מצב</th><th>תפקיד</th></tr>
-<tr><td><code>enable secret X</code></td><td>config</td><td>סיסמת enable מגובבת</td></tr>
-<tr><td><code>service password-encryption</code></td><td>config</td><td>מסתיר סיסמאות type 7</td></tr>
-<tr><td><code>security passwords min-length N</code></td><td>config</td><td>אורך סיסמה מינימלי</td></tr>
-<tr><td><code>username U privilege 15 secret P</code></td><td>config</td><td>משתמש מקומי</td></tr>
-<tr><td><code>login block-for S attempts N within T</code></td><td>config</td><td>הגנה מ-brute force</td></tr>
-<tr><td><code>ip domain-name D</code> / <code>crypto key generate rsa</code></td><td>config</td><td>הכנה ל-SSH</td></tr>
-<tr><td><code>ip ssh version 2</code></td><td>config</td><td>SSHv2 בלבד</td></tr>
-<tr><td><code>line vty 0 4</code> → <code>login local</code> / <code>transport input ssh</code></td><td>line</td><td>גישה מרחוק מאובטחת</td></tr>
-<tr><td><code>exec-timeout M S</code></td><td>line</td><td>ניתוק חוסר פעילות</td></tr>
-<tr><td><code>privilege exec level N CMD</code></td><td>config</td><td>העברת פקודה לרמה</td></tr>
-<tr><td><code>parser view V</code></td><td>config (אחרי aaa new-model)</td><td>תצוגת תפקיד</td></tr>
-<tr><td><code>banner motd #…#</code></td><td>config</td><td>אזהרה</td></tr>
-<tr><td><code>logging host IP</code> / <code>logging trap LEVEL</code></td><td>config</td><td>syslog</td></tr>
-<tr><td><code>ntp server IP</code> / <code>ntp authenticate</code></td><td>config</td><td>זמן</td></tr>
-<tr><td><code>snmp-server …</code></td><td>config</td><td>ניטור</td></tr>
-<tr><td><code>auto secure</code></td><td>exec</td><td>הקשחה אוטומטית</td></tr>
-<tr><td><code>secure boot-image</code> / <code>secure boot-config</code></td><td>config</td><td>הגנה על IOS וקונפיג</td></tr>
-<tr><td><code>show ip ssh</code>, <code>show logging</code>, <code>show ntp status</code>, <code>show privilege</code>, <code>show login</code></td><td>exec</td><td>וריפיקציה</td></tr>
-</table>
-
-<h2>2.15 תרגילים לתלמידים</h2>
-<div class="box ex"><span class="t">תרגיל 1 – מצאו את 5 הבעיות בקונפיג</span>
+<h2>2.9 תרגילים – עם פתרונות</h2>
+<div class="box ex"><span class="t">תרגיל 1 – מצאו את הבעיות בקונפיג</span>
 <pre>Router(config)# enable password cisco
 Router(config)# line vty 0 4
 Router(config-line)# password cisco
 Router(config-line)# login
 Router(config-line)# transport input telnet
-Router(config)# banner motd # Welcome to ACME Corp main router! #
-Router(config)# snmp-server community public rw</pre>
-<div class="ans">1. <code>enable password</code> במקום <code>enable secret</code> (טקסט גלוי). 2. hostname נשאר Router (ובלי domain-name לא יהיה SSH). 3. סיסמה חלשה "cisco" ובלי שם משתמש (<code>login</code> במקום <code>login local</code>). 4. <code>transport input telnet</code> – לא מוצפן; צריך ssh. 5. באנר "Welcome" עם שם החברה. 6. SNMP community "public" עם הרשאת <b>rw</b> – כל אחד יכול לשנות את הקונפיג. 7. אין exec-timeout. (כל 5 מתוך 7 מתקבלים.)</div></div>
-<div class="box ex"><span class="t">תרגיל 2 – סדר נכון</span>
-סדרו את הפקודות הבאות בסדר שבו חייבים להקליד אותן כדי ש-SSH יעבוד: <code>crypto key generate rsa</code> · <code>ip domain-name lab.local</code> · <code>transport input ssh</code> · <code>hostname R1</code> · <code>username admin secret P@ss</code> · <code>login local</code> · <code>line vty 0 4</code>
-<div class="ans">hostname R1 → ip domain-name lab.local → crypto key generate rsa → username admin secret P@ss → line vty 0 4 → login local → transport input ssh. (username יכול לבוא בכל מקום לפני login local; hostname ו-domain-name חייבים לפני crypto key.)</div></div>
-<div class="box ex"><span class="t">תרגיל 3 – syslog</span>
-הנתב הגדיר <code>logging trap 4</code>. סמנו אילו מההודעות יגיעו לשרת:<br>
-א. <code>%SYS-5-CONFIG_I: Configured from console</code> &nbsp; ב. <code>%LINK-3-UPDOWN</code> &nbsp; ג. <code>%SEC_LOGIN-4-LOGIN_FAILED</code> &nbsp; ד. <code>%SEC-6-IPACCESSLOGP</code> &nbsp; ה. <code>%OSPF-5-ADJCHG</code>
-<div class="ans">ב (3) ו-ג (4) יגיעו. א (5), ד (6), ה (5) לא – חמורים פחות מ-4. <b>מנמוניקה:</b> המספר במרכז ההודעה הוא רמת החומרה.</div></div>
-<div class="box ex"><span class="t">תרגיל 4 – תכנון</span>
-אתם מנהלי הרשת של בית ספר עם 3 נתבים ו-12 מתגים. כתבו רשימת 8 צעדי הקשחה שתבצעו על כל מכשיר, לפי סדר עדיפות, ונמקו את הראשון.
-<div class="ans">דוגמה: 1. enable secret + username secret (בלי זה – כל השאר חסר ערך). 2. SSH בלבד, כיבוי Telnet. 3. login block-for. 4. exec-timeout. 5. syslog + NTP לשרת מרכזי. 6. כיבוי HTTP, CDP על ממשקי קצה, small servers. 7. SNMPv3 בלבד. 8. banner אזהרה. 9. גיבוי config. 10. secure boot-image/config.</div></div>
-
-<h2>2.16 שאלות בסגנון בגרות</h2>
-<div class="box exam"><span class="t">שאלה 1</span>
-מנהל רשת הקליד: <code>hostname R1</code>, <code>crypto key generate rsa</code> – וקיבל שגיאה. מה חסר?
-<div class="ans"><code>ip domain-name</code>. יצירת מפתחות RSA דורשת FQDN (hostname + domain).</div></div>
-<div class="box exam"><span class="t">שאלה 2</span>
-מהו הסדר הנכון של רמות חומרה ב-syslog מהחמורה לקלה: Warning, Emergency, Debugging, Error?
-<div class="ans">Emergency (0) → Error (3) → Warning (4) → Debugging (7).</div></div>
-<div class="box exam"><span class="t">שאלה 3</span>
-השלימו כדי לאפשר גישה מרחוק ב-SSH בלבד עם אימות מול משתמש מקומי:<br><code>R1(config)# line vty 0 4</code><br><code>R1(config-line)# ______</code><br><code>R1(config-line)# ______</code>
-<div class="ans"><code>login local</code> ו-<code>transport input ssh</code>.</div></div>
-<div class="box exam"><span class="t">שאלה 4</span>
-מנהל הגדיר <code>logging trap 3</code>. אילו הודעות יישלחו לשרת ה-syslog?
-<div class="ans">רמות 0–3: Emergencies, Alerts, Critical, Errors. הודעות Warning ומטה לא יישלחו.</div></div>
-<div class="box exam"><span class="t">שאלה 5</span>
-נכון / לא נכון: (א) <code>service password-encryption</code> מצפין את הסיסמאות באופן שאינו ניתן לפענוח. (ב) SNMPv3 תומך בהצפנה. (ג) NTP משתמש ב-TCP. (ד) SSH גרסה 1 מאובטחת יותר מגרסה 2.
-<div class="ans">(א) לא נכון – type 7, ניתן לפענוח בקלות. (ב) נכון. (ג) לא נכון – UDP 123. (ד) לא נכון.</div></div>
-<div class="box exam"><span class="t">שאלה 6</span>
-איזו פקודה תגרום לנתב לנתק משתמש בקונסול לאחר 3 דקות ללא פעילות?
-<div class="ans"><code>line console 0</code> → <code>exec-timeout 3 0</code>.</div></div>
-
-<h2>2.17 מעבדה (2 שעות) – הקשחת נתב ב-Packet Tracer</h2>
-<ol>
-<li>טופולוגיה: PC — Switch — R1 — Syslog/NTP server (Server-PT עם שירותי SYSLOG ו-NTP מופעלים).</li>
-<li>הגדירו hostname, enable secret, min-length, service password-encryption, banner.</li>
-<li>הגדירו SSH לפי 2.4. נסו Telnet – ודאו שנכשל. התחברו ב-SSH מה-PC.</li>
-<li>הפעילו <code>login block-for 60 attempts 3 within 30</code>; נסו 3 סיסמאות שגויות; ראו ב-<code>show login</code> את מצב ה-quiet mode.</li>
-<li>הגדירו logging לשרת ו-<code>logging trap informational</code>; כבו והדליקו ממשק; ראו את ההודעה בשרת ה-Syslog.</li>
-<li>הגדירו NTP מול השרת; ודאו ב-<code>show ntp status</code> ש-synchronized.</li>
-<li>צרו משתמש ברמה 5 שיכול רק <code>show running-config</code>; בדקו שאינו יכול להיכנס ל-configure terminal.</li>
-</ol>
-
-<h2>עוד דוגמאות מהעולם האמיתי</h2>
-<div class="box story"><span class="t">VPNFilter (2018) – חצי מיליון נתבים ביתיים נחטפו</span>
-נוזקה בשם VPNFilter הדביקה מעל 500,000 נתבים ביתיים וקטנים בעולם (Linksys, MikroTik, Netgear, TP-Link ועוד). היכולות שלה: ריגול אחר כל התעבורה שעוברת בנתב, גניבת סיסמאות, ואף "הריגת" הנתב (bricking) בפקודה אחת. ה-FBI ייחס אותה לתקיפה מדינתית והשתלט על שרת השליטה (C2) שלה כדי לעצור אותה. <b>איך היא נכנסה?</b> חולשות ידועות שלא עודכנו + סיסמאות ברירת מחדל שלא שונו. לקח: נתב ביתי הוא מחשב מלא – בלי הקשחה ועדכון הוא הדלת הקלה ביותר פנימה.</div>
-<div class="box story"><span class="t">הדגל האמריקאי על 168,000 נתבים (Cisco Smart Install, 2018)</span>
-קבוצת האקרים ניצלה שירות ניהול של סיסקו בשם <b>Smart Install</b> (פורט TCP 4786) שנשאר <u>פתוח וחשוף לאינטרנט</u> בעשרות אלפי ארגונים. הם מצאו את המכשירים החשופים דרך מנוע החיפוש Shodan, איפסו את הקונפיגורציה של כ-168,000 נתבים, ובחלקם כתבו קונפיג עם דגל אמריקאי ב-ASCII וההודעה "Don't mess with our elections". נפגעו ספקיות אינטרנט באיראן וברוסיה. <b>לקח:</b> שירות ניהול מיותר שנשאר פתוח = הזמנה. זו בדיוק הסיבה שמכבים כל שירות שלא נחוץ (<code>no ...</code>) ומריצים AutoSecure.</div>
-<div class="box story"><span class="t">Shodan – "גוגל של המכשירים המחוברים"</span>
-Shodan הוא מנוע חיפוש שסורק כל הזמן את האינטרנט ומקטלג מכשירים חשופים: נתבים, מתגים, מצלמות אבטחה, ואפילו בקרים תעשייתיים. אפשר לחפש בו מכשירים עם SNMP "public", עם Telnet פתוח, או עם סיסמת ברירת מחדל – ולקבל רשימה של אלפים. תוקפים משתמשים בו לשלב הסיור (פרק 1); אנשי אבטחה משתמשים בו כדי לגלות מה <u>הארגון שלהם</u> חושף בטעות. כל פעולה שעשינו בפרק הזה – SSH במקום Telnet, SNMPv3, כיבוי שירותים – מורידה אתכם מהרשימה של Shodan.</div>
-<div class="box ex"><span class="t">תרגיל 5 – קישור סיפור להקשחה</span>
-לכל סיפור מהעולם האמיתי לעיל, איזו פקודת/פעולת הקשחה מהפרק הייתה מונעת אותו?
-<div class="ans">VPNFilter: שינוי סיסמת ברירת מחדל (<code>enable secret</code>, <code>username secret</code>) + עדכון IOS. Cisco Smart Install: כיבוי השירות המיותר (<code>no vstack</code> / כיבוי שירותים + AutoSecure). Shodan: SSH במקום Telnet, SNMPv3, וכיבוי כל שירות פתוח מיותר.</div></div>
-<div class="box ex"><span class="t">תרגיל 6 – תכנון הקשחה</span>
-אתם מנהלי הרשת של בית ספר עם 3 נתבים. כתבו 6 צעדי הקשחה שתבצעו על כל נתב, לפי סדר עדיפות, ונמקו את הראשון.
-<div class="ans">דוגמה: 1. <code>enable secret</code> + <code>username ... secret</code> (בלי זה כל השאר חסר ערך – אין הגנה בסיסית). 2. SSH בלבד (<code>transport input ssh</code> + <code>login local</code>), כיבוי Telnet. 3. <code>login block-for</code> נגד ניחוש סיסמאות. 4. syslog + NTP לשרת מרכזי. 5. SNMPv3, כיבוי HTTP/CDP מיותרים. 6. banner אזהרה + גיבוי הקונפיג.</div></div>
-
-
+Router(config)# banner motd # Welcome to ACME Corp! #</pre>
+<div class="ans">1. <code>enable password</code> (גלוי) במקום <code>enable secret</code>. 2. הסיסמה "cisco" חלשה מאוד. 3. <code>login</code> בלי שם משתמש (צריך <code>login local</code> עם <code>username</code>). 4. <code>transport input telnet</code> – לא מוצפן, צריך <code>ssh</code>. 5. באנר "Welcome" עם שם החברה. 6. השם נשאר "Router" ואין <code>ip domain-name</code> – כך שאי אפשר בכלל ליצור מפתחות ל-SSH.</div></div>
+<div class="box ex"><span class="t">תרגיל 2 – סדרו את הפקודות</span>
+באיזה סדר צריך להריץ כדי ש-SSH יעבוד? <code>crypto key generate rsa</code> · <code>login local</code> · <code>hostname R1</code> · <code>transport input ssh</code> · <code>ip domain-name lab.local</code> · <code>line vty 0 4</code>
+<div class="ans"><code>hostname R1</code> → <code>ip domain-name lab.local</code> → <code>crypto key generate rsa</code> → <code>line vty 0 4</code> → <code>login local</code> → <code>transport input ssh</code>. השם והדומיין חייבים לבוא לפני יצירת המפתחות.</div></div>
+<div class="box ex"><span class="t">תרגיל 3 – למה שרת syslog מרכזי?</span>
+תוקף הצליח להיכנס לנתב. מדוע עדיף שהיומן יישלח לשרת חיצוני ולא יישמר רק בנתב עצמו?
+<div class="ans">כי תוקף עם גישה לנתב יכול למחוק את היומן המקומי כדי לטשטש את עקבותיו. ליומן שנשלח לשרת חיצוני אין לו גישה, ולכן הראיות נשמרות שם – מה שמאפשר לחקור את האירוע.</div></div>
+<div class="box ex"><span class="t">תרגיל 4 – תכנון הקשחה</span>
+אתם מנהלי הרשת של בית ספר עם שלושה נתבים. כתבו שישה צעדי הקשחה שתבצעו על כל נתב, לפי סדר עדיפות, ונמקו את הראשון.
+<div class="ans">דוגמה: 1. <code>enable secret</code> + <code>username ... secret</code> – בלי הגנת סיסמה בסיסית כל השאר חסר ערך. 2. SSH בלבד (<code>login local</code> + <code>transport input ssh</code>), כיבוי Telnet. 3. <code>login block-for</code> נגד ניחוש סיסמאות. 4. syslog + NTP לשרת מרכזי. 5. SNMPv3 וכיבוי שירותים מיותרים (HTTP, CDP). 6. באנר אזהרה + גיבוי הקונפיג.</div></div>
 
 <h2>בנק שאלות שתלמידים שואלים – ותשובות מוכנות</h2>
 <p>שאלות נפוצות בפרק הקשחת הנתב, עם תשובות מוכנות.</p>
@@ -393,3 +160,4 @@ Shodan הוא מנוע חיפוש שסורק כל הזמן את האינטרנט
 <tr><td><b>Hardening (הקשחה)</b></td><td>סגירת שירותים מיותרים והגדרות אבטחה למזעור שטח התקיפה.</td></tr>
 <tr><td><b>err-disabled</b></td><td>מצב שבו פורט מושבת אוטומטית עקב הפרת אבטחה.</td></tr>
 </table>
+

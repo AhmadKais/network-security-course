@@ -51,432 +51,164 @@
 \sloppy
 \chapterheading{פרק \enLR{2} – אבטחת אביזרי רשת}{\small\color{subgray}\enLR{10} שעות עיוני + \enLR{2} מעשי · שבועות \enLR{4}–\enLR{6}\par}\vskip4pt
 
-\begin{metabox}\textbf{מטרות:} הקשחת נתב ב-\enLR{CLI} · אבטחת גישה · \enLR{SSH} · \enLR{syslog/NTP/SNMP} · \enLR{AutoSecure}\\ \textbf{בבגרות:} \enLR{line vty / login local / secret}, מפתחות \enLR{RSA} ל-\enLR{SSH}, פקודת \enLR{logging}\end{metabox}
+\begin{defbox}\boxtitle{איך לקרוא את הפרק הזה}\par  בפרק הקודם הבנו מפני מה מגנים ומי התוקפים. בפרק הזה מתחילים להגן בפועל – על הרכיב הראשון והחשוב ביותר ברשת: הנתב. הפרק כתוב לקריאה רציפה גם למי שלא ראה מעולם ציוד רשת. נתחיל מהבסיס ממש (מה זה נתב, איך "מדברים" איתו), ורק אז נראה פקודות. כל פקודה מוסברת במילים לפני שהיא מופיעה.\end{defbox}
 
-\begin{defbox}\boxtitle{לפני שמתחילים – איך בכלל מדברים עם נתב? (למי שאין רקע)}\par  כל הפרק הזה עוסק ב"הקשחת נתב" – אבל איך פונים לנתב מלכתחילה? הנה הבסיס:  \textbf{\enLR{CLI (Command Line Interface)}} – ממשק שורת פקודה. במקום עכבר וחלונות, מקלידים פקודות טקסט. כל ציוד סיסקו מנוהל כך. \textbf{\enLR{IOS}} – מערכת ההפעלה של ציוד סיסקו (כמו \enLR{Windows} למחשב, רק לנתב). ה-\enLR{CLI} הוא הדרך לדבר איתה. \textbf{מצבי עבודה \enLR{(Modes)}} – ל-\enLR{CLI} יש "רמות". הסימן שאחרי שם הנתב מראה איפה אתם:  \code{R1>} – מצב בסיסי \enLR{(User)} – רק צפייה. \code{R1\#} – מצב מנהל \enLR{(Privileged)} – אחרי הקלדת \code{enable}. אפשר הכול. \code{R1(config)\#} – מצב הגדרות – אחרי \code{configure terminal}. כאן משנים הגדרות. \code{R1(config-if)\#} – מצב ממשק – מגדירים כרטיס רשת ספציפי.  \textbf{קונפיגורציה \enLR{(Configuration)}} – כל ההגדרות של הנתב. יש \textbf{\enLR{running-config}} (הפעילה כרגע בזיכרון, נמחקת בכיבוי) ו-\textbf{\enLR{startup-config}} (השמורה, נטענת באתחול). שומרים עם \code{copy running-config startup-config} או \code{write}. \textbf{ממשק \enLR{(Interface)}} – כרטיס רשת/פורט פיזי בנתב, למשל \code{GigabitEthernet0/0} (בקיצור \enLR{g0/0).}  \textbf{דוגמה – כניסה והגדרה ראשונה:} \enLR{Router> enable} ! מעבר למצב מנהל \enLR{Router\# configure terminal} ! מעבר למצב הגדרות \enLR{Router(config)\# hostname R1} ! שינוי שם הנתב \enLR{R1(config)\# exit R1\# write} ! שמירת ההגדרות\end{defbox}
+\sectionheading{\enLR{2.1} למה מתחילים דווקא מהנתב?}
 
-\sectionheading{\enLR{2.1} למה הנתב הוא המטרה הראשונה}
+נזכיר מהפרק הקודם: \textbf{נתב \enLR{(Router)}} הוא המכשיר שמעביר את התעבורה בין רשתות שונות – למשל בין הרשת של בית הספר לבין האינטרנט. הנתב שיושב על הגבול הזה נקרא \textbf{נתב קצה \enLR{(Edge Router)}}, והוא נקודת המפגש בין הרשת שלנו לעולם החיצון.\par
 
-\textbf{נתב הקצה} \enLR{(Edge router)} הוא הנקודה שבה רשת הארגון פוגשת את האינטרנט. מי ששולט בו יכול לנתב תעבורה לאן שירצה, להאזין לה, לחסום אותה או לפתוח פתח פנימה. שלוש גישות לתכנון:\par
+למה הוא המטרה הראשונה של תוקפים? כי מי ששולט בנתב שולט בכל מה שעובר דרכו. הוא יכול לצותת לכל התעבורה, לחסום אותה, להטות אותה למקום אחר, או לפתוח דרכה דלת אל תוך הרשת. במילים אחרות, הנתב הוא כמו השומר בשער: אם הוא נפרץ, כל שאר ההגנות שמאחוריו כבר לא עוזרות. לכן הצעד הראשון בכל רשת מאובטחת הוא "להקשיח" את הנתב.\par
+
+\textbf{הקשחה \enLR{(Hardening)}} פירושה להפוך מכשיר מהגדרת ברירת המחדל ה"פתוחה" שלו למצב מאובטח: לתת סיסמאות חזקות, לאפשר גישה מוצפנת בלבד, לכבות שירותים מיותרים, ולהפעיל ניטור. את כל אלה נלמד בפרק. נהוג לחלק את אבטחת הנתב לשלושה תחומים: אבטחה \textbf{פיזית} (מי בכלל יכול לגעת בו – חדר נעול), אבטחת \textbf{מערכת ההפעלה} (גרסה עדכנית וגיבוי), ו\textbf{הקשחה} של ההגדרות (לב הפרק).\par
+
+\begin{storybox}\boxtitle{מהעולם האמיתי: חצי מיליון נתבים נחטפו \enLR{(VPNFilter, 2018)}}\par  נוזקה בשם \enLR{VPNFilter} הדביקה מעל \enLR{500,000} נתבים ביתיים וקטנים בעולם. היכולות שלה היו מפחידות: לרגל אחר כל התעבורה שעוברת בנתב, לגנוב סיסמאות, ואף "להרוג" את הנתב בפקודה אחת. ה-\enLR{FBI} ייחס אותה לתקיפה מדינתית והשתלט על שרת השליטה שלה כדי לעצור אותה. איך היא נכנסה? דרך חולשות ידועות שלא עודכנו וסיסמאות ברירת מחדל שלא שונו. הלקח: נתב הוא מחשב מלא לכל דבר, ובלי הקשחה הוא הדלת הקלה ביותר פנימה.\end{storybox}
+
+\sectionheading{\enLR{2.2} איך בכלל "מדברים" עם נתב?}
+
+בניגוד למחשב רגיל, לנתב אין מסך, עכבר וחלונות. מנהלים אותו בעזרת \textbf{\enLR{CLI (Command Line Interface)}} – "ממשק שורת פקודה", כלומר מקלידים פקודות טקסט והנתב מגיב. מערכת ההפעלה של ציוד סיסקו נקראת \textbf{\enLR{IOS}} (כמו ש-\enLR{Windows} היא מערכת ההפעלה של המחשב, \enLR{IOS} היא מערכת ההפעלה של הנתב), וה-\enLR{CLI} הוא הדרך לדבר איתה.\par
+
+\subheading{מצבי העבודה – והסימן שאומר לכם איפה אתם}
+
+ל-\enLR{CLI} יש כמה "מצבים" (רמות), וכל אחד מאפשר דברים אחרים. הדבר החשוב: \underline{הסימן שמופיע על המסך תמיד אומר לכם באיזה מצב אתם נמצאים}. הסימן בנוי משלושה חלקים: שם הנתב, ואחריו – בסוגריים – החלק שאתם מגדירים כרגע, ואחריו הסימן \code{>} או \code{\#}. הסימן \code{>} אומר "אתם רק יכולים להסתכל", והסימן \code{\#} אומר "אתם מנהלים ומותר לכם לשנות" (חשבו על \code{\#} כמו על מנהל/\enLR{root).}\par
 
 \begin{itemize}
-\item \textbf{נתב יחיד} – הנתב הוא גם חומת האש \enLR{(ACL, ZPF).} מתאים לעסק קטן \enLR{(SOHO).}
-\item \textbf{הגנה לעומק \enLR{(Defense in depth)}} – נתב קצה מסנן גס ⇒ חומת אש ייעודית \enLR{(ASA)} ⇒ נתב פנימי. כל שכבה עצמאית.
-\item \textbf{\enLR{DMZ}} – אזור מפורז בין שתי חומות אש (או בין שני ממשקים של אותה חומה) ובו השרתים הציבוריים \enLR{(web, mail).} אם שרת ב-\enLR{DMZ} נפרץ, התוקף עדיין לא בפנים.
+\item \code{R1>} – \textbf{מצב משתמש \enLR{(User)}}. זה מה שרואים מיד בכניסה. אפשר רק להסתכל: פקודות \code{show} בסיסיות, \code{ping}.
+\item \code{R1\#} – \textbf{מצב מנהל \enLR{(Privileged)}}. מגיעים אליו בהקלדת \code{enable}. כאן מותר הכול, כולל לצפות בכל ההגדרות ולאתחל את הנתב.
+\item \code{R1(config)\#} – \textbf{מצב הגדרות \enLR{(Global config)}}. מגיעים אליו בהקלדת \code{configure terminal}. כאן משנים הגדרות של הנתב כולו (שם, משתמשים, ניתוב).
+\item \code{R1(config-if)\#} – \textbf{מצב ממשק \enLR{(Interface)}}. מגיעים אליו בהקלדת למשל \code{interface g0/0}, ומגדירים פורט מסוים. (\textbf{ממשק / \enLR{Interface}} הוא פשוט פורט/כרטיס רשת בנתב, למשל \enLR{GigabitEthernet0/0}, בקיצור \enLR{g0/0.)}
 \end{itemize}
 
-אבטחת הנתב עצמו כוללת שלושה תחומים: \textbf{אבטחה פיזית} (חדר נעול, \enLR{UPS} – מי שיש לו גישה פיזית לקונסול יכול לאפס סיסמה דרך \enLR{password recovery)}, \textbf{אבטחת מערכת ההפעלה} (גרסת \enLR{IOS} עדכנית, זיכרון מספיק, גיבוי של ה-\enLR{image} והקונפיגורציה) ו\textbf{הקשחה} \enLR{(hardening)} – סגירת שירותים מיותרים, סיסמאות, גישה מוצפנת, ניטור. זה ליבת הפרק.\par
+\begin{tipbox}\boxtitle{מושג חשוב: איפה נשמרות ההגדרות?}\par  לנתב יש שני "עותקים" של ההגדרות. \textbf{\enLR{running-config}} הוא הקונפיגורציה הפעילה כרגע – אבל היא נמצאת בזיכרון זמני ו\underline{נמחקת בכיבוי}. \textbf{\enLR{startup-config}} היא הקונפיגורציה השמורה, שנטענת מחדש בכל הדלקה. לכן אחרי שמסיימים להגדיר – חייבים לשמור, בפקודה \code{write} (או \code{copy running-config startup-config}). מי ששוכח לשמור מגלה שכל עבודתו נעלמה אחרי אתחול.\end{tipbox}
 
-\begin{storybox}\boxtitle{סיפור מהחיים: הנתבים שנשארו עם \enLR{admin/admin}}\par  ב-\enLR{2016} רשת \enLR{Mirai} הדביקה \enLR{600,000} מכשירים – מצלמות אבטחה, ראוטרים ביתיים, מקליטי \enLR{DVR} – בשיטה פרימיטיבית להדהים: היא ניסתה \enLR{62} צירופים של שם משתמש וסיסמה מברירת המחדל של היצרנים \enLR{(admin/admin, root/12345, admin/password).} זהו. בלי פגיעות מתוחכמת. עם הצבא הזה הופלו ב-\enLR{DDoS} של \enLR{1.2} טרה-ביט/שנייה שירות ה-\enLR{DNS} של \enLR{Dyn}, ואיתו \enLR{Twitter, Netflix, Spotify} ו-\enLR{PayPal} ליום שלם. כל מה שנלמד בפרק הזה – סיסמה חזקה, \enLR{SSH} במקום \enLR{Telnet}, כיבוי שירותים – היה מונע את ההדבקה. שאלו: כמה מכם שינו את הסיסמה של הראוטר בבית?\end{storybox}
-
-\sectionheading{\enLR{2.2} שלוש דרכי ניהול לנתב}
-
-\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
-\hline
-\rowcolor{hdrbg}\textbf{אבטחה} & \textbf{איך מתחברים} & \textbf{ממשק} \\
-\hline
-\endhead
-מי שמגיע פיזית – שולט. חובה סיסמה + \enLR{exec-timeout.} & כבל קונסול פיזי, \code{line console 0} & \textbf{\enLR{Console}} \\
-\hline
-לרוב מכבים: \code{no exec} / \code{transport input none} & פורט עזר למודם (ישן), \code{line aux 0} & \textbf{\enLR{AUX}} \\
-\hline
-הנקודה הרגישה ביותר – חייבים \enLR{SSH} בלבד + אימות משתמשים. & \enLR{Telnet/SSH} דרך הרשת, \code{line vty 0 4} \enLR{(5} קווים וירטואליים \enLR{0}–\enLR{4}; ב-\enLR{IOS} חדש \enLR{0}–\enLR{15)} & \textbf{\enLR{VTY}} \enLR{(Virtual Terminal)} \\
-\hline
-\end{xltabular}
-
-\begin{defbox}\boxtitle{\enLR{In-band} מול \enLR{Out-of-band (OOB)}}\par  \textbf{\enLR{In-band}} – ניהול דרך אותה רשת שמעבירה את תעבורת המשתמשים \enLR{(SSH} מהמשרד לנתב). זול, אבל אם הרשת נופלת – אין ניהול, ואם התוקף ברשת – הוא רואה את תעבורת הניהול.\newline  \textbf{\enLR{Out-of-band (OOB)}} – רשת ניהול נפרדת פיזית או לוגית: שרת קונסולים, \enLR{VLAN} ניהול ייעודי, מודם/\enLR{LTE} לחירום. עדיף לארגונים; לפחות \enLR{VLAN} ניהול נפרד.\end{defbox}
-
-\sectionheading{\enLR{2.3} סיסמאות בנתב – מה ההבדל בין כל הסוגים}
+הנה "סיפור" קצר של פקודות. קראו את הסימן בתחילת כל שורה כדי לעקוב איפה אנחנו נמצאים:\par
 
 \begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
-\textcolor{ccom}{\texthebrew{! מדיניות מינימום}}\\
-R1(config)\# \textcolor{cbold}{\textbf{security passwords min-length 10}}\\
-\textcolor{ccom}{\texthebrew{! סיסמת מצב \enLR{enable} – תמיד \enLR{secret}, לעולם לא \enLR{password}}}\\
-R1(config)\# \textcolor{cbold}{\textbf{enable secret}} Str0ng-P@ss\\
-\textcolor{ccom}{\texthebrew{! קונסול}}\\
-R1(config)\# line console 0\\
-R1(config-line)\# password C0ns0le-P@ss\\
-R1(config-line)\# \textcolor{cbold}{\textbf{login}}\\
-R1(config-line)\# \textcolor{cbold}{\textbf{exec-timeout 5 0}}        \textcolor{ccom}{\texthebrew{! ניתוק אחרי \enLR{5} דק' חוסר פעילות}}\\
-R1(config-line)\# logging synchronous      \textcolor{ccom}{\texthebrew{! שהודעות לוג לא ישברו את השורה שמקלידים}}\\
-\textcolor{ccom}{\texthebrew{! הצפנת כל הסיסמאות בטקסט גלוי בקונפיג \enLR{(type 7} – חלשה, אבל עדיף מכלום)}}\\
-R1(config)\# \textcolor{cbold}{\textbf{service password-encryption}}
+Router> \textcolor{cbold}{\textbf{enable}}                 \textcolor{ccom}{\texthebrew{! ממצב "רק להסתכל" למצב "מנהל"}}\\
+Router\# \textcolor{cbold}{\textbf{configure terminal}}     \textcolor{ccom}{\texthebrew{! נכנסים למצב הגדרות}}\\
+Router(config)\# \textcolor{cbold}{\textbf{hostname R1}}    \textcolor{ccom}{\texthebrew{! נותנים לנתב שם – שימו לב שהסימן משתנה מיד}}\\
+R1(config)\# \textcolor{cbold}{\textbf{interface g0/0}}     \textcolor{ccom}{\texthebrew{! נכנסים לפורט מסוים}}\\
+R1(config-if)\# \textcolor{cbold}{\textbf{no shutdown}}     \textcolor{ccom}{\texthebrew{! מדליקים את הפורט}}\\
+R1(config-if)\# \textcolor{cbold}{\textbf{end}}             \textcolor{ccom}{\texthebrew{! חוזרים ישר למצב מנהל}}\\
+R1\# \textcolor{cbold}{\textbf{write}}                       \textcolor{ccom}{\texthebrew{! שומרים! (אחרת ההגדרות ייעלמו בכיבוי)}}
 \end{english}\end{codebox}
 
-\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
-\hline
-\rowcolor{hdrbg}\textbf{חוזק} & \textbf{איך נשמר בקונפיג} & \textbf{פקודה} \\
-\hline
-\endhead
-אפס. לא להשתמש. & טקסט גלוי \enLR{(type 0)} & \code{enable password X} \\
-\hline
-חלש – מפוענח באתרים אונליין בשנייה. מגן רק מהצצה מעבר לכתף. & \enLR{Vigen}è\enLR{re "type 7"} & \code{service password-encryption} \\
-\hline
-גיבוב חד-כיווני – לא ניתן לשחזר. \textbf{זה מה שמשתמשים בו.} & \enLR{MD5 (type 5)}, ב-\enLR{IOS} חדש \enLR{scrypt (type 9)} & \code{enable secret X} \\
-\hline
-חזק – לחשבונות מקומיים. & גיבוב כמו \enLR{enable secret} & \code{username admin secret X} \\
-\hline
-חלש – לא להשתמש. & גלוי / \enLR{type 7} & \code{username admin password X} \\
-\hline
-\end{xltabular}
+\sectionheading{\enLR{2.3} סיסמאות: מה חזק, מה חלש, ולמה}
 
-\begin{faqbox}\boxtitle{שאלת תלמיד: "אם הגדרתי גם \enLR{enable password} וגם \enLR{enable secret} – מה קובע?"}\par  ה-\enLR{secret.} ה-\enLR{IOS} מתעלם מ-\enLR{enable password} כשקיים \enLR{enable secret} (ומזהיר אם הן זהות). למען הסדר – פשוט לא מגדירים \enLR{enable password.}\end{faqbox}
-
-\begin{faqbox}\boxtitle{שאלת תלמיד: "מה ההבדל בין \enLR{login} ל-\enLR{login local}?"}\par  \code{login} – מבקש רק את הסיסמה שהוגדרה בקו עצמו (\code{password} בתוך \enLR{line).} כולם משתמשים באותה סיסמה, אין שמות, אין מעקב מי נכנס.\newline  \code{login local} – מבקש שם משתמש וסיסמה ומאמת מול מסד המשתמשים המקומי (\code{username … secret …}). \textbf{\enLR{SSH} דורש שם משתמש ולכן חייב \enLR{login local} (או \enLR{AAA).}} זה בדיוק מה שנשאל בבגרות שאלה \enLR{2}א: התשובה הנכונה היא \code{username admin privilege 15 secret …} + \code{login local}.\end{faqbox}
-
-\sectionheading{\enLR{2.4 Telnet} מול \enLR{SSH} – והגדרת \enLR{SSH} צעד אחר צעד}
-
-\textbf{\enLR{Telnet}} \enLR{(TCP 23)} מעביר הכול – כולל שם משתמש וסיסמה – בטקסט גלוי. כל מי שמאזין לרשת \enLR{(Wireshark)} רואה אותם. \textbf{\enLR{SSH}} \enLR{(Secure Shell, TCP 22)} מצפין את כל ההפעלה ומאמת את השרת. \enLR{SSH} גרסה \enLR{2} בלבד (גרסה \enLR{1} פגיעה).\par
-
-כדי ש-\enLR{SSH} יעבוד, הנתב צריך \textbf{זוג מפתחות \enLR{RSA}} (פרק \enLR{7} יסביר לעומק: מפתח ציבורי שנשלח ללקוח ומפתח פרטי שנשאר בנתב). כדי לייצר מפתח הנתב צריך שם מלא \enLR{(FQDN) = hostname + domain-name}, כי השם נכנס למפתח.\par
+הצעד הבסיסי בהקשחה הוא סיסמאות טובות. ב-\enLR{IOS} יש כמה סוגים של סיסמאות, וההבדל ביניהן קריטי. הכלל הפשוט: תמיד להשתמש במילה \code{secret}, אף פעם לא במילה \code{password}.\par
 
 \begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
-\textcolor{ccom}{\texthebrew{! \enLR{1.} שם ייחודי ודומיין – חובה לפני יצירת מפתחות}}\\
-Router(config)\# \textcolor{cbold}{\textbf{hostname R1}}\\
-R1(config)\# \textcolor{cbold}{\textbf{ip domain-name school.local}}\\
-\textcolor{ccom}{\texthebrew{! \enLR{2.} יצירת זוג מפתחות \enLR{RSA (2048} ביט ומעלה)}}\\
-R1(config)\# \textcolor{cbold}{\textbf{crypto key generate rsa general-keys modulus 2048}}\\
-The name for the keys will be: R1.school.local\\
-\textcolor{ccom}{\texthebrew{! \enLR{3.} משתמש מקומי}}\\
-R1(config)\# \textcolor{cbold}{\textbf{username admin privilege 15 secret Adm1n-P@ss}}\\
-\textcolor{ccom}{\texthebrew{! \enLR{4.} פרמטרים של \enLR{SSH}}}\\
-R1(config)\# \textcolor{cbold}{\textbf{ip ssh version 2}}\\
-R1(config)\# \textcolor{cbold}{\textbf{ip ssh time-out 60}}              \textcolor{ccom}{\texthebrew{! זמן לסיום ההזדהות}}\\
-R1(config)\# \textcolor{cbold}{\textbf{ip ssh authentication-retries 2}}\\
-\textcolor{ccom}{\texthebrew{! \enLR{5.} קווי \enLR{VTY} – רק \enLR{SSH}, אימות מקומי}}\\
-R1(config)\# \textcolor{cbold}{\textbf{line vty 0 4}}\\
-R1(config-line)\# \textcolor{cbold}{\textbf{login local}}\\
-R1(config-line)\# \textcolor{cbold}{\textbf{transport input ssh}}          \textcolor{ccom}{\texthebrew{! חוסם \enLR{Telnet} לחלוטין}}\\
-R1(config-line)\# exec-timeout 5 0\\
-\textcolor{ccom}{\texthebrew{! בדיקה}}\\
-R1\# \textcolor{cbold}{\textbf{show ip ssh}}\\
-R1\# \textcolor{cbold}{\textbf{show ssh}}                                  \textcolor{ccom}{\texthebrew{! חיבורים פעילים}}\\
-R1\# \textcolor{cbold}{\textbf{show crypto key mypubkey rsa}}\\
-\textcolor{ccom}{\texthebrew{! חיבור מנתב אחר / ממחשב}}\\
-R2\# ssh -l admin 10.0.0.1\\
-PC> ssh -l admin 10.0.0.1
+R1(config)\# \textcolor{cbold}{\textbf{enable secret}} Str0ng-P@ss   \textcolor{ccom}{\texthebrew{! סיסמת מצב מנהל – מאוחסנת מגובבת (בטוח)}}\\
+R1(config)\# enable password weak         \textcolor{ccom}{\texthebrew{! מאוחסנת בטקסט גלוי – לא להשתמש!}}\\
+R1(config)\# \textcolor{cbold}{\textbf{service password-encryption}}  \textcolor{ccom}{\texthebrew{! מסתיר את הסיסמאות הגלויות בקונפיג}}\\
+R1(config)\# username admin \textcolor{cbold}{\textbf{secret}} P@ss   \textcolor{ccom}{\texthebrew{! משתמש מקומי עם סיסמה מגובבת}}
 \end{english}\end{codebox}
 
-\begin{mistakebox}\boxtitle{טעויות נפוצות בהגדרת \enLR{SSH}}\par  • שכחו \code{ip domain-name} ⇒ הפקודה \code{crypto key generate rsa} נכשלת ("\enLR{Please define a domain-name first").}\newline  • השאירו \enLR{hostname "Router"} ⇒ אותה שגיאה.\newline  • הגדירו \code{login} במקום \code{login local} ⇒ \enLR{SSH} דוחה ("\enLR{Password required, but none set"} / אין אימות בשם משתמש).\newline  • מפתח קטן מ-\enLR{768} ביט לא מאפשר \enLR{SSHv2.} משתמשים ב-\enLR{1024} לפחות; מומלץ \enLR{2048.}\newline  • \code{transport input ssh} חוסם \enLR{Telnet} – אם התלמיד היה מחובר ב-\enLR{Telnet} הוא לא יינתק, אבל חיבור הבא ייכשל. זה מכוון.\end{mistakebox}
+למה \code{secret} עדיף? כי הוא נשמר כ\textbf{גיבוב \enLR{(hash)}} – טביעת אצבע חד-כיוונית של הסיסמה, שממנה אי אפשר לשחזר את הסיסמה המקורית (נרחיב על גיבוב בפרק \enLR{7).} לעומת זאת \code{password} נשמר בטקסט גלוי, וגם הפקודה \code{service password-encryption} שמסתירה אותו משתמשת בהצפנה חלשה מאוד (מה שנקרא "\enLR{type 7")} שנשברת בשנייה באתרים חינמיים באינטרנט. לכן \code{service password-encryption} מגן רק מפני מישהו שמציץ מעבר לכתף בזמן שאתם צופים בקונפיג – לא מפני תוקף אמיתי. ההגנה האמיתית היא ה-\code{secret}.\par
 
-\begin{exambox}\boxtitle{בבגרות (שאלה \enLR{5}ב)}\par  "מנהל רשת הפיק מפתחות \enLR{RSA} בנתב. מה ניתן לעשות כעת עם המפתחות?" – \textbf{ניתן להשתמש בהם לצורך חיבור \enLR{SSH}} (ללא צורך באיפוס). \enLR{Telnet} לא משתמש במפתחות כלל.\end{exambox}
+\sectionheading{\enLR{2.4 Telnet} מול \enLR{SSH} – ההבדל שמציל אתכם}
 
-\begin{storybox}\boxtitle{סיפור מהחיים: \enLR{Telnet} בבית חולים}\par  בבדיקת חדירה בבית חולים (סיפור שמופיע בדוחות של חברות אבטחה רבות), הבודקים חיברו מחשב נייד לשקע רשת בחדר המתנה, הריצו \enLR{Wireshark}, וחיכו. תוך \enLR{40} דקות הם לכדו \enLR{session} של \enLR{Telnet} של טכנאי שהתחבר למתג הראשי – שם משתמש וסיסמה בטקסט גלוי. עם הסיסמה הזו הם קיבלו שליטה בכל המתגים בבניין. הטכנאי לא עשה שום דבר "לא נכון" – הוא פשוט השתמש בכלי שהיה זמין. ההגנה: \code{transport input ssh} – שורה אחת.\end{storybox}
+כדי לנהל נתב מרחוק (מבלי להתחבר אליו פיזית בכבל), מתחברים אליו דרך הרשת. יש לכך שני פרוטוקולים, ואחד מהם מסוכן מאוד.\par
 
-\sectionheading{\enLR{2.5} רמות הרשאה \enLR{(Privilege Levels)} ותצוגות תפקיד \enLR{(Role-Based CLI Views)}}
+\textbf{\enLR{Telnet}} (פורט \enLR{23)} הוא הפרוטוקול הישן. הבעיה שלו חמורה: הוא מעביר את \underline{הכול} בטקסט גלוי, כולל את שם המשתמש והסיסמה. כל מי ש"מקשיב" לרשת יכול לראות אותם. \textbf{\enLR{SSH (Secure Shell)}} (פורט \enLR{22)} הוא הפרוטוקול המאובטח: הוא \underline{מצפין} את כל התקשורת, כך שמאזין רואה רק ג'יבריש, וגם מוודא שאתם מדברים באמת עם הנתב הנכון. משתמשים ב-\enLR{SSH} גרסה \enLR{2} בלבד.\par
 
-ל-\enLR{IOS} יש \enLR{16} רמות הרשאה \enLR{(0}–\enLR{15).} בפועל משתמשים בשלוש:\par
+\begin{storybox}\boxtitle{מהעולם האמיתי: \enLR{Telnet} שנלכד בבית חולים}\par  בבדיקת חדירה מוזמנת, הבודק חיבר מחשב נייד לשקע רשת בחדר המתנה והריץ תוכנה שמקשיבה לתעבורה \enLR{(Wireshark).} תוך \enLR{40} דקות הוא לכד תקשורת \enLR{Telnet} של טכנאי שהתחבר למתג הראשי – ושם המשתמש והסיסמה השתקפו על מסכו בטקסט גלוי. עם הסיסמה הזו הוא קיבל שליטה בכל המתגים בבניין. הטכנאי לא עשה שום דבר "לא נכון" – הוא פשוט השתמש בכלי הישן שהיה זמין. ההגנה מפני כל התרחיש הזה היא שורה אחת שחוסמת \enLR{Telnet} ומחייבת \enLR{SSH.}\end{storybox}
 
-\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
-\hline
-\rowcolor{hdrbg}\textbf{מה מותר} & \textbf{שם} & \textbf{רמה} \\
-\hline
-\endhead
-רק \enLR{disable, enable, exit, help, logout} & – & \enLR{0} \\
-\hline
-פקודות \enLR{show} בסיסיות, \enLR{ping.} ברירת מחדל אחרי \enLR{login.} & \enLR{User EXEC} (\code{R1>}) & \enLR{1} \\
-\hline
-מה שהמנהל מעביר אליהן בעזרת \code{privilege} & מותאם אישית & \enLR{2}–\enLR{14} \\
-\hline
-הכול, כולל \enLR{configure terminal} & \enLR{Privileged EXEC} (\code{R1\#}) & \enLR{15} \\
-\hline
-\end{xltabular}
+\subheading{הגדרת \enLR{SSH} – חמישה שלבים, כל אחד מוסבר}
+
+כדי ש-\enLR{SSH} יעבוד, הנתב צריך לייצר לעצמו \textbf{זוג מפתחות \enLR{RSA}} – מפתח ציבורי ומפתח פרטי (נבין אותם לעומק בפרק \enLR{7).} המפתחות האלה הם מה שמצפין את החיבור. כדי לייצר אותם, הנתב חייב קודם שם מלא, שמורכב מהשם שלו \enLR{(hostname)} ומשם דומיין. לכן שני אלה חייבים לבוא ראשונים:\par
 
 \begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
-\textcolor{ccom}{\texthebrew{! רמה \enLR{5}: מותר גם \enLR{reload} ו-\enLR{show running-config}}}\\
-R1(config)\# \textcolor{cbold}{\textbf{privilege exec level 5 reload}}\\
-R1(config)\# \textcolor{cbold}{\textbf{privilege exec level 5 show running-config}}\\
-R1(config)\# \textcolor{cbold}{\textbf{enable secret level 5 Lvl5-P@ss}}\\
-R1(config)\# \textcolor{cbold}{\textbf{username helpdesk privilege 5 secret Help-P@ss}}\\
-\textcolor{ccom}{\texthebrew{! כניסה לרמה}}\\
-R1> \textcolor{cbold}{\textbf{enable 5}}\\
-R1\# \textcolor{cbold}{\textbf{show privilege}}\\
-Current privilege level is 5
+R1(config)\# \textcolor{cbold}{\textbf{hostname R1}}                       \textcolor{ccom}{\texthebrew{! \enLR{1.} שם לנתב}}\\
+R1(config)\# \textcolor{cbold}{\textbf{ip domain-name school.local}}       \textcolor{ccom}{\texthebrew{! \enLR{2.} שם דומיין (חובה לפני יצירת מפתחות)}}\\
+R1(config)\# \textcolor{cbold}{\textbf{crypto key generate rsa}} modulus 2048  \textcolor{ccom}{\texthebrew{! \enLR{3.} ייצור זוג מפתחות \enLR{RSA}}}\\
+R1(config)\# username admin privilege 15 secret P@ss \textcolor{ccom}{\texthebrew{! \enLR{4.} משתמש שאיתו נתחבר}}\\
+R1(config)\# ip ssh version 2                         \textcolor{ccom}{\texthebrew{! \enLR{SSHv2} בלבד}}\\
+R1(config)\# \textcolor{cbold}{\textbf{line vty 0 4}}                          \textcolor{ccom}{\texthebrew{! \enLR{5.} הגדרת קווי הגישה מרחוק}}\\
+R1(config-line)\# \textcolor{cbold}{\textbf{login local}}                      \textcolor{ccom}{\texthebrew{! אימות מול המשתמש המקומי}}\\
+R1(config-line)\# \textcolor{cbold}{\textbf{transport input ssh}}              \textcolor{ccom}{\texthebrew{! רק \enLR{SSH} – חוסם \enLR{Telnet}}}
 \end{english}\end{codebox}
 
-\textbf{מגבלות של רמות:} אין שליטה "בין רמות" (רמה \enLR{5} מקבלת אוטומטית גם כל מה שמותר ב-\enLR{1}–\enLR{4)}, ופקודות \enLR{show} מסוימות חושפות הרבה. הפתרון המדויק יותר: \textbf{\enLR{Role-Based CLI Views}} – "תצוגה" שמכילה רשימת פקודות מדויקת. דורש \enLR{AAA} מופעל.\par
+\begin{mistakebox}\boxtitle{הטעות הנפוצה ביותר}\par  אם שוכחים את שורת \code{ip domain-name} (או משאירים את שם הנתב כברירת המחדל "\enLR{Router")}, הפקודה \code{crypto key generate rsa} נכשלת עם ההודעה "\enLR{Please define a domain-name first".} זכרו: השם והדומיין חייבים לבוא \underline{לפני} יצירת המפתחות, כי שם המפתח נגזר מהם.\end{mistakebox}
 
-\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
-R1(config)\# \textcolor{cbold}{\textbf{aaa new-model}}\\
-R1(config)\# exit\\
-R1\# \textcolor{cbold}{\textbf{enable view}}                                \textcolor{ccom}{\texthebrew{! נכנסים ל-\enLR{root view} (מבקש \enLR{enable secret)}}}\\
-R1\# configure terminal\\
-R1(config)\# \textcolor{cbold}{\textbf{parser view MONITOR}}\\
-R1(config-view)\# \textcolor{cbold}{\textbf{secret Mon-P@ss}}\\
-R1(config-view)\# \textcolor{cbold}{\textbf{commands exec include show ip interface brief}}\\
-R1(config-view)\# \textcolor{cbold}{\textbf{commands exec include show ip route}}\\
-R1(config-view)\# \textcolor{cbold}{\textbf{commands exec include ping}}\\
-R1(config-view)\# exit\\
-\textcolor{ccom}{\texthebrew{! משתמש שמשויך לתצוגה}}\\
-R1(config)\# username noc view MONITOR secret Noc-P@ss\\
-\textcolor{ccom}{\texthebrew{! בדיקה}}\\
-R1\# enable view MONITOR\\
-R1\# \textcolor{cbold}{\textbf{show parser view}}\\
-Current view is 'MONITOR'
-\end{english}\end{codebox}
+הערה על \code{line vty 0 4}: "\enLR{VTY"} הם קווי הגישה הווירטואליים שדרכם מתחברים מרחוק (יש חמישה כאלה, ממוספרים \enLR{0} עד \enLR{4).} עליהם אנחנו קובעים שני דברים: \code{login local} – שהאימות ייעשה מול מסד המשתמשים המקומי (כלומר יידרש גם שם וגם סיסמה), ו-\code{transport input ssh} – שמותר להתחבר רק ב-\enLR{SSH} ולא ב-\enLR{Telnet.}\par
 
-\textbf{\enLR{Superview}} – תצוגה שמאגדת כמה תצוגות (\code{parser view ADMIN superview} ⇒ \code{view MONITOR}).\par
+\begin{tipbox}\boxtitle{\enLR{login} מול \enLR{login local} – הבחנה שנשאלת בבגרות}\par  \code{login} (לבד) מבקש רק סיסמה אחת משותפת של הקו, בלי שם משתמש. \code{login local} מבקש גם שם משתמש וגם סיסמה, ומאמת אותם מול מסד המשתמשים המקומי (\code{username ... secret}). מכיוון ש-\enLR{SSH} דורש שם משתמש, הוא חייב \code{login local} – ולכן זו התשובה הנכונה בשאלות בגרות על התחברות מאובטחת.\end{tipbox}
 
-\sectionheading{\enLR{2.6 Banner} – אזהרה משפטית}
+\sectionheading{\enLR{2.5} עוד כלי הקשחה: רמות הרשאה ו-\enLR{Banner}}
+
+\textbf{רמות הרשאה \enLR{(Privilege Levels)}:} לפעמים רוצים לתת למישהו גישה חלקית – למשל למתמחה שיוכל רק לצפות, בלי לשנות. ל-\enLR{IOS} יש \enLR{16} רמות הרשאה \enLR{(0} עד \enLR{15).} רמה \enLR{1} היא ברירת המחדל (רק צפייה), רמה \enLR{15} היא הרשאת מנהל מלאה, ואת הרמות שביניהן אפשר להתאים אישית ולהעביר אליהן פקודות מסוימות. כך אפשר לתת לכל תפקיד בדיוק את מה שהוא צריך – עיקרון שנקרא "מינימום הרשאות".\par
+
+\textbf{\enLR{Banner}:} זוהי הודעת אזהרה שמופיעה בכניסה לנתב. מטרתה משפטית – להבהיר שהגישה מיועדת למורשים בלבד ושהפעילות מנוטרת.\par
 
 \begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
 R1(config)\# \textcolor{cbold}{\textbf{banner motd \#}}\\
-*** UNAUTHORIZED ACCESS IS PROHIBITED ***\\
-This system is for authorized personnel only.\\
-All activity is monitored and logged.\\
+*** גישה בלתי מורשית אסורה. הפעילות מנוטרת ומתועדת. ***\\
 \#
 \end{english}\end{codebox}
 
-\begin{tipbox}\boxtitle{טיפ: מה לא לכתוב בבאנר}\par  לא "\enLR{Welcome"} (בית משפט בארה"ב קיבל טענה של פורץ ש"הוזמן"), לא שם החברה, לא דגם הנתב, לא שם המנהל. רק אזהרה ותו לא. ה-\enLR{motd} מוצג לפני ההזדהות; \code{banner login} מוצג אחרי \enLR{motd} ולפני בקשת שם משתמש; \code{banner exec} אחרי הכניסה.\end{tipbox}
+\begin{mistakebox}\boxtitle{מה לא לכתוב בבאנר}\par  לא לכתוב "\enLR{Welcome"} (ברוכים הבאים) – במקרה משפטי בארה"ב פורץ טען שהבאנר "הזמין" אותו להיכנס. לא לכתוב את שם החברה ולא את דגם הנתב – זה רק עוזר לתוקף. הבאנר צריך רק להזהיר, לא לקבל את פני האורח.\end{mistakebox}
 
-\sectionheading{\enLR{2.7 Logging} ו-\enLR{Syslog}}
+\begin{storybox}\boxtitle{מהעולם האמיתי: הדגל האמריקאי על \enLR{168,000} נתבים \enLR{(2018)}}\par  קבוצת האקרים גילתה שירות ניהול של סיסקו בשם \enLR{Smart Install} שנשאר פתוח וחשוף לאינטרנט אצל עשרות אלפי ארגונים. הם מצאו את הנתבים החשופים דרך מנוע חיפוש בשם \enLR{Shodan}, איפסו את הקונפיגורציה של כ-\enLR{168,000} נתבים, ובחלקם השאירו הודעה עם דגל אמריקאי וכיתוב "אל תתעסקו עם הבחירות שלנו". נפגעו ספקיות אינטרנט באיראן וברוסיה. הלקח ישיר: שירות ניהול מיותר שנשאר פתוח הוא הזמנה – ולכן מכבים כל שירות שלא נחוץ (הנושא של סעיף \enLR{2.7).}\end{storybox}
 
-הנתב מייצר הודעות על אירועים (ממשק עלה/ירד, כניסה כושלת, \enLR{ACL} שחסם). ניתן לשלוח אותן ל: \textbf{קונסול} (ברירת מחדל), \textbf{קווי \enLR{VTY}} (\code{terminal monitor}), \textbf{חוצץ בזיכרון} \enLR{(buffer} – נמחק ב-\enLR{reload)}, ו\textbf{שרת \enLR{syslog}} \enLR{(UDP 514)} – היעד הנכון לארגון, כי הלוגים נשמרים גם אם הנתב נפרץ או אופס.\par
+\sectionheading{\enLR{2.6} ניטור: לדעת מה קורה בנתב}
 
-\subheading{מבנה הודעה}
+אבטחה טובה היא לא רק חסימה – היא גם לדעת מה קורה. לשם כך יש שלושה שירותים שכדאי להפעיל.\par
 
-\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
-*Mar  1 00:12:45.123: \%LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to down\\
-~\textasciicircum{}זמן                  \textasciicircum{}facility \textasciicircum{}severity \textasciicircum{}mnemonic  \textasciicircum{}תיאור
-\end{english}\end{codebox}
+\subheading{\enLR{Syslog} – יומן האירועים}
 
-\subheading{\enLR{8} רמות חומרה \enLR{(Severity)} – חובה לזכור}
-
-\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
-\hline
-\rowcolor{hdrbg}\textbf{משמעות} & \textbf{שם} & \textbf{רמה} \\
-\hline
-\endhead
-המערכת אינה שמישה & \enLR{Emergencies} & \enLR{0} \\
-\hline
-נדרשת פעולה מיידית & \enLR{Alerts} & \enLR{1} \\
-\hline
-מצב קריטי & \enLR{Critical} & \enLR{2} \\
-\hline
-שגיאה (ממשק נפל) & \enLR{Errors} & \enLR{3} \\
-\hline
-אזהרה & \enLR{Warnings} & \enLR{4} \\
-\hline
-אירוע רגיל אך משמעותי (ממשק עלה, \enLR{config} שונה) & \enLR{Notifications} & \enLR{5} \\
-\hline
-מידע \enLR{(ACL match)} & \enLR{Informational} & \enLR{6} \\
-\hline
-פלט \enLR{debug} – עצום, רק לפתרון תקלות & \enLR{Debugging} & \enLR{7} \\
-\hline
-\end{xltabular}
-
-מנמוניקה באנגלית: \textbf{\enLR{E}}\enLR{very} \textbf{\enLR{A}}\enLR{wesome} \textbf{\enLR{C}}\enLR{isco} \textbf{\enLR{E}}\enLR{ngineer} \textbf{\enLR{W}}\enLR{ill} \textbf{\enLR{N}}\enLR{eed} \textbf{\enLR{I}}\enLR{ce-cream} \textbf{\enLR{D}}\enLR{aily.} כשמגדירים רמה – מקבלים אותה \textbf{וכל מה שחמור ממנה} (רמה \enLR{4 = 0}–\enLR{4).}\par
+הנתב מייצר כל הזמן הודעות על אירועים: ממשק שעלה או נפל, ניסיון כניסה כושל, חבילה שנחסמה. \textbf{\enLR{Syslog}} הוא המנגנון ששולח את ההודעות האלה ל\textbf{שרת מרכזי} (על פורט \enLR{UDP 514).} למה שרת מרכזי ולא רק בנתב עצמו? כי תוקף חכם שמצליח להיכנס לנתב ימחק את היומן המקומי כדי לטשטש עקבות – אבל אין לו גישה לשרת החיצוני, ושם הראיות נשמרות.\par
 
 \begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
-R1(config)\# \textcolor{cbold}{\textbf{logging host 2.9.20.22}}       \textcolor{ccom}{\texthebrew{! או בקיצור: \enLR{logging 2.9.20.22} (זו התשובה בבגרות שאלה \enLR{2}ח)}}\\
-R1(config)\# \textcolor{cbold}{\textbf{logging trap warnings}}        \textcolor{ccom}{\texthebrew{! שלח לשרת רמות \enLR{0}–\enLR{4} (אפשר לכתוב \enLR{4)}}}\\
-R1(config)\# \textcolor{cbold}{\textbf{logging source-interface loopback 0}}\\
-R1(config)\# \textcolor{cbold}{\textbf{logging buffered 16384 informational}}   \textcolor{ccom}{\texthebrew{! חוצץ \enLR{16KB}, רמות \enLR{0}–\enLR{6}}}\\
-R1(config)\# \textcolor{cbold}{\textbf{service timestamps log datetime msec}}  \textcolor{ccom}{\texthebrew{! חותמת זמן – חסר טעם בלי \enLR{NTP}!}}\\
-R1(config)\# \textcolor{cbold}{\textbf{logging on}}\\
-R1\# \textcolor{cbold}{\textbf{show logging}}
+R1(config)\# \textcolor{cbold}{\textbf{logging host 10.0.0.5}}       \textcolor{ccom}{\texthebrew{! שולח את היומן לשרת}}\\
+R1(config)\# \textcolor{cbold}{\textbf{logging trap warnings}}       \textcolor{ccom}{\texthebrew{! שולח רמות \enLR{0} עד \enLR{4}}}
 \end{english}\end{codebox}
 
-\sectionheading{\enLR{2.8 NTP} – למה זמן מדויק הוא עניין של אבטחה}
+להודעות היומן יש \textbf{\enLR{8} רמות חומרה}, מ-\enLR{0 (Emergency}, החמור ביותר) עד \enLR{7 (Debug}, מידע פנימי מפורט). כשבוחרים רמה מקבלים אותה וכל מה שחמור ממנה – למשל אם בוחרים רמה \enLR{4 (warnings)} מקבלים את רמות \enLR{0} עד \enLR{4.}\par
 
-לוגים בלי זמן נכון חסרי ערך: אי אפשר לשחזר סדר אירועים בין נתב, חומת אש ושרת. גם תעודות דיגיטליות (פרק \enLR{7)} ומפתחות \enLR{IPsec} (פרק \enLR{8)} תלויים בזמן. \textbf{\enLR{NTP}} \enLR{(Network Time Protocol, UDP 123)} מסנכרן את כל הציוד למקור אחד. \textbf{\enLR{Stratum}} – מרחק ממקור הזמן \enLR{(stratum 0} = שעון אטומי/\enLR{GPS, stratum 1} = שרת שמחובר אליו ישירות…).\par
+\subheading{\enLR{NTP} – למה זמן מדויק הוא עניין של אבטחה}
+
+\textbf{\enLR{NTP (Network Time Protocol)}} מסנכרן את השעון של כל הציוד ברשת למקור זמן אחד. זה נשמע טכני ומשעמם, אבל הוא קריטי לאבטחה: בלי זמן מסונכרן, אי אפשר לשחזר את סדר האירועים בזמן חקירה. אם הנתב מראה שעה אחת והשרת שעה אחרת, לא תדעו אם הכניסה הכושלת לנתב קרתה לפני החדירה לשרת או אחריה. חוץ מזה, גם תעודות דיגיטליות ומפתחות \enLR{VPN} תלויים בשעון נכון.\par
 
 \begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
-\textcolor{ccom}{\texthebrew{! נתב כלקוח \enLR{NTP}}}\\
-R1(config)\# \textcolor{cbold}{\textbf{ntp server 10.0.0.5}}\\
-R1(config)\# clock timezone IST 2\\
-\textcolor{ccom}{\texthebrew{! אימות \enLR{NTP} – שלא יזייפו לנו את הזמן}}\\
-R1(config)\# \textcolor{cbold}{\textbf{ntp authenticate}}\\
-R1(config)\# \textcolor{cbold}{\textbf{ntp authentication-key 1 md5 NtpK3y}}\\
-R1(config)\# \textcolor{cbold}{\textbf{ntp trusted-key 1}}\\
-R1(config)\# ntp server 10.0.0.5 key 1\\
-\textcolor{ccom}{\texthebrew{! נתב כשרת \enLR{NTP} לרשת הפנימית}}\\
-R1(config)\# \textcolor{cbold}{\textbf{ntp master 3}}\\
-R1\# \textcolor{cbold}{\textbf{show ntp status}}\\
-R1\# \textcolor{cbold}{\textbf{show ntp associations}}\\
-R1\# show clock
+R1(config)\# \textcolor{cbold}{\textbf{ntp server 10.0.0.5}}
 \end{english}\end{codebox}
 
-\sectionheading{\enLR{2.9 SNMP} – ניטור ציוד, ולמה גרסה \enLR{3}}
+\subheading{\enLR{SNMP} – ניטור מצב הציוד}
 
-\textbf{\enLR{SNMP}} \enLR{(Simple Network Management Protocol, UDP 161/162)} מאפשר לתחנת ניהול \enLR{(NMS} – \enLR{PRTG, SolarWinds, Zabbix)} לקרוא נתונים מהנתב \enLR{(GET} – תעבורה, \enLR{CPU)} ואף לשנות \enLR{(SET).} הנתב יכול גם לשלוח התראות יזומות (\textbf{\enLR{trap}}). הנתונים מאורגנים ב-\textbf{\enLR{MIB}} (עץ של משתנים, כל אחד עם מזהה \enLR{OID).}\par
+\textbf{\enLR{SNMP}} הוא פרוטוקול שמאפשר לתחנת ניהול מרכזית לאסוף נתונים מהנתב (כמה תעבורה עוברת, עומס המעבד). הבעיה: בגרסאות הישנות \enLR{(v1, v2c)} הגישה מאובטחת רק ב"מחרוזת קהילה" \enLR{(community string)} שעוברת בטקסט גלוי, ולעיתים קרובות נשארת ברירת המחדל "\enLR{public".} רק \textbf{גרסה \enLR{3 (SNMPv3)}} מוסיפה אימות והצפנה אמיתיים. הכלל: אם משתמשים ב-\enLR{SNMP}, גרסה \enLR{3} בלבד.\par
 
-\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
-\hline
-\rowcolor{hdrbg}\textbf{הערכה} & \textbf{הצפנה} & \textbf{אימות} & \textbf{גרסה} \\
-\hline
-\endhead
-לא לשימוש & אין & \enLR{Community string} בטקסט גלוי ("\enLR{public"/"private")} & \enLR{SNMPv1} \\
-\hline
-נפוץ, אך חלש – לפחות \enLR{read-only + ACL} & אין & \enLR{Community string} בטקסט גלוי & \enLR{SNMPv2c} \\
-\hline
-\textbf{היחיד המומלץ}. רמות: \enLR{noAuthNoPriv, authNoPriv, authPriv} & \enLR{DES/AES} & שם משתמש + \enLR{HMAC (MD5/SHA)} & \textbf{\enLR{SNMPv3}} \\
-\hline
-\end{xltabular}
+\begin{storybox}\boxtitle{מהעולם האמיתי: \enLR{Shodan} – "גוגל של המכשירים המחוברים"}\par  \enLR{Shodan} הוא מנוע חיפוש שסורק כל הזמן את האינטרנט ומקטלג מכשירים חשופים – נתבים, מתגים, מצלמות אבטחה. אפשר לחפש בו מכשירים עם \enLR{SNMP "public"}, עם \enLR{Telnet} פתוח, או עם סיסמת ברירת מחדל, ולקבל רשימה של אלפים. תוקפים משתמשים בו לשלב הסיור (פרק \enLR{1)}; אנשי אבטחה משתמשים בו כדי לגלות מה הארגון שלהם חושף בטעות. כל פעולת הקשחה שאנחנו לומדים בפרק הזה מורידה אתכם מהרשימה של \enLR{Shodan.}\end{storybox}
+
+\sectionheading{\enLR{2.7} כיבוי שירותים מיותרים ו-\enLR{AutoSecure}}
+
+נתב מגיע מהמפעל עם הרבה שירותים דלוקים שהיו שימושיים פעם והיום הם רק שטח תקיפה מיותר. עיקרון ההקשחה פשוט: \textbf{כל שירות שלא צריך – כבה אותו}. כל שירות פתוח הוא דלת אפשרית (זכרו את סיפור \enLR{Cisco Smart Install}!).\par
 
 \begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
-\textcolor{ccom}{\texthebrew{! \enLR{v2c} מוגבל (אם חייבים): קריאה בלבד ורק מ-\enLR{NMS}}}\\
-R1(config)\# access-list 5 permit host 10.0.0.50\\
-R1(config)\# \textcolor{cbold}{\textbf{snmp-server community S3cr3tRO ro 5}}\\
-\textcolor{ccom}{\texthebrew{! \enLR{v3} – הדרך הנכונה}}\\
-R1(config)\# \textcolor{cbold}{\textbf{snmp-server group ADMINS v3 priv}}\\
-R1(config)\# \textcolor{cbold}{\textbf{snmp-server user monitor ADMINS v3 auth sha AuthP@ss priv aes 128 PrivP@ss}}\\
-R1(config)\# snmp-server host 10.0.0.50 version 3 priv monitor\\
-R1(config)\# snmp-server enable traps\\
-R1\# \textcolor{cbold}{\textbf{show snmp}}
+R1(config)\# no ip http server      \textcolor{ccom}{\texthebrew{! ממשק ניהול \enLR{web} מיותר}}\\
+R1(config)\# no cdp run             \textcolor{ccom}{\texthebrew{! פרוטוקול שחושף דגם וגרסה לשכנים}}
 \end{english}\end{codebox}
 
-\sectionheading{\enLR{2.10} שירותים שסוגרים ו-\enLR{AutoSecure}}
-
-ה-\enLR{IOS} מגיע עם שירותים שהיו נחוצים פעם והיום הם רק שטח תקיפה. רשימת הקשחה ידנית:\par
+כדי לחסוך זמן, קיימת פקודה אחת שמבצעת חלק גדול מההקשחה אוטומטית: \textbf{\enLR{AutoSecure}}. היא מכבה שירותים מסוכנים, מפעילה ניטור, ומקשיחה את הנתב בכמה שאלות פשוטות.\par
 
 \begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
-R1(config)\# \textcolor{cbold}{\textbf{no cdp run}}                 \textcolor{ccom}{\texthebrew{! \enLR{CDP} חושף דגם, \enLR{IOS} וכתובות לשכנים (השאירו על קישורים פנימיים אם צריך)}}\\
-R1(config)\# \textcolor{cbold}{\textbf{no ip http server}}          \textcolor{ccom}{\texthebrew{! ממשק \enLR{web} – או \enLR{ip http secure-server} אם חייבים}}\\
-R1(config)\# no ip finger\\
-R1(config)\# no ip bootp server\\
-R1(config)\# no service tcp-small-servers\\
-R1(config)\# no service udp-small-servers\\
-R1(config)\# no ip source-route            \textcolor{ccom}{\texthebrew{! מונע מהשולח להכתיב מסלול}}\\
-R1(config)\# no service pad\\
-R1(config)\# interface g0/0\\
-R1(config-if)\# \textcolor{cbold}{\textbf{no ip redirects}}\\
-R1(config-if)\# \textcolor{cbold}{\textbf{no ip proxy-arp}}\\
-R1(config-if)\# no ip unreachables\\
-R1(config-if)\# no ip directed-broadcast   \textcolor{ccom}{\texthebrew{! נגד \enLR{Smurf} (ברירת מחדל כבר כך)}}
+R1\# \textcolor{cbold}{\textbf{auto secure}}
 \end{english}\end{codebox}
 
-\textbf{\enLR{AutoSecure}} – פקודה אחת שעושה את רוב זה: מכבה שירותים מסוכנים, מפעילה שירותי אבטחה \enLR{(logging, login block)}, מקשיחה ממשקים, ומציעה להגדיר \enLR{SSH} ו-\enLR{CBAC.} במצב אינטראקטיבי שואלת שאלות; במצב \code{no-interact} משתמשת בברירות מחדל.\par
+\begin{mistakebox}\boxtitle{זהירות עם \enLR{AutoSecure}}\par  היא "עיוורת" – עלולה לכבות דברים שהרשת בכל זאת צריכה (למשל \enLR{CDP} שהמתגים משתמשים בו). לכן מריצים אותה, בודקים מה היא שינתה בעזרת \code{show auto secure config}, ומכווננים לפי הצורך.\end{mistakebox}
 
-\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
-R1\# \textcolor{cbold}{\textbf{auto secure}}\\
-R1\# auto secure no-interact\\
-R1\# \textcolor{cbold}{\textbf{show auto secure config}}
-\end{english}\end{codebox}
+\sectionheading{\enLR{2.8} עוד דוגמאות מהעולם האמיתי}
 
-\begin{faqbox}\boxtitle{שאלת תלמיד: "אז למה לא פשוט להריץ \enLR{auto secure} תמיד?"}\par  כי הוא "עיוור": יכול לכבות \enLR{CDP} שהמתגים צריכים, להפעיל חומת אש \enLR{(CBAC)} שתחסום תעבורה לגיטימית, ואי אפשר לבטל אותו בפקודה אחת (\code{no auto secure} לא קיים – צריך לשחזר \enLR{config).} מומלץ להריץ אותו, לבדוק את מה שהוא שינה עם \code{show auto secure config}, ולכוונן.\end{faqbox}
+שלושת הסיפורים בפרק – \enLR{VPNFilter}, הדגל האמריקאי \enLR{(Cisco Smart Install)} ו-\enLR{Shodan} – אינם אנקדוטות; הם ההוכחה החיה לכל מה שלמדנו. בכל אחד מהם, נתב או שירות שלא הוקשח היה הדלת פנימה: סיסמת ברירת מחדל שלא שונתה, שירות מיותר שנשאר פתוח, או ניהול לא מוצפן שנחשף. שורת המחץ של הפרק: הקשחה הופכת את הנתב משער פתוח לשער נעול.\par
 
-\sectionheading{\enLR{2.11} שמירה על ה-\enLR{IOS} והקונפיג – \enLR{Resilient Configuration}}
+\sectionheading{\enLR{2.9} תרגילים – עם פתרונות}
 
-תוקף שהשיג גישה יכול למחוק את ה-\enLR{IOS} ואת ה-\enLR{startup-config} ולהשבית את הנתב. תכונת \textbf{\enLR{IOS Resilient Configuration}} שומרת עותק מוגן \enLR{(bootset)} שלא ניתן למחוק מה-\enLR{CLI}, גם לא ב-\code{format flash:}.\par
+\begin{exbox}\boxtitle{תרגיל \enLR{1} – מצאו את הבעיות בקונפיג}\par  \enLR{Router(config)\# enable password cisco Router(config)\# line vty 0 4 Router(config-line)\# password cisco Router(config-line)\# login Router(config-line)\# transport input telnet Router(config)\# banner motd \# Welcome to ACME Corp}! \# \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{1.} \code{enable password} (גלוי) במקום \code{enable secret}. \enLR{2.} הסיסמה "\enLR{cisco"} חלשה מאוד. \enLR{3.} \code{login} בלי שם משתמש (צריך \code{login local} עם \code{username}). \enLR{4.} \code{transport input telnet} – לא מוצפן, צריך \code{ssh}. \enLR{5.} באנר "\enLR{Welcome"} עם שם החברה. \enLR{6.} השם נשאר "\enLR{Router"} ואין \code{ip domain-name} – כך שאי אפשר בכלל ליצור מפתחות ל-\enLR{SSH.}\end{exbox}
 
-\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
-R1(config)\# \textcolor{cbold}{\textbf{secure boot-image}}\\
-R1(config)\# \textcolor{cbold}{\textbf{secure boot-config}}\\
-R1\# \textcolor{cbold}{\textbf{show secure bootset}}\\
-\textcolor{ccom}{\texthebrew{! שחזור: \enLR{ROMMON > boot flash:<image>} ואז \enLR{R1(config)\# secure boot-config restore flash:rescue-cfg}}}
-\end{english}\end{codebox}
+\begin{exbox}\boxtitle{תרגיל \enLR{2} – סדרו את הפקודות}\par  באיזה סדר צריך להריץ כדי ש-\enLR{SSH} יעבוד? \code{crypto key generate rsa} · \code{login local} · \code{hostname R1} · \code{transport input ssh} · \code{ip domain-name lab.local} · \code{line vty 0 4} \par\vskip2pt\hrule\vskip3pt\textbf{}\code{hostname R1} → \code{ip domain-name lab.local} → \code{crypto key generate rsa} → \code{line vty 0 4} → \code{login local} → \code{transport input ssh}. השם והדומיין חייבים לבוא לפני יצירת המפתחות.\end{exbox}
 
-גיבוי שוטף: \code{copy running-config tftp:} / \code{archive} + \code{path} + \code{time-period} לגיבוי אוטומטי.\par
+\begin{exbox}\boxtitle{תרגיל \enLR{3} – למה שרת \enLR{syslog} מרכזי?}\par  תוקף הצליח להיכנס לנתב. מדוע עדיף שהיומן יישלח לשרת חיצוני ולא יישמר רק בנתב עצמו? \par\vskip2pt\hrule\vskip3pt\textbf{}כי תוקף עם גישה לנתב יכול למחוק את היומן המקומי כדי לטשטש את עקבותיו. ליומן שנשלח לשרת חיצוני אין לו גישה, ולכן הראיות נשמרות שם – מה שמאפשר לחקור את האירוע.\end{exbox}
 
-\sectionheading{\enLR{2.12} ביקורת חשבונות \enLR{(Auditing)}}
-
-לדעת \emph{מי} עשה \emph{מה} ומתי. הכלים בפרק זה: \code{login on-failure log} / \code{login on-success log}, \code{archive log config} (רישום כל פקודת \enLR{config} עם שם המשתמש), \enLR{syslog} מרכזי, ו-\code{show users} לראות מי מחובר עכשיו. הרחבה מלאה – \enLR{Accounting} של \enLR{AAA} בפרק \enLR{3.}\par
-
-\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
-R1(config)\# \textcolor{cbold}{\textbf{archive}}\\
-R1(config-archive)\# \textcolor{cbold}{\textbf{log config}}\\
-R1(config-archive-log-cfg)\# \textcolor{cbold}{\textbf{logging enable}}\\
-R1(config-archive-log-cfg)\# hidekeys      \textcolor{ccom}{\texthebrew{! לא לרשום סיסמאות}}\\
-R1\# \textcolor{cbold}{\textbf{show archive log config all}}
-\end{english}\end{codebox}
-
-\sectionheading{\enLR{2.13 SDM / CCP} – מה זה ומה אומרים לתלמידים}
-
-תכנית הלימודים מזכירה "\enLR{SDM} לוריפיקציה". \textbf{\enLR{SDM}} \enLR{(Security Device Manager)} היה ממשק גרפי מבוסס \enLR{Java} שרץ בדפדפן מול הנתב והציע אשפים \enLR{(wizards)} ל-\enLR{SSH}, חומת אש, \enLR{VPN} ו-"\enLR{Security Audit"} – סריקה שמציגה רשימת שירותים מסוכנים ומציעה לתקן בלחיצה ("\enLR{One-step lockdown"}, המקבילה הגרפית של \enLR{AutoSecure). SDM} הוחלף ב-\enLR{CCP (Cisco Configuration Professional)} ב-\enLR{2009}, ו-\enLR{CCP} הופסק ב-\enLR{2015.} \textbf{הבגרות בודקת \enLR{CLI} בלבד.} אמרו לתלמידים: "קיימים ממשקים גרפיים; אנחנו לומדים \enLR{CLI} כי הוא אוניברסלי, מדויק ונשאל בבחינה".\par
-
-\sectionheading{\enLR{2.14} מדריך פקודות מרוכז – פרק \enLR{2}}
-
-\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
-\hline
-\rowcolor{hdrbg}\textbf{תפקיד} & \textbf{מצב} & \textbf{פקודה} \\
-\hline
-\endhead
-סיסמת \enLR{enable} מגובבת & \enLR{config} & \code{enable secret X} \\
-\hline
-מסתיר סיסמאות \enLR{type 7} & \enLR{config} & \code{service password-encryption} \\
-\hline
-אורך סיסמה מינימלי & \enLR{config} & \code{security passwords min-length N} \\
-\hline
-משתמש מקומי & \enLR{config} & \code{username U privilege 15 secret P} \\
-\hline
-הגנה מ-\enLR{brute force} & \enLR{config} & \code{login block-for S attempts N within T} \\
-\hline
-הכנה ל-\enLR{SSH} & \enLR{config} & \code{ip domain-name D} / \code{crypto key generate rsa} \\
-\hline
-\enLR{SSHv2} בלבד & \enLR{config} & \code{ip ssh version 2} \\
-\hline
-גישה מרחוק מאובטחת & \enLR{line} & \code{line vty 0 4} → \code{login local} / \code{transport input ssh} \\
-\hline
-ניתוק חוסר פעילות & \enLR{line} & \code{exec-timeout M S} \\
-\hline
-העברת פקודה לרמה & \enLR{config} & \code{privilege exec level N CMD} \\
-\hline
-תצוגת תפקיד & \enLR{config} (אחרי \enLR{aaa new-model)} & \code{parser view V} \\
-\hline
-אזהרה & \enLR{config} & \code{banner motd \#…\#} \\
-\hline
-\enLR{syslog} & \enLR{config} & \code{logging host IP} / \code{logging trap LEVEL} \\
-\hline
-זמן & \enLR{config} & \code{ntp server IP} / \code{ntp authenticate} \\
-\hline
-ניטור & \enLR{config} & \code{snmp-server …} \\
-\hline
-הקשחה אוטומטית & \enLR{exec} & \code{auto secure} \\
-\hline
-הגנה על \enLR{IOS} וקונפיג & \enLR{config} & \code{secure boot-image} / \code{secure boot-config} \\
-\hline
-וריפיקציה & \enLR{exec} & \code{show ip ssh}, \code{show logging}, \code{show ntp status}, \code{show privilege}, \code{show login} \\
-\hline
-\end{xltabular}
-
-\sectionheading{\enLR{2.15} תרגילים לתלמידים}
-
-\begin{exbox}\boxtitle{תרגיל \enLR{1} – מצאו את \enLR{5} הבעיות בקונפיג}\par  \enLR{Router(config)\# enable password cisco Router(config)\# line vty 0 4 Router(config-line)\# password cisco Router(config-line)\# login Router(config-line)\# transport input telnet Router(config)\# banner motd \# Welcome to ACME Corp main router}! \# \enLR{Router(config)\# snmp-server community public rw} \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{1.} \code{enable password} במקום \code{enable secret} (טקסט גלוי). \enLR{2. hostname} נשאר \enLR{Router} (ובלי \enLR{domain-name} לא יהיה \enLR{SSH). 3.} סיסמה חלשה "\enLR{cisco"} ובלי שם משתמש (\code{login} במקום \code{login local}). \enLR{4.} \code{transport input telnet} – לא מוצפן; צריך \enLR{ssh. 5.} באנר "\enLR{Welcome"} עם שם החברה. \enLR{6. SNMP community "public"} עם הרשאת \textbf{\enLR{rw}} – כל אחד יכול לשנות את הקונפיג. \enLR{7.} אין \enLR{exec-timeout.} (כל \enLR{5} מתוך \enLR{7} מתקבלים.)\end{exbox}
-
-\begin{exbox}\boxtitle{תרגיל \enLR{2} – סדר נכון}\par  סדרו את הפקודות הבאות בסדר שבו חייבים להקליד אותן כדי ש-\enLR{SSH} יעבוד: \code{crypto key generate rsa} · \code{ip domain-name lab.local} · \code{transport input ssh} · \code{hostname R1} · \code{username admin secret P@ss} · \code{login local} · \code{line vty 0 4} \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{hostname R1} → \enLR{ip domain-name lab.local} → \enLR{crypto key generate rsa} → \enLR{username admin secret P@ss} → \enLR{line vty 0 4} → \enLR{login local} → \enLR{transport input ssh. (username} יכול לבוא בכל מקום לפני \enLR{login local; hostname} ו-\enLR{domain-name} חייבים לפני \enLR{crypto key.)}\end{exbox}
-
-\begin{exbox}\boxtitle{תרגיל \enLR{3} – \enLR{syslog}}\par  הנתב הגדיר \code{logging trap 4}. סמנו אילו מההודעות יגיעו לשרת:\newline  א. \code{\%SYS-5-CONFIG\_I: Configured from console} ב. \code{\%LINK-3-UPDOWN} ג. \code{\%SEC\_LOGIN-4-LOGIN\_FAILED} ד. \code{\%SEC-6-IPACCESSLOGP} ה. \code{\%OSPF-5-ADJCHG} \par\vskip2pt\hrule\vskip3pt\textbf{}ב \enLR{(3)} ו-ג \enLR{(4)} יגיעו. א \enLR{(5)}, ד \enLR{(6)}, ה \enLR{(5)} לא – חמורים פחות מ-\enLR{4.} \textbf{מנמוניקה:} המספר במרכז ההודעה הוא רמת החומרה.\end{exbox}
-
-\begin{exbox}\boxtitle{תרגיל \enLR{4} – תכנון}\par  אתם מנהלי הרשת של בית ספר עם \enLR{3} נתבים ו-\enLR{12} מתגים. כתבו רשימת \enLR{8} צעדי הקשחה שתבצעו על כל מכשיר, לפי סדר עדיפות, ונמקו את הראשון. \par\vskip2pt\hrule\vskip3pt\textbf{}דוגמה: \enLR{1. enable secret + username secret} (בלי זה – כל השאר חסר ערך). \enLR{2. SSH} בלבד, כיבוי \enLR{Telnet. 3. login block-for. 4. exec-timeout. 5. syslog + NTP} לשרת מרכזי. \enLR{6.} כיבוי \enLR{HTTP, CDP} על ממשקי קצה, \enLR{small servers. 7. SNMPv3} בלבד. \enLR{8. banner} אזהרה. \enLR{9.} גיבוי \enLR{config. 10. secure boot-image/config.}\end{exbox}
-
-\sectionheading{\enLR{2.16} שאלות בסגנון בגרות}
-
-\begin{exambox}\boxtitle{שאלה \enLR{1}}\par  מנהל רשת הקליד: \code{hostname R1}, \code{crypto key generate rsa} – וקיבל שגיאה. מה חסר? \par\vskip2pt\hrule\vskip3pt\textbf{}\code{ip domain-name}. יצירת מפתחות \enLR{RSA} דורשת \enLR{FQDN (hostname + domain).}\end{exambox}
-
-\begin{exambox}\boxtitle{שאלה \enLR{2}}\par  מהו הסדר הנכון של רמות חומרה ב-\enLR{syslog} מהחמורה לקלה: \enLR{Warning, Emergency, Debugging, Error}? \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{Emergency (0)} → \enLR{Error (3)} → \enLR{Warning (4)} → \enLR{Debugging (7).}\end{exambox}
-
-\begin{exambox}\boxtitle{שאלה \enLR{3}}\par  השלימו כדי לאפשר גישה מרחוק ב-\enLR{SSH} בלבד עם אימות מול משתמש מקומי:\newline \code{R1(config)\# line vty 0 4}\newline \code{R1(config-line)\# \_\_\_\_\_\_}\newline \code{R1(config-line)\# \_\_\_\_\_\_} \par\vskip2pt\hrule\vskip3pt\textbf{}\code{login local} ו-\code{transport input ssh}.\end{exambox}
-
-\begin{exambox}\boxtitle{שאלה \enLR{4}}\par  מנהל הגדיר \code{logging trap 3}. אילו הודעות יישלחו לשרת ה-\enLR{syslog}? \par\vskip2pt\hrule\vskip3pt\textbf{}רמות \enLR{0}–\enLR{3: Emergencies, Alerts, Critical, Errors.} הודעות \enLR{Warning} ומטה לא יישלחו.\end{exambox}
-
-\begin{exambox}\boxtitle{שאלה \enLR{5}}\par  נכון / לא נכון: (א) \code{service password-encryption} מצפין את הסיסמאות באופן שאינו ניתן לפענוח. (ב) \enLR{SNMPv3} תומך בהצפנה. (ג) \enLR{NTP} משתמש ב-\enLR{TCP.} (ד) \enLR{SSH} גרסה \enLR{1} מאובטחת יותר מגרסה \enLR{2.} \par\vskip2pt\hrule\vskip3pt\textbf{}(א) לא נכון – \enLR{type 7}, ניתן לפענוח בקלות. (ב) נכון. (ג) לא נכון – \enLR{UDP 123.} (ד) לא נכון.\end{exambox}
-
-\begin{exambox}\boxtitle{שאלה \enLR{6}}\par  איזו פקודה תגרום לנתב לנתק משתמש בקונסול לאחר \enLR{3} דקות ללא פעילות? \par\vskip2pt\hrule\vskip3pt\textbf{}\code{line console 0} → \code{exec-timeout 3 0}.\end{exambox}
-
-\sectionheading{\enLR{2.17} מעבדה \enLR{(2} שעות) – הקשחת נתב ב-\enLR{Packet Tracer}}
-
-\begin{enumerate}
-\item טופולוגיה: \enLR{PC} — \enLR{Switch} — \enLR{R1} — \enLR{Syslog/NTP server (Server-PT} עם שירותי \enLR{SYSLOG} ו-\enLR{NTP} מופעלים).
-\item הגדירו \enLR{hostname, enable secret, min-length, service password-encryption, banner.}
-\item הגדירו \enLR{SSH} לפי \enLR{2.4.} נסו \enLR{Telnet} – ודאו שנכשל. התחברו ב-\enLR{SSH} מה-\enLR{PC.}
-\item הפעילו \code{login block-for 60 attempts 3 within 30}; נסו \enLR{3} סיסמאות שגויות; ראו ב-\code{show login} את מצב ה-\enLR{quiet mode.}
-\item הגדירו \enLR{logging} לשרת ו-\code{logging trap informational}; כבו והדליקו ממשק; ראו את ההודעה בשרת ה-\enLR{Syslog.}
-\item הגדירו \enLR{NTP} מול השרת; ודאו ב-\code{show ntp status} ש-\enLR{synchronized.}
-\item צרו משתמש ברמה \enLR{5} שיכול רק \code{show running-config}; בדקו שאינו יכול להיכנס ל-\enLR{configure terminal.}
-\end{enumerate}
-
-\sectionheading{עוד דוגמאות מהעולם האמיתי}
-
-\begin{storybox}\boxtitle{\enLR{VPNFilter (2018)} – חצי מיליון נתבים ביתיים נחטפו}\par  נוזקה בשם \enLR{VPNFilter} הדביקה מעל \enLR{500,000} נתבים ביתיים וקטנים בעולם \enLR{(Linksys, MikroTik, Netgear, TP-Link} ועוד). היכולות שלה: ריגול אחר כל התעבורה שעוברת בנתב, גניבת סיסמאות, ואף "הריגת" הנתב \enLR{(bricking)} בפקודה אחת. ה-\enLR{FBI} ייחס אותה לתקיפה מדינתית והשתלט על שרת השליטה \enLR{(C2)} שלה כדי לעצור אותה. \textbf{איך היא נכנסה?} חולשות ידועות שלא עודכנו + סיסמאות ברירת מחדל שלא שונו. לקח: נתב ביתי הוא מחשב מלא – בלי הקשחה ועדכון הוא הדלת הקלה ביותר פנימה.\end{storybox}
-
-\begin{storybox}\boxtitle{הדגל האמריקאי על \enLR{168,000} נתבים \enLR{(Cisco Smart Install, 2018)}}\par  קבוצת האקרים ניצלה שירות ניהול של סיסקו בשם \textbf{\enLR{Smart Install}} (פורט \enLR{TCP 4786)} שנשאר \underline{פתוח וחשוף לאינטרנט} בעשרות אלפי ארגונים. הם מצאו את המכשירים החשופים דרך מנוע החיפוש \enLR{Shodan}, איפסו את הקונפיגורציה של כ-\enLR{168,000} נתבים, ובחלקם כתבו קונפיג עם דגל אמריקאי ב-\enLR{ASCII} וההודעה "\enLR{Don't mess with our elections".} נפגעו ספקיות אינטרנט באיראן וברוסיה. \textbf{לקח:} שירות ניהול מיותר שנשאר פתוח = הזמנה. זו בדיוק הסיבה שמכבים כל שירות שלא נחוץ (\code{no ...}) ומריצים \enLR{AutoSecure.}\end{storybox}
-
-\begin{storybox}\boxtitle{\enLR{Shodan} – "גוגל של המכשירים המחוברים"}\par  \enLR{Shodan} הוא מנוע חיפוש שסורק כל הזמן את האינטרנט ומקטלג מכשירים חשופים: נתבים, מתגים, מצלמות אבטחה, ואפילו בקרים תעשייתיים. אפשר לחפש בו מכשירים עם \enLR{SNMP "public"}, עם \enLR{Telnet} פתוח, או עם סיסמת ברירת מחדל – ולקבל רשימה של אלפים. תוקפים משתמשים בו לשלב הסיור (פרק \enLR{1)}; אנשי אבטחה משתמשים בו כדי לגלות מה \underline{הארגון שלהם} חושף בטעות. כל פעולה שעשינו בפרק הזה – \enLR{SSH} במקום \enLR{Telnet, SNMPv3}, כיבוי שירותים – מורידה אתכם מהרשימה של \enLR{Shodan.}\end{storybox}
-
-\begin{exbox}\boxtitle{תרגיל \enLR{5} – קישור סיפור להקשחה}\par  לכל סיפור מהעולם האמיתי לעיל, איזו פקודת/פעולת הקשחה מהפרק הייתה מונעת אותו? \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{VPNFilter}: שינוי סיסמת ברירת מחדל (\code{enable secret}, \code{username secret}) + עדכון \enLR{IOS. Cisco Smart Install}: כיבוי השירות המיותר (\code{no vstack} / כיבוי שירותים + \enLR{AutoSecure). Shodan: SSH} במקום \enLR{Telnet, SNMPv3}, וכיבוי כל שירות פתוח מיותר.\end{exbox}
-
-\begin{exbox}\boxtitle{תרגיל \enLR{6} – תכנון הקשחה}\par  אתם מנהלי הרשת של בית ספר עם \enLR{3} נתבים. כתבו \enLR{6} צעדי הקשחה שתבצעו על כל נתב, לפי סדר עדיפות, ונמקו את הראשון. \par\vskip2pt\hrule\vskip3pt\textbf{}דוגמה: \enLR{1.} \code{enable secret} + \code{username ... secret} (בלי זה כל השאר חסר ערך – אין הגנה בסיסית). \enLR{2. SSH} בלבד (\code{transport input ssh} + \code{login local}), כיבוי \enLR{Telnet. 3.} \code{login block-for} נגד ניחוש סיסמאות. \enLR{4. syslog + NTP} לשרת מרכזי. \enLR{5. SNMPv3}, כיבוי \enLR{HTTP/CDP} מיותרים. \enLR{6. banner} אזהרה + גיבוי הקונפיג.\end{exbox}
+\begin{exbox}\boxtitle{תרגיל \enLR{4} – תכנון הקשחה}\par  אתם מנהלי הרשת של בית ספר עם שלושה נתבים. כתבו שישה צעדי הקשחה שתבצעו על כל נתב, לפי סדר עדיפות, ונמקו את הראשון. \par\vskip2pt\hrule\vskip3pt\textbf{}דוגמה: \enLR{1.} \code{enable secret} + \code{username ... secret} – בלי הגנת סיסמה בסיסית כל השאר חסר ערך. \enLR{2. SSH} בלבד (\code{login local} + \code{transport input ssh}), כיבוי \enLR{Telnet. 3.} \code{login block-for} נגד ניחוש סיסמאות. \enLR{4. syslog + NTP} לשרת מרכזי. \enLR{5. SNMPv3} וכיבוי שירותים מיותרים \enLR{(HTTP, CDP). 6.} באנר אזהרה + גיבוי הקונפיג.\end{exbox}
 
 \sectionheading{בנק שאלות שתלמידים שואלים – ותשובות מוכנות}
 
