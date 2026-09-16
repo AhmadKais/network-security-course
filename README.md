@@ -1,102 +1,79 @@
-# אבטחת מידע – קורס מגמת תקשוב
+# 🔐 אבטחת מידע — קורס מלא (מגמת תקשוב)
 
-## 🌐 אתר הקורס (להקרנה מהדפדפן)
-**https://ahmadkais.github.io/network-security-course/**
+קורס אבטחת מידע ורשתות תקשורת, מבוסס על תכנית הלימודים של משרד החינוך ועל מבנה שאלון הבגרות **735001**.
+הקורס בנוי כך שאפשר **ללמד ממנו ישירות**: לכל פרק יש מצגת להקרנה, חומר עיון למורה, תרגילים, סיפורים מהחיים, מילון מונחים ושאלות בסגנון בגרות.
 
-פותחים את הקישור מכל מחשב/פרויקטור, בוחרים פרק ומקרינים. אין צורך להתקין דבר.
-
-קישורים ישירים למצגות:
-- פרק 1 – מבוא לאיומי רשת (מורחב): https://ahmadkais.github.io/network-security-course/Chapter_01_Network_Threats/presentation.html
-- שאר הפרקים והספר המלא – דרך דף הבית שלמעלה.
-
-לכל פרק יש שלוש גרסאות של חומר העיון: **`.md`** (קריא ונוח לעריכה, מוצג יפה ב-GitHub), **`.pdf`** (להדפסה/למידה), ו-**`.tex`** (מקור LaTeX).
-
-מקשים במצגת: `→`/רווח הבא · `←` אחורה · `N` הערות למורה · `F` מסך מלא.
-
-> הערה: המאגר ציבורי כדי ש-GitHub Pages יעבוד בחשבון חינמי. אפשר להפוך אותו לפרטי אם יש GitHub Pro.
+> **🌐 להקרנה בכיתה — אתר הקורס:** **https://ahmadkais.github.io/network-security-course/**
+> פותחים מכל מחשב/פרויקטור, בוחרים פרק, מקרינים. אין צורך להתקין דבר.
 
 ---
 
-## על החבילה
+## 📚 תוכן הקורס
 
-חבילת הוראה מלאה בעברית ל-9 פרקי תכנית הלימודים, מבוססת על התכנית הרשמית ועל מבנה שאלון הבגרות 735001.
-**ספר הקורס המלא:** `Full_Course.pdf` – כל 9 הפרקים ב-PDF אחד עם תוכן עניינים וסימניות (78 עמ').
+לכל פרק שלושה רכיבים: **📊 מצגת** (להקרנה), **📖 חומר עיון** (Markdown — נקרא ונערך בנוחות), ו-**📄 PDF** (להדפסה/למידה).
 
-**הכי פשוט:** פתח את `index.html` בדפדפן – תפריט לכל הפרקים (חומר עיון + מצגת).
+| # | פרק | מצגת (הקרנה) | חומר עיון | PDF |
+|---|------|:---:|:---:|:---:|
+| 0 | סקירה, תכנון שנתי ופתרון שאלון | — | [📖](Chapter_00_Overview/study_material.md) | [📄](Chapter_00_Overview/study_material.pdf) |
+| 0.5 | תזכורת רשתות תקשורת | [📊](https://ahmadkais.github.io/network-security-course/Chapter_00b_Networking_Reminder/presentation.html) | [📖](Chapter_00b_Networking_Reminder/study_material.md) | [📄](Chapter_00b_Networking_Reminder/study_material.pdf) |
+| 1 | מבוא לאיומי רשת ⭐ | [📊](https://ahmadkais.github.io/network-security-course/Chapter_01_Network_Threats/presentation.html) | [📖](Chapter_01_Network_Threats/study_material.md) | [📄](Chapter_01_Network_Threats/study_material.pdf) |
+| 2 | אבטחת אביזרי רשת | [📊](https://ahmadkais.github.io/network-security-course/Chapter_02_Device_Security/presentation.html) | [📖](Chapter_02_Device_Security/study_material.md) | [📄](Chapter_02_Device_Security/study_material.pdf) |
+| 3 | מודל ה-AAA | [📊](https://ahmadkais.github.io/network-security-course/Chapter_03_AAA/presentation.html) | [📖](Chapter_03_AAA/study_material.md) | [📄](Chapter_03_AAA/study_material.pdf) |
+| 4 | חומות אש ו-ACL | [📊](https://ahmadkais.github.io/network-security-course/Chapter_04_Firewalls/presentation.html) | [📖](Chapter_04_Firewalls/study_material.md) | [📄](Chapter_04_Firewalls/study_material.pdf) |
+| 5 | IDS / IPS | [📊](https://ahmadkais.github.io/network-security-course/Chapter_05_IDS_IPS/presentation.html) | [📖](Chapter_05_IDS_IPS/study_material.md) | [📄](Chapter_05_IDS_IPS/study_material.pdf) |
+| 6 | אבטחת הרשת המקומית | [📊](https://ahmadkais.github.io/network-security-course/Chapter_06_LAN_Security/presentation.html) | [📖](Chapter_06_LAN_Security/study_material.md) | [📄](Chapter_06_LAN_Security/study_material.pdf) |
+| 7 | הצפנה וקריפטולוגיה | [📊](https://ahmadkais.github.io/network-security-course/Chapter_07_Cryptography/presentation.html) | [📖](Chapter_07_Cryptography/study_material.md) | [📄](Chapter_07_Cryptography/study_material.pdf) |
+| 8 | מערכות VPN | [📊](https://ahmadkais.github.io/network-security-course/Chapter_08_VPN/presentation.html) | [📖](Chapter_08_VPN/study_material.md) | [📄](Chapter_08_VPN/study_material.pdf) |
+| 9 | ניהול אבטחה מתקדם | [📊](https://ahmadkais.github.io/network-security-course/Chapter_09_Security_Management/presentation.html) | [📖](Chapter_09_Security_Management/study_material.md) | [📄](Chapter_09_Security_Management/study_material.pdf) |
 
-## מבנה – תיקייה לכל פרק
+📕 **ספר הקורס המלא (כל הפרקים ב-PDF אחד, 100 עמ'):** [Full_Course.pdf](Full_Course.pdf)
 
-כל פרק בתיקייה משלו, ובה שני חלקים:
+⭐ = פרק שעבר הרחבה מלאה (מצגת מפורטת, דוגמאות וסיפורים). שאר הפרקים מלאים אך ייהנו מהרחבה דומה בהמשך.
 
-```
-Chapter_01_Network_Threats/
-├── study_material.tex   ← מקור LaTeX (עריך)
-├── study_material.pdf   ← חומר העיון שאתה קורא ולומד ממנו
-└── presentation.html    ← המצגת שאתה מקרין לתלמידים (עצמאית, עובדת בלי אינטרנט)
-```
+---
 
-| תיקייה | פרק |
-|--------|-----|
-| `Chapter_00_Overview` | סקירה, תכנון שנתי, פתרון שאלון הבגרות לדוגמה (ללא מצגת) |
-| `Chapter_01_Network_Threats` | מבוא לאיומי רשת |
-| `Chapter_02_Device_Security` | אבטחת אביזרי רשת |
-| `Chapter_03_AAA` | מודל ה-AAA |
-| `Chapter_04_Firewalls` | חומות אש ו-ACL |
-| `Chapter_05_IDS_IPS` | IDS / IPS |
-| `Chapter_06_LAN_Security` | אבטחת הרשת המקומית |
-| `Chapter_07_Cryptography` | הצפנה וקריפטולוגיה |
-| `Chapter_08_VPN` | מערכות VPN |
-| `Chapter_09_Security_Management` | ניהול אבטחה מתקדם |
+## 🎓 איך משתמשים
 
-## חומר העיון (LaTeX → PDF)
-כל פרק כולל: חומר עיוני מלא, מדריך פקודות CLI, סיפורים מהחיים,
-תיבות "שאלת תלמיד", "טעות נפוצה", "טיפ להוראה", תרגילים עם פתרונות,
-ושאלות בסגנון בגרות עם תשובות.
-
-המקור הוא **LaTeX** (`study_material.tex`). לעריכה, שנה את ה-tex והדר מחדש:
-```
-cd Chapter_03_AAA
-lualatex study_material.tex     # פעמיים, לעדכון מספרי עמודים
-```
-דורש: LuaLaTeX (TeX Live) + הגופנים Noto Sans Hebrew ו-DejaVu (מותקנים במערכת).
-
-## המצגות
-פתח `presentation.html` של הפרק בדפדפן. מקשים:
+### להקרנה בכיתה
+פותחים את [אתר הקורס](https://ahmadkais.github.io/network-security-course/) או קישור המצגת של הפרק. מקשים:
 
 | מקש | פעולה |
 |-----|-------|
-| `→` / רווח | הבא (התוכן מתגלה בהדרגה) |
+| `→` / רווח | השקף/שורה הבאה (התוכן מתגלה בהדרגה) |
 | `←` | אחורה |
-| `N` | הערות למורה (מה להגיד, איזו שאלה לשאול) |
+| `N` | **הערות למורה** — מה להגיד ואיזו שאלה לשאול את הכיתה |
 | `F` | מסך מלא |
-| `Home` / `End` | ראשון / אחרון |
+| `Home` / `End` | לשקף הראשון / האחרון |
 
-בשקפי "שאלה" התשובה מוסתרת עד ללחיצה, כדי לתת לכיתה לנסות קודם.
+בשקפי "שאלה" התשובה מוסתרת עד ללחיצה — כך אפשר לתת לכיתה לנסות קודם.
 
-## עריכה ובנייה מחדש
+### ללמידה והכנה
+קוראים את חומר העיון של הפרק (📖 Markdown ישירות ב-GitHub, או 📄 PDF). כל פרק כולל:
+רקע למתחילים · חומר עיוני מלא · מדריך פקודות CLI · סיפורים מהחיים · תיבות "שאלת תלמיד" ו"טעות נפוצה" · תרגילים עם פתרונות · **בנק שאלות שתלמידים שואלים** · **מילון מונחים** · שאלות בסגנון בגרות.
 
-**מקור האמת:**
-- חומר עיון = קובץ ה-LaTeX `Chapter_XX/study_material.tex` — **ערוך את זה**.
-- מצגות = ה-HTML בתיקייה `_build/slides_src/`.
+---
 
-לאחר עריכה, בנה מחדש (מריצים מתוך `Course_Materials/`):
+## 🗂️ מבנה המאגר
+
 ```
-python3 _build/make.py latex    # מהדר כל study_material.tex ל-PDF (לא נוגע ב-.tex)
-python3 _build/make.py book     # מרכיב את Full_Course.pdf מקובצי ה-.tex
-python3 _build/make.py slides   # בונה מחדש את המצגות מ-_build/slides_src
-python3 _build/make.py all      # מצגות + latex + ספר
+├── index.html                     דף הבית של אתר הקורס (GitHub Pages)
+├── Full_Course.pdf                ספר הקורס המלא
+├── Chapter_XX_.../
+│   ├── presentation.html          המצגת (להקרנה)
+│   ├── study_material.md          חומר העיון — Markdown (מקור נוח לעריכה/קריאה)
+│   ├── study_material.pdf         חומר העיון — PDF
+│   └── study_material.tex         חומר העיון — מקור LaTeX
+└── _build/                        סקריפטים ומקורות לבנייה מחדש
 ```
-דורש: LuaLaTeX (TeX Live) + הגופנים Noto Sans Hebrew ו-DejaVu.
 
-> **חשוב:** `make.py latex` **רק מהדר** את ה-.tex ל-PDF — הוא לעולם לא דורס את העריכות שלך.
-> הספר (`book`) מורכב ישירות מקובצי ה-.tex, כך שכל עריכה שלך מופיעה גם בו.
+## 🔧 בנייה מחדש
+```bash
+python3 _build/make.py all       # בונה הכול: מצגות + PDF + ספר + Markdown
+python3 _build/make.py slides    # רק מצגות
+python3 _build/make.py md        # רק Markdown
+python3 _build/make.py latex     # מהדר את ה-PDF-ים
+```
+דורש: Python 3, LuaLaTeX (TeX Live) והגופנים Noto Sans Hebrew ו-DejaVu.
 
-תוכן תיקיית `_build/`:
-- `slides_src/`              – מקור המצגות (HTML + CSS + JS) = מקור האמת למצגות
-- `html2tex.py`, `make.py`   – סקריפטים לבנייה
-- `_source_html_originals/`  – טיוטות ה-HTML המקוריות ש**מהן נוצר ה-LaTeX פעם אחת**. אינן מקור
-  האמת ואין לערוך אותן. הן משמשות רק לפקודת האיפוס:
-  ```
-  python3 _build/make.py convert --force   # מאפס את קובצי ה-.tex חזרה לטיוטה (דורס עריכות!)
-  ```
-  בלי `--force` הפקודה מדלגת על כל .tex קיים ולא דורסת דבר.
+---
+*נבנה עבור מגמת תקשוב · מבוסס על תכנית הלימודים ושאלון 735001 של משרד החינוך.*
