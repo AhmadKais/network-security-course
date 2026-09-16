@@ -1,0 +1,203 @@
+\documentclass[11pt]{article}
+\usepackage{fontspec}
+\directlua{luaotfload.add_fallback("hebfb",{"DejaVu Sans:mode=harf"})}
+\usepackage{polyglossia}
+\setdefaultlanguage{hebrew}
+\setotherlanguage{english}
+\setmainfont{Noto Sans Hebrew}[Script=Hebrew,RawFeature={fallback=hebfb}]
+\newfontfamily\codefont{DejaVu Sans Mono}[RawFeature={fallback=hebfb}]
+\usepackage[a4paper,margin=18mm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{mdframed}
+\usepackage{tabularx}
+\usepackage{xltabular}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\setlist{leftmargin=1.6em,itemsep=1pt,topsep=2pt}
+% colors
+\definecolor{h1}{HTML}{1E3A8A}\definecolor{h2}{HTML}{1E40AF}\definecolor{h3}{HTML}{0F172A}
+\definecolor{subgray}{HTML}{64748B}\definecolor{hdrbg}{HTML}{E0E7FF}
+\definecolor{cfg}{HTML}{E2E8F0}\definecolor{cbg}{HTML}{0F172A}\definecolor{cbold}{HTML}{7DD3FC}\definecolor{ccom}{HTML}{94A3B8}
+\definecolor{metabg}{HTML}{F1F5F9}
+\newcommand{\enLR}[1]{\textenglish{#1}}
+\newcommand{\code}[1]{\textenglish{\codefont #1}}
+\newcommand{\chapterheading}[1]{\vspace{2pt}{\LARGE\bfseries\color{h1}#1\par}\vskip2pt{\color{h1}\hrule height 2pt}\vskip6pt}
+\newcommand{\sectionheading}[1]{\vskip10pt\penalty-200{\large\bfseries\color{h2}#1\par}\vskip3pt}
+\newcommand{\subheading}[1]{\vskip6pt{\bfseries\color{h3}#1\par}\vskip2pt}
+\newcommand{\boxtitle}[1]{{\bfseries\color{boxti}#1}}
+% box environments (right border, tinted bg)
+\newmdenv[topline=false,bottomline=false,leftline=false,rightline=true,linewidth=2pt,innermargin=0pt,skipabove=6pt,skipbelow=6pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt]{genericbox}
+\definecolor{faqbg}{HTML}{ECFDF5}\definecolor{faqfr}{HTML}{10B981}\definecolor{faqti}{HTML}{065F46}
+\definecolor{misbg}{HTML}{FEF2F2}\definecolor{misfr}{HTML}{EF4444}\definecolor{misti}{HTML}{991B1B}
+\definecolor{tipbg}{HTML}{FFFBEB}\definecolor{tipfr}{HTML}{F59E0B}\definecolor{tipti}{HTML}{92400E}
+\definecolor{exabg}{HTML}{EFF6FF}\definecolor{exafr}{HTML}{3B82F6}\definecolor{exati}{HTML}{1E3A8A}
+\definecolor{defbg}{HTML}{F5F3FF}\definecolor{deffr}{HTML}{8B5CF6}\definecolor{defti}{HTML}{5B21B6}
+\definecolor{stobg}{HTML}{FDF4FF}\definecolor{stofr}{HTML}{D946EF}\definecolor{stoti}{HTML}{86198F}
+\definecolor{exbg}{HTML}{F0FDFA}\definecolor{exfr}{HTML}{14B8A6}\definecolor{exti}{HTML}{115E59}
+\newenvironment{faqbox}{\colorlet{boxti}{faqti}\begin{mdframed}[backgroundcolor=faqbg,linecolor=faqfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{mistakebox}{\colorlet{boxti}{misti}\begin{mdframed}[backgroundcolor=misbg,linecolor=misfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{tipbox}{\colorlet{boxti}{tipti}\begin{mdframed}[backgroundcolor=tipbg,linecolor=tipfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{exambox}{\colorlet{boxti}{exati}\begin{mdframed}[backgroundcolor=exabg,linecolor=exafr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{defbox}{\colorlet{boxti}{defti}\begin{mdframed}[backgroundcolor=defbg,linecolor=deffr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{storybox}{\colorlet{boxti}{stoti}\begin{mdframed}[backgroundcolor=stobg,linecolor=stofr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{exbox}{\colorlet{boxti}{exti}\begin{mdframed}[backgroundcolor=exbg,linecolor=exfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{metabox}{\begin{mdframed}[backgroundcolor=metabg,linewidth=0pt,innertopmargin=5pt,innerbottommargin=5pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=4pt,skipbelow=8pt]}{\end{mdframed}}
+\newmdenv[backgroundcolor=cbg,linewidth=0pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=8pt]{codebox}
+\setlength{\parindent}{0pt}\setlength{\parskip}{4pt}
+\renewcommand{\thepage}{\enLR{\arabic{page}}}
+\pagestyle{fancy}\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}
+\begin{document}
+\sloppy
+\begin{titlepage}\centering\vspace*{3cm}
+{\Huge\bfseries\color{h1}אבטחת מידע – מדריך למורה\par}\vskip8pt
+{\Large תכנית הלימודים "אבטחת מידע" – מגמת תקשוב, משרד החינוך\par}\vskip6pt
+{\Large חומר עיון מלא, שאלות תלמידים נפוצות, טעויות נפוצות ושאלות בסגנון בגרות (שאלון \enLR{735001)}\par}\vskip6pt
+\vskip3cm{\large\color{gray}\enLR{120} שעות · \enLR{9} פרקים · תכנון ל-\enLR{30} שבועות \enLR{(4} ש"ש)\newline מבוסס על תכנית הלימודים הרשמית ועל מבנה שאלון הבגרות "רשתות תקשורת ואבטחת מידע"\par}
+\end{titlepage}
+
+\chapterheading{מבוא: איך להשתמש בחומר הזה}{\small\color{subgray}קראו את הפרק הזה לפני שמתחילים ללמד\par}\vskip4pt
+
+\sectionheading{מה יש כאן}
+
+החומר בנוי משני חלקים שמשלימים זה את זה:\par
+
+\begin{itemize}
+\item \textbf{מדריך למורה (ה-\enLR{PDF} הזה)} – פרק לכל פרק בתכנית הלימודים. כל פרק כולל: מטרות ותכנון שעות, את החומר העיוני עצמו בעומק שמאפשר לענות על שאלות של תלמידים, מדריך פקודות \enLR{CLI}, תיבות "שאלת תלמיד נפוצה" עם תשובה מוכנה, תיבות "טעות נפוצה", תיבות "טיפ להוראה", ושאלות בסגנון בגרות עם פתרון מלא.
+\item \textbf{מצגות (תיקיית \enLR{slides})} – קובץ \enLR{HTML} אחד לכל פרק, פותחים בדפדפן ומקרינים. עובד ללא אינטרנט. לחיצה על \enLR{N} פותחת הערות למורה בתחתית המסך (מה להגיד, איזו שאלה לשאול את הכיתה). לחיצה על \enLR{F} – מסך מלא. חיצים / רווח – מעבר שקף. בשקפי "שאלה" התשובה מופיעה רק בלחיצה נוספת – כך אפשר לתת לכיתה לנסות קודם.
+\end{itemize}
+
+\begin{tipbox}\boxtitle{טיפ: סדר עבודה מומלץ לכל שבוע}\par  \enLR{1.} קראו את פרק המדריך הרלוונטי \enLR{(30}–\enLR{60} דקות). \enLR{2.} עברו על המצגת עם הערות המורה פתוחות \enLR{(N). 3.} הריצו בעצמכם את פקודות ה-\enLR{CLI} ב-\enLR{Packet Tracer} לפני השיעור – תלמידים ישאלו "מה קורה אם…" ועדיף שכבר ראיתם. \enLR{4.} אחרי השיעור – תנו לתלמידים את שאלות "סגנון בגרות" מהמדריך כתרגול.\end{tipbox}
+
+\sectionheading{על תכנית הלימודים ועל שאלון הבגרות}
+
+תכנית הלימודים הרשמית \enLR{(120} שעות: \enLR{96} עיוני + \enLR{24} מעשי) מבוססת על קורס \enLR{CCNA Security} של סיסקו מהדור הקודם. שימו לב לשלושה דברים:\par
+
+\begin{enumerate}
+\item \textbf{\enLR{SDM / CCP} הם כלים שיצאו משימוש.} התכנית מזכירה הרבה "הגדרה על ידי \enLR{SDM"} (ממשק גרפי של סיסקו לנתבים). \enLR{SDM} הוחלף ב-\enLR{CCP} וגם הוא הופסק. \textbf{שאלון הבגרות בודק אך ורק \enLR{CLI.}} לכן במדריך הזה ההגדרות הן ב-\enLR{CLI}, ואת \enLR{SDM} אנו מזכירים רק כמושג ("קיים גם ממשק גרפי").
+\item \textbf{בתכנית הרשמית יש שגיאת העתקה:} רשימת הנושאים של פרק \enLR{3 (AAA)} זהה לרשימה של פרק \enLR{2.} במדריך הזה פרק \enLR{3} בנוי לפי \emph{המטרות} של פרק \enLR{3} (מודל \enLR{AAA, ACS, TACACS+, RADIUS)} – זה גם מה שנשאל בבגרות.
+\item \textbf{מחצית משאלון הבגרות \enLR{(50} נקודות) היא "רשתות תקשורת"} – סאבנטים, \enLR{OSPF, STP, DHCP}, ניתוב סטטי, \enLR{VLAN} וכו'. החומר הזה \underline{לא} נמצא בתכנית "אבטחת מידע" והוא נלמד בקורס הרשתות. במדריך הזה נגענו בו רק היכן שהוא נוגע ישירות לאבטחה (למשל \enLR{STP} בפרק \enLR{6, ACL} בפרק \enLR{4}, פקודות \enLR{line vty} בפרק \enLR{2).} מומלץ לוודא שהתלמידים מגיעים עם רקע ב-\enLR{CCNA 1}–\enLR{2.}
+\end{enumerate}
+
+\sectionheading{תכנון שנתי – \enLR{30} שבועות, \enLR{4} שעות שבועיות}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{מעשי} & \textbf{מה מכסים} & \textbf{שעות בתכנית} & \textbf{פרק} & \textbf{שבועות} \\
+\hline
+\endhead
+\enLR{Wireshark} / דמו \enLR{phishing} & מושגי יסוד \enLR{(CIA)}, אבולוציית האיומים, סוגי תוקפים, נוזקות, שלבי תקיפה, \enLR{DoS/DDoS}, הנדסה חברתית, ברוט-פורס. שבוע \enLR{1}: היכרות עם הקורס ומבחן רמה קצר ברשתות. & \enLR{10} & פרק \enLR{1} – מבוא לאיומי רשת & \enLR{1}–\enLR{3} \\
+\hline
+\enLR{Packet Tracer}: הקשחת נתב + \enLR{SSH} & הקשחת נתב: סיסמאות, \enLR{enable secret, SSH}, רמות הרשאה, \enLR{banner, syslog, NTP, SNMP, AutoSecure, OOB.} & \enLR{12} & פרק \enLR{2} – אבטחת אביזרי רשת & \enLR{4}–\enLR{6} \\
+\hline
+\enLR{Packet Tracer}: שרת \enLR{RADIUS/TACACS}+ & \enLR{Authentication/Authorization/Accounting, AAA} מקומי, \enLR{RADIUS} מול \enLR{TACACS+, ACS/ISE}, פקודות \enLR{AAA.} & \enLR{14} & פרק \enLR{3} – מודל \enLR{AAA} & \enLR{7}–\enLR{9} \\
+\hline
+\enLR{Packet Tracer: ACL + ZPF} & \enLR{ACL} סטנדרטי/מורחב/\enLR{named, wildcard}, מיקום \enLR{ACL, ACL} מבוסס זמן/\enLR{reflexive/dynamic}, סוגי חומות אש, \enLR{CBAC, ZPF.} & \enLR{13} & פרק \enLR{4} – חומות אש & \enLR{10}–\enLR{12} \\
+\hline
+\enLR{Packet Tracer: IOS IPS} & \enLR{IDS} מול \enLR{IPS}, חתימות, \enLR{HIPS} מול \enLR{NIPS}, אזעקות \enLR{(true/false positive), IOS IPS}, ניטור ופתרון תקלות. שבוע \enLR{16}: חזרה + מבחן מחצית. & \enLR{14} & פרק \enLR{5} – \enLR{IDS / IPS} & \enLR{13}–\enLR{16} \\
+\hline
+\enLR{Packet Tracer: port security + BPDU guard} & התקפות שכבה \enLR{2: MAC flooding, VLAN hopping/DTP, STP, DHCP/ARP spoofing.} הגנות: \enLR{port security, BPDU guard, DHCP snooping, DAI, storm control, SPAN. NAC, IronPort, VoIP/SAN, Evil Twin.} & \enLR{13} & פרק \enLR{6} – אבטחת הרשת המקומית & \enLR{17}–\enLR{19} \\
+\hline
+תרגול: צופן קיסר, \enLR{hash} בפייתון/אונליין & היסטוריה (קיסר, ויז'נר), \enLR{CIA} + הצפנה, גיבוב \enLR{(MD5/SHA), HMAC}, סימטרי \enLR{(DES/3DES/AES)}, א-סימטרי \enLR{(RSA/DH)}, חתימה דיגיטלית, \enLR{PKI.} & \enLR{14} & פרק \enLR{7} – הצפנה וקריפטולוגיה & \enLR{20}–\enLR{23} \\
+\hline
+\enLR{Packet Tracer: GRE + IPsec site-to-site} & סוגי \enLR{VPN, GRE, IPsec (AH/ESP, IKE, DH), site-to-site} ב-\enLR{CLI, SSL VPN}, ציוד \enLR{(ASA).} & \enLR{13} & פרק \enLR{8} – \enLR{VPN} & \enLR{24}–\enLR{26} \\
+\hline
+\enLR{Nmap} במעבדה מבודדת & ניהול סיכונים, סוגי בקרות (מנהלי/פיזי/לוגי), בדיקות חדירה, \enLR{Nmap/Nessus, BCP/DRP, SDLC}, מדיניות ואתיקה. & \enLR{14} & פרק \enLR{9} – ניהול אבטחה מתקדם & \enLR{27}–\enLR{29} \\
+\hline
+ & פתרון שאלון לדוגמה בתנאי אמת, חזרה על פקודות. & \enLR{3} & חזרה לבגרות & \enLR{30} \\
+\hline
+\end{xltabular}
+
+\sectionheading{מיפוי שאלון הבגרות (חלק ב' – אבטחת מידע) לפרקי הקורס}
+
+ניתחנו את שאלון \enLR{735001} (אביב תשפ"ג). כך מתפלגים נושאי חלק ב' \enLR{(50} נקודות) בין הפרקים – זה אומר לכם על מה לשים דגש:\par
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{סוג שאלה} & \textbf{פרק} & \textbf{נושא שנשאל} \\
+\hline
+\endhead
+רב-ברירה על תמונה & \enLR{1} & זיהוי הודעת \enLR{phishing} / הנדסה חברתית \\
+\hline
+התאמה & \enLR{1} & סוגי תוקפים: \enLR{Script kiddies, Hacktivist, Insider}, פשע מאורגן \\
+\hline
+רב-ברירה & \enLR{1} & \enLR{Brute force} (מילון), \enLR{Buffer overflow, DoS, Port redirection} \\
+\hline
+רב-ברירה & \enLR{2} & הפקת מפתחות \enLR{RSA} – משמשים ל-\enLR{SSH} \\
+\hline
+התאמה & \enLR{3} & שלושת שירותי \enLR{AAA} (הגדרות) \\
+\hline
+נכון/לא נכון & \enLR{3} & \enLR{RADIUS} מול \enLR{TACACS}+ (הצפנה, \enLR{UDP/TCP}, הרשאות) \\
+\hline
+השלמת פקודה & \enLR{3} & הפקודה \code{aaa new-model} \\
+\hline
+רב-ברירה & \enLR{4} & \enLR{ACL} סטנדרטי לחסימת רשת; מיקום \enLR{ACL} וכיוון \enLR{(in/out)} \\
+\hline
+התאמה & \enLR{5} & \enLR{IDS} מול \enLR{IPS} \\
+\hline
+רב-ברירה & \enLR{6} & \enLR{Port security} נגד \enLR{MAC table overflow; DTP} ו-\enLR{VLAN hopping; BPDU Guard; Evil Twin} \\
+\hline
+רב-ברירה & \enLR{7} & \enLR{Diffie-Hellman}, צופן קיסר ו-\enLR{mod 26}, מפתח ציבורי/פרטי, \enLR{AES} מול \enLR{hash} (סודיות) \\
+\hline
+רב-ברירה & \enLR{8} & \enLR{IPsec} – פועל על \enLR{TCP/IP} \\
+\hline
+התאמה / רב-ברירה & \enLR{9} & בקרות מנהליות / פיזיות / לוגיות; \enLR{Nmap} \\
+\hline
+\end{xltabular}
+
+\sectionheading{פתרון מלא – חלק ב' של שאלון הדוגמה \enLR{(735001}, תשפ"ג)}
+
+כדי שתוכלו לפתור עם התלמידים בסוף השנה. ההסברים מופיעים בהרחבה בפרקים.\par
+
+\subheading{שאלה \enLR{4 (20} נק')}
+
+\begin{enumerate}
+\item \textbf{א.} הודעת "\enLR{UPS} – \enLR{Last Call} – \enLR{Confirm Now"} – תשובה \textbf{\enLR{4: Social Engineering}} \enLR{(phishing).} סימנים: שולח מ-\enLR{hotmail.com} ולא מדומיין \enLR{UPS}, דחיפות ("\enLR{Last Call")}, כפתור לאישור פרטים.
+\item \textbf{ב.} זיהוי ואימות משתמשים = \textbf{\enLR{Authentication}}; ניהול הרשאות = \textbf{\enLR{Authorization}}; רישום למעקב = \textbf{\enLR{Accounting}}.
+\item \textbf{ג.} ניטור + חסימה אוטומטית = \textbf{\enLR{IPS}}; ניטור + התראה בלבד = \textbf{\enLR{IDS}}.
+\item \textbf{ד.} חסימת \enLR{20.20.20.0/24} ב-\enLR{ACL} סטנדרטי: תשובה \textbf{\enLR{2}: \code{access-list 10 deny 20.20.20.0 0.0.0.255}} (מספר \enLR{1}–\enLR{99} = סטנדרטי; \enLR{wildcard 0.0.0.255).}
+\item \textbf{ה.} \enLR{1. RADIUS} מצפין רק את הסיסמה – \textbf{נכון}. \enLR{2. RADIUS} מבצע אימות ולא מתייחס להרשאות – \textbf{נכון} \enLR{(RADIUS} משלב \enLR{authentication+authorization} בתהליך אחד ואינו מאפשר הרשאה נפרדת לכל פקודה). \enLR{3. TACACS}+ משתמש רק ב-\enLR{UDP} – \textbf{לא נכון} \enLR{(TCP 49). 4. TACACS}+ מספק שירות \enLR{AAA} – \textbf{נכון}.
+\item \textbf{ו.} הסכמה על מפתח פרטי בערוץ ציבורי – \textbf{\enLR{2: Diffie-Hellman}}.
+\end{enumerate}
+
+\subheading{שאלה \enLR{5 (9} נק')}
+
+\begin{enumerate}
+\item \textbf{א.} \code{R1(config)\# aaa new-model}
+\item \textbf{ב.} מפתחות \enLR{RSA} – \textbf{\enLR{2}: ניתן להשתמש בהם לצורך חיבור \enLR{SSH}} (ללא איפוס).
+\item \textbf{ג.} \enLR{modulo 26} – \textbf{\enLR{4}: מספר האפשרויות (האותיות) בשפה האנגלית}; ה-\enLR{mod "}מגלגל" חזרה מ-\enLR{Z} ל-\enLR{A.}
+\item \textbf{ד.} הצפנה במפתח ציבורי ⇒ פענוח ב-\textbf{\enLR{1}: מפתח פרטי}.
+\item \textbf{ה.} סודיות \enLR{(confidentiality)} של מידע מוצפן – \textbf{\enLR{3: AES}} \enLR{(MD5/HASH} = שלמות; \enLR{WPA-2} הוא פרוטוקול, לא אלגוריתם).
+\end{enumerate}
+
+\subheading{שאלה \enLR{6 (12} נק')}
+
+\begin{enumerate}
+\item \textbf{א.} \enLR{IPsec} נועד לאבטח את חבילת הפרוטוקולים \textbf{\enLR{2: TCP/IP}} (שכבה \enLR{3).}
+\item \textbf{ב.} מנהלי = כתיבת מדיניות, הנחיות, נהלים, תקנים; פיזי = הגנה על חדר שרתים וארונות תקשורת; לוגי = רשימות גישה, סיסמאות, מערכות למניעת גישה.
+\item \textbf{ג.} \enLR{Script kiddies} = משתמש בכלי פריצה בלי להיות מודע לתהליכים; \enLR{Hacktivist} = תוקף מתוך אמונות ומניעים אידיאולוגיים; \enLR{Insider} = משתמש בגישה מורשית לצרכים זרים.
+\item \textbf{ד.} \enLR{Nmap} – \textbf{\enLR{3}: גילוי, ניתוח ובקרה ברשתות תקשורת} (סריקת פורטים ומארחים).
+\item \textbf{ה.} \enLR{Evil Twin} – \textbf{\enLR{1}: נקודת גישה זדונית עם \enLR{SSID} זהה לנקודה חוקית}.
+\end{enumerate}
+
+\subheading{שאלה \enLR{7 (9} נק')}
+
+\begin{enumerate}
+\item \textbf{א.} ניחוש סיסמה בעזרת מילון – \textbf{\enLR{4: Brute force attack}} (התקפת מילון היא תת-סוג).
+\item \textbf{ב.} \enLR{MAC table overflow} – \textbf{\enLR{1: port security}} על כל הממשקים שאינם \enLR{trunk} + הגבלת מספר כתובות \enLR{MAC.}
+\item \textbf{ג.} השבתת \enLR{DTP} מונעת \textbf{\enLR{3: VLAN hopping}} \enLR{(switch spoofing).}
+\item \textbf{ד.} \enLR{BPDU Guard} גלובלי – \textbf{\enLR{3}: \code{spanning-tree portfast bpduguard default}} (תשובה \enLR{2} גם נכונה תחבירית לממשק בודד – \code{spanning-tree bpduguard enable} – אך התשובה המצופה היא \enLR{3).}
+\item \textbf{ה.} חסימת \enLR{192.168.2.0} ל-\enLR{192.168.3.0} בלבד: \textbf{\enLR{2}} – \code{deny 192.168.2.0} ואז \code{permit any}, ומחילים \textbf{\enLR{out}} על \enLR{G0/2} (הממשק שיוצא לרשת המוגבלת). סדר השורות קריטי: \enLR{permit any} קודם היה מבטל את ה-\enLR{deny.}
+\end{enumerate}
+
+\sectionheading{סביבת מעבדה מומלצת}
+
+\begin{itemize}
+\item \textbf{\enLR{Cisco Packet Tracer}} (חינם דרך \enLR{Cisco Networking Academy)} – תומך ב: \enLR{SSH, AAA} עם \enLR{RADIUS/TACACS+, ACL, ZPF} (חלקית), \enLR{IOS IPS} (בסיסי), \enLR{port security, BPDU guard, DHCP snooping, GRE} ו-\enLR{IPsec site-to-site.} זה מכסה כמעט את כל המעשי בקורס.
+\item \textbf{\enLR{Wireshark}} – להדגמת \enLR{Telnet} בטקסט גלוי מול \enLR{SSH} מוצפן (פרק \enLR{2)}, ולהצגת \enLR{handshake} של \enLR{TLS} (פרק \enLR{7).}
+\item \textbf{\enLR{Nmap / Zenmap}} – רק ברשת מעבדה מבודדת ובאישור בית הספר (פרק \enLR{9).} אף פעם לא על רשת בית הספר או האינטרנט.
+\item אתרי הדגמה: \enLR{cryptii.com} (צופן קיסר/ויז'נר), \enLR{sha256algorithm.com} (הדמיה של גיבוב).
+\end{itemize}
+
+\begin{mistakebox}\boxtitle{חשוב – אתיקה ומשמעת}\par  בקורס הזה מלמדים איך התקפות עובדות כדי לדעת להגן. הבהירו לתלמידים כבר בשיעור הראשון: הרצת סורקים, כלי פריצה או ניסיונות "לבדוק" את רשת בית הספר ללא אישור בכתב היא עבירה על חוק המחשבים \enLR{(1995)} – ותאמרו להם זאת במפורש. פרק \enLR{9} מקדיש לכך חלק.\end{mistakebox}
+\end{document}

@@ -1,0 +1,98 @@
+<section class="slide title"><h1>פרק 4<br>חומות אש ו-ACL</h1><div class="sub">ACL סטנדרטי/מורחב · wildcard · מיקום וכיוון · CBAC · ZPF</div><div class="course">אבטחת מידע · מגמת תקשוב</div>
+<div class="notes">היום הכלי הכי בסיסי ונשאל בקורס – ACL. פתחו Packet Tracer. זה פרק שדורש הרבה תרגול ידיים.</div></section>
+
+<section class="slide"><h2>מהי חומת אש</h2>
+<ul><li class="fragment">עומדת בין רשתות ברמות אמון שונות</li>
+<li class="fragment">כל התעבורה עוברת דרכה (נקודת מעבר יחידה)</li>
+<li class="fragment">מחליטה permit/deny לפי מדיניות</li></ul>
+<div class="box warn fragment"><span class="t">הקזינו והאקווריום (2017)</span>נפרצו דרך חיישן טמפרטורה חכם – כי לא היה ACL שמפריד אותו משאר הרשת</div>
+<div class="notes">חומת אש היא לא רק בין "פנים" ל"אינטרנט" – גם בין חלקי הפנים (פילוח). סיפור האקווריום ממחיש.</div></section>
+
+<section class="slide"><h2>סוגי חומות אש</h2>
+<table><tr><th>סוג</th><th>בודקת</th></tr>
+<tr><td>Packet filter (ACL)</td><td>כותרות L3-L4, ללא מצב</td></tr>
+<tr><td><b>Stateful</b></td><td>זוכרת שיחות – רק תשובות נכנסות</td></tr>
+<tr><td>Proxy (L7)</td><td>קוראת תוכן אפליקציה</td></tr>
+<tr><td>NGFW</td><td>הכול + זהות + IPS</td></tr></table>
+<div class="notes">ACL הוא stateless – זה מה שנלמד קודם. Stateful (ZPF/CBAC) בהמשך הפרק.</div></section>
+
+<section class="slide"><h2>ACL – שלושה חוקי ברזל</h2>
+<ol><li class="fragment">נסרקת <b>מלמעלה למטה</b></li>
+<li class="fragment">עוצרת ב<b>התאמה הראשונה</b></li>
+<li class="fragment">בסוף יש <b>deny any סמוי</b> (implicit deny)</li></ol>
+<div class="box tip fragment"><span class="t">מסקנה</span>סדר השורות קריטי · חייבים permit מפורש אחרת הכול נחסם</div>
+<div class="notes">שלושת החוקים מסבירים 90% מהטעויות. חזרו עליהם בכל תרגיל.</div></section>
+
+<section class="slide"><h2>Wildcard Mask</h2>
+<p class="fragment big">wildcard = 255.255.255.255 − subnet mask</p>
+<table><tr><th>רשת</th><th>Wildcard</th></tr>
+<tr><td>/24</td><td>0.0.0.255</td></tr>
+<tr><td>/28</td><td>0.0.0.15</td></tr>
+<tr><td>מארח בודד</td><td>0.0.0.0 = <code>host</code></td></tr>
+<tr><td>כל כתובת</td><td>255.255.255.255 = <code>any</code></td></tr></table>
+<div class="box warn fragment"><span class="t">ביט 0 = חייב להתאים · ביט 1 = לא אכפת</span>הפוך מ-subnet mask!</div>
+<div class="notes">הנקודה שהכי מבלבלת. תרגלו המרות על הלוח. הנוסחה 255-mask היא הדרך המהירה.</div></section>
+
+<section class="slide"><h2>סטנדרטי מול מורחב</h2>
+<table><tr><th></th><th>סטנדרטי</th><th>מורחב</th></tr>
+<tr><td>מספר</td><td>1–99</td><td>100–199</td></tr>
+<tr><td>בודק</td><td>רק מקור</td><td>מקור+יעד+פרוטוקול+פורט</td></tr>
+<tr><td>ממקמים</td><td>קרוב ל<b>יעד</b></td><td>קרוב ל<b>מקור</b></td></tr></table>
+<pre class="fragment">access-list 10 deny 20.20.20.0 0.0.0.255
+access-list 10 permit any</pre>
+<div class="notes">כלל המיקום נשאל! סטנדרטי בודק רק מקור, לכן קרוב ליעד כדי לא לחסום יותר מדי.</div></section>
+
+<section class="slide"><h2>ACL מורחב – דוגמאות</h2>
+<pre>access-list 101 deny ip 172.18.1.0 0.0.0.255 host 10.0.0.190
+access-list 101 permit ip any any
+interface g0/0
+ <b>ip access-group 101 in</b>
+
+access-list 110 permit tcp any any <b>eq 443</b>
+access-list 110 deny icmp any any echo    <span class="c">! חסימת ping</span></pre>
+<div class="notes">שאלה זו בדיוק בבגרות (IT מקבל DNS/DHCP אך לא WEB). הדגישו את השורה permit בסוף.</div></section>
+
+<section class="slide"><h2>כיוון: in או out?</h2>
+<ul><li class="fragment"><b>in</b> = נכנס לנתב דרך הממשק (לפני ניתוב)</li>
+<li class="fragment"><b>out</b> = יוצא מהנתב דרך הממשק (אחרי ניתוב)</li></ul>
+<div class="box tip fragment"><span class="t">מנקודת מבט הנתב, לא המשתמש</span>ACL אחת לכל ממשק, לכל כיוון</div>
+<div class="notes">ציירו נתב עם חצים. תלמידים מתבלבלים – "out" זה החוצה מהנתב לרשת, לא החוצה מהרשת.</div></section>
+
+<section class="slide q"><h2>שאלת בגרות</h2><p>R1: G0/0→רשת1, G0/1→רשת2, G0/2→רשת3 (מוגבלת). לחסום רשת2 מרשת3 <b>בלבד</b>. איפה וכיוון?</p>
+<div class="answer fragment">ACL סטנדרטי ⇒ קרוב ליעד ⇒ <b>G0/2 out</b>. סדר: deny 192.168.2.0 ואז permit any. (in על G0/1 היה חוסם גם לרשת1 ולאינטרנט!)</div>
+<div class="notes">שאלה 7ה מהבגרות. עברו לאט. הדגישו למה in על G0/1 שגוי.</div></section>
+
+<section class="slide"><h2>ACL נגד התקפות (anti-spoofing)</h2>
+<pre>! כתובות פרטיות לא אמורות להגיע מהאינטרנט
+deny ip 10.0.0.0 0.255.255.255 any
+deny ip 192.168.0.0 0.0.255.255 any
+deny icmp any any echo        <span class="c">! נגד ping sweep/Smurf</span>
+permit tcp any any established <span class="c">! רק תשובות</span></pre>
+<div class="notes">מקשר לפרק 1 (spoofing, Smurf). מסנן בכניסה מהאינטרנט. established = "stateful לעניים".</div></section>
+
+<section class="slide"><h2>מ-ACL ל-Stateful: CBAC ו-ZPF</h2>
+<ul><li class="fragment"><b>CBAC</b> – בוחן תעבורה יוצאת, פותח אוטומטית חור לתשובות</li>
+<li class="fragment"><b>ZPF</b> – הגישה המודרנית: אזורים + מדיניות בין זוגות</li></ul>
+<div class="box tip fragment"><span class="t">ZPF – חוקי ברזל</span>אותו אזור=מותר · אזור↔לא-אזור=חסום · בין אזורים=חסום עד zone-pair</div>
+<div class="notes">ACL הוא stateless וצריך לפתוח פורטים ידנית לתשובות. Stateful פותר את זה אוטומטית.</div></section>
+
+<section class="slide"><h2>ZPF – 5 שלבים</h2>
+<pre>1. zone security INSIDE / OUTSIDE
+2. class-map type inspect  (איזו תעבורה)
+3. policy-map type inspect (inspect/pass/drop)
+4. zone-pair security      (מקור→יעד + policy)
+5. zone-member security    (שיוך ממשקים)</pre>
+<div class="box tip fragment"><span class="t">3 פעולות</span><b>inspect</b>=stateful (תשובות אוטומטית) · <b>pass</b>=כיוון אחד · <b>drop</b>=חסום</div>
+<div class="notes">inspect הוא מה שרוצים כמעט תמיד – הוא מטפל בתשובות. pass לא. הסדר של 5 השלבים חשוב.</div></section>
+
+<section class="slide q"><h2>שאלה</h2><p>ב-ZPF, G0/0 באזור INSIDE ו-G0/1 לא שויך לאף אזור. מה קורה לתעבורה ביניהם?</p>
+<div class="answer fragment">נחסמת. ממשק באזור לא מתקשר עם ממשק שאינו באזור.</div>
+<div class="notes">חוק ברזל של ZPF. טעות נפוצה – שוכחים לשייך ממשק.</div></section>
+
+<section class="slide"><h2>סיכום פרק 4</h2><ul>
+<li class="fragment">ACL: מלמעלה-למטה, התאמה ראשונה, deny סמוי</li>
+<li class="fragment">wildcard = 255.255.255.255 − mask</li>
+<li class="fragment">סטנדרטי (מקור, קרוב ליעד) · מורחב (הכול, קרוב למקור)</li>
+<li class="fragment"><b>ZPF</b> = חומת אש stateful מודרנית ב-IOS</li>
+</ul><div class="box tip fragment"><span class="t">כלי דיבוג #1</span><code>show access-lists</code> – מונה ההתאמות לכל שורה</div>
+<div class="notes">חזרה. הדגישו את show access-lists כשעוברים למעבדה.</div></section>

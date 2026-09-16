@@ -1,0 +1,187 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>פרק 7 הצפנה וקריפטולוגיה</title>
+<style>* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #0b1220; color: #e5e7eb; font-family: "Noto Sans Hebrew", "Segoe UI", Arial, sans-serif; overflow: hidden; }
+#deck { position: fixed; inset: 0; }
+.slide { position: absolute; inset: 0; padding: 4vh 6vw 9vh; display: none; flex-direction: column; font-size: clamp(20px, 3.1vh, 40px); line-height: 1.45; overflow: hidden; }
+.slide.active { display: flex; }
+.slide h1 { font-size: 2.1em; margin: 0 0 .3em; color: #7dd3fc; line-height: 1.15; }
+.slide h2 { font-size: 1.55em; margin: 0 0 .5em; color: #7dd3fc; border-bottom: 3px solid #1d4ed8; padding-bottom: .2em; line-height: 1.2; }
+.slide h3 { font-size: 1.15em; margin: .4em 0 .2em; color: #fbbf24; }
+.slide p { margin: .25em 0; }
+.slide ul, .slide ol { margin: .2em 0; padding-right: 1.2em; }
+.slide li { margin: .22em 0; }
+.slide li li { font-size: .88em; color: #cbd5e1; }
+.slide .sub { color: #94a3b8; font-size: .8em; }
+.slide code { font-family: "Liberation Mono", Consolas, monospace; background: #1e293b; padding: 0 .3em; border-radius: 4px; direction: ltr; unicode-bidi: embed; font-size: .9em; color: #fde68a; }
+.slide pre { font-family: "Liberation Mono", Consolas, monospace; background: #111827; border: 1px solid #334155; border-radius: 10px; padding: .6em .9em; direction: ltr; text-align: left; font-size: .78em; line-height: 1.4; white-space: pre-wrap; margin: .4em 0; color: #e5e7eb; }
+.slide pre b { color: #7dd3fc; font-weight: bold; }
+.slide pre .c { color: #6b7280; font-style: italic; }
+.title { justify-content: center; align-items: center; text-align: center; background: radial-gradient(ellipse at top, #1e3a8a 0%, #0b1220 60%); }
+.title h1 { font-size: 2.6em; color: #fff; }
+.title .sub { font-size: 1.1em; color: #93c5fd; }
+.title .course { position: absolute; bottom: 12vh; color: #64748b; font-size: .7em; }
+.section { justify-content: center; align-items: center; text-align: center; background: linear-gradient(135deg, #172554, #0b1220); }
+.section h1 { color: #fbbf24; }
+.cols { display: flex; gap: 3vw; flex: 1; min-height: 0; }
+.cols > div { flex: 1; min-width: 0; }
+.cols > div.narrow { flex: .7; }
+table { border-collapse: collapse; width: 100%; font-size: .78em; margin: .3em 0; }
+th, td { border: 1px solid #334155; padding: .3em .6em; text-align: right; vertical-align: top; }
+th { background: #1e3a8a; color: #fff; }
+td { background: #0f172a; }
+.box { border-radius: 12px; padding: .5em .9em; margin: .4em 0; border-right: 8px solid; background: #111827; }
+.box .t { font-weight: bold; display: block; margin-bottom: .1em; }
+.def { border-color: #a78bfa; } .def .t { color: #c4b5fd; }
+.warn { border-color: #f87171; } .warn .t { color: #fca5a5; }
+.tip { border-color: #fbbf24; } .tip .t { color: #fde68a; }
+.ok { border-color: #34d399; } .ok .t { color: #6ee7b7; }
+.q { border-color: #60a5fa; background: #0c1a3a; } .q .t { color: #93c5fd; }
+.fragment { visibility: hidden; opacity: 0; transition: opacity .25s; }
+.fragment.visible { visibility: visible; opacity: 1; }
+.answer { background: #052e16; border: 2px solid #16a34a; border-radius: 10px; padding: .4em .8em; margin-top: .5em; color: #bbf7d0; }
+.answer::before { content: "תשובה: "; font-weight: bold; color: #4ade80; }
+.big { font-size: 1.5em; text-align: center; margin: .4em 0; color: #fbbf24; }
+.center { text-align: center; }
+.diagram { display: block; margin: .3em auto; max-width: 100%; max-height: 62vh; }
+.diagram text { font-family: "Noto Sans Hebrew", "Segoe UI", Arial, sans-serif; }
+.pill { display: inline-block; background: #1e3a8a; color: #bfdbfe; border-radius: 999px; padding: .05em .7em; margin: .1em; font-size: .85em; }
+.flow { display: flex; align-items: center; justify-content: center; gap: .4em; flex-wrap: wrap; margin: .5em 0; }
+.flow .n { background: #1e293b; border: 2px solid #3b82f6; border-radius: 12px; padding: .4em .8em; text-align: center; font-size: .85em; }
+.flow .a { color: #fbbf24; font-size: 1.3em; }
+.notes { display: none; }
+.en { direction: ltr; unicode-bidi: embed; display: inline-block; }
+#hud { position: fixed; bottom: 10px; left: 14px; display: flex; gap: 6px; align-items: center; z-index: 10; direction: ltr; opacity: .35; transition: opacity .2s; }
+#hud:hover { opacity: 1; }
+#hud button { background: #1e293b; color: #e5e7eb; border: 1px solid #475569; border-radius: 8px; font-size: 20px; width: 40px; height: 36px; cursor: pointer; }
+#counter { color: #94a3b8; font-size: 15px; min-width: 60px; text-align: center; font-family: monospace; }
+#progress { position: fixed; bottom: 0; left: 0; height: 5px; background: #3b82f6; width: 0; z-index: 10; transition: width .2s; }
+#notes { position: fixed; left: 0; right: 0; bottom: 0; max-height: 34vh; overflow: auto; background: rgba(15,23,42,.97); border-top: 3px solid #fbbf24; color: #fde68a; padding: 10px 24px 24px; font-size: 18px; line-height: 1.5; display: none; z-index: 9; }
+#notes.show { display: block; }
+#notes::before { content: "הערות למורה"; display: block; font-weight: bold; color: #fbbf24; margin-bottom: 4px; font-size: 14px; }
+.foot { position: absolute; bottom: 2.2vh; right: 6vw; color: #475569; font-size: .55em; }
+@media print { @page { size: 1280px 720px; margin: 0; } html,body{overflow:visible;height:auto} #deck{position:static} .slide { display: flex !important; position: relative; height: 720px; width:1280px; page-break-after: always; overflow: hidden; } #hud, #progress, #notes { display: none !important; } .fragment { visibility: visible; opacity: 1; } }
+.story { border-color: #e879f9; background: #2a0f33; } .story .t { color: #f0abfc; } .story .t::before { content: "📖 "; }
+.ex { border-color: #2dd4bf; } .ex .t { color: #5eead4; }
+</style></head><body>
+<div id="deck"><section class="slide title"><h1>פרק 7<br>הצפנה וקריפטולוגיה</h1><div class="sub">קיסר · גיבוב · סימטרי/א-סימטרי · חתימה דיגיטלית · PKI</div><div class="course">אבטחת מידע · מגמת תקשוב</div>
+<div class="notes">הפרק התיאורטי-מתמטי. אבל הכול חוזר בפרק 8 (VPN). התחילו בשאלה: איך שולחים סוד למישהו שלא פגשתם?</div></section>
+
+<section class="slide"><h2>קידוד · הצפנה · גיבוב</h2>
+<table><tr><th></th><th>הפיך?</th><th>מפתח?</th><th>מטרה</th></tr>
+<tr><td>קידוד (Base64)</td><td>כן, לכולם</td><td>לא</td><td>נוחות</td></tr>
+<tr><td>הצפנה (AES)</td><td>כן, עם מפתח</td><td>כן</td><td>סודיות</td></tr>
+<tr><td>גיבוב (SHA)</td><td><b>לא</b></td><td>לא</td><td>שלמות</td></tr></table>
+<div class="box warn fragment"><span class="t">טעות נפוצה</span>Base64 זה <b>לא</b> הצפנה! רואים "==" בסוף? זה קידוד, נפתח בשנייה</div>
+<div class="notes">השאלה המבחינה: "צריך סוד כדי לחזור?" קידוד לא, הצפנה כן. נקודה קריטית שמבלבלת גם מתכנתים.</div></section>
+
+<section class="slide"><h2>צופן קיסר</h2>
+<p class="fragment big">C = (P + K) mod 26</p>
+<ul><li class="fragment">כל אות מוזזת ב-K קבוע (קיסר: 3)</li>
+<li class="fragment">mod 26 = מספר האותיות; "מגלגל" מ-Z חזרה ל-A</li></ul>
+<div class="box tip fragment"><span class="t">דוגמה K=10</span>H(7) → (7+10)=17 → R · &nbsp; Z(25) → 35 mod 26 = 9 → J</div>
+<div class="notes">נשאל בבגרות (5ג): תפקיד mod 26 = מספר האותיות בשפה. תרגלו על הלוח.</div></section>
+
+<section class="slide"><h2>איזה כלי לאיזו מטרה</h2>
+<table><tr><th>מטרה</th><th>כלי</th></tr>
+<tr><td>סודיות</td><td>הצפנה (AES / RSA)</td></tr>
+<tr><td>שלמות</td><td>Hash (SHA-256)</td></tr>
+<tr><td>שלמות + אימות</td><td>HMAC</td></tr>
+<tr><td>אימות + אי-הכחשה</td><td>חתימה דיגיטלית</td></tr></table>
+<div class="notes">מיפוי CIA לכלים. נשאל בבגרות (5ה): מי מבטיח סודיות? AES. לא MD5/HASH (שלמות).</div></section>
+
+<section class="slide"><h2>גיבוב (Hashing)</h2>
+<ul><li class="fragment">קלט בכל אורך → פלט קבוע, חד-כיווני</li>
+<li class="fragment">אפקט מפולת: שינוי ביט אחד → פלט שונה לגמרי</li>
+<li class="fragment">שימוש: שלמות קבצים, אחסון סיסמאות (+salt)</li></ul>
+<div class="box warn fragment"><span class="t">מצב</span>MD5 ו-SHA-1 = <b>שבורים</b> · SHA-256 = הסטנדרט</div>
+<div class="notes">אתרים "שוברים" MD5 לא בהפיכה אלא בניחוש (rainbow table). salt מסכל את זה.</div></section>
+
+<section class="slide"><h2>סימטרי מול א-סימטרי</h2>
+<div class="cols"><div><div class="box"><span class="t">סימטרי</span>מפתח אחד משותף. מהיר. AES/3DES/DES. חיסרון: חלוקת המפתח</div></div>
+<div><div class="box"><span class="t">א-סימטרי</span>זוג מפתחות (ציבורי+פרטי). איטי. RSA/DH. פותר חלוקת מפתח</div></div></div>
+<div class="notes">סימטרי מהיר פי 1000 – לכמויות מידע. א-סימטרי – לפתיחה ולחתימה. בפועל משלבים (היברידי).</div></section>
+
+<section class="slide"><h2>מפתח ציבורי/פרטי – שני שימושים</h2>
+<div class="box ok fragment"><span class="t">לסודיות</span>מצפינים ב<b>ציבורי של הנמען</b> ⇒ רק הוא (בעל הפרטי) יפענח</div>
+<div class="box tip fragment"><span class="t">לחתימה</span>מצפינים ב<b>פרטי של השולח</b> ⇒ כולם מאמתים בציבורי שלו</div>
+<div class="notes">נשאל בבגרות (5ד): ציבורי מצפין ⇒ פרטי מפענח. הבחנה קריטית – הפוך לחתימה.</div></section>
+
+<section class="slide"><h2>Diffie-Hellman – משל הצבעים</h2>
+<div class="flow fragment"><span class="n">צבע בסיס<br>(פומבי)</span><span class="a">+</span><span class="n">סוד של כל צד</span><span class="a">→</span><span class="n">סוד משותף</span></div>
+<ul><li class="fragment">מסכימים על מפתח סודי <b>מעל ערוץ ציבורי</b></li>
+<li class="fragment">המאזין רואה את התערובות – אך לא יכול להפריד</li></ul>
+<div class="notes">משל הצבעים הוא הדרך הכי טובה. DH לא מצפין מידע – רק מסכים על מפתח. נשאל בבגרות (4ו).</div></section>
+
+<section class="slide q"><h2>שאלת בגרות</h2><p>איזה אלגוריתם מאפשר לצדדים להסכים על מפתח פרטי מעל ערוץ ציבורי? נובל / Diffie-Hellman / דייקסטרה / קיסר</p>
+<div class="answer fragment">Diffie-Hellman. (דייקסטרה = מסלולים, לא הצפנה; קיסר = צופן קדום.)</div>
+<div class="notes">שאלה 4ו. מסיחים מוכרים משיעורים אחרים.</div></section>
+
+<section class="slide"><h2>חתימה דיגיטלית</h2>
+<div class="flow"><span class="n">מסמך</span><span class="a">→hash→</span><span class="n">digest</span><span class="a">→🔑פרטי→</span><span class="n">חתימה</span></div>
+<ul><li class="fragment"><b>שולח:</b> מגבב את המסמך, מצפין את ה-hash בפרטי שלו</li>
+<li class="fragment"><b>מקבל:</b> מפענח בציבורי, מגבב מחדש, משווה</li>
+<li class="fragment">נותן: שלמות + אימות + אי-הכחשה</li></ul>
+<div class="notes">מצפינים את ה-hash (קטן) ולא את כל המסמך – כי א-סימטרי איטי. HMAC = גרסה עם מפתח משותף.</div></section>
+
+<section class="slide"><h2>PKI – למי שייך המפתח?</h2>
+<div class="flow"><span class="n">Root CA</span><span class="a">→חותם→</span><span class="n">Intermediate</span><span class="a">→חותם→</span><span class="n">תעודת שרת</span></div>
+<ul><li class="fragment"><b>תעודה</b> קושרת זהות למפתח ציבורי, חתומה ע"י CA</li>
+<li class="fragment"><b>CA</b> = גורם מהימן. שרשרת אמון עד root מובנה</li></ul>
+<div class="box warn fragment"><span class="t">DigiNotar 2011</span>CA נפרץ, הנפיקו תעודת google מזויפת → MITM על 300,000 איראנים</div>
+<div class="notes">PKI פותר: איך יודעים שהמפתח "של הבנק" אמיתי? זה מה שקורה כשרואים 🔒. סיפור DigiNotar ממחיש את השבריריות.</div></section>
+
+<section class="slide"><h2>HTTPS – הכול ביחד</h2>
+<ol><li class="fragment">DH/RSA מסכימים על <b>מפתח סימטרי</b> (session key)</li>
+<li class="fragment">תעודה מוכיחה שזה באמת הבנק</li>
+<li class="fragment">כל התעבורה ב-<b>AES</b> (מהיר)</li></ol>
+<p class="fragment big">א-סימטרי לפתיחה · סימטרי לתעבורה = היברידי</p>
+<div class="notes">מחבר את כל הפרק. זה בדיוק מה שקורה בכל כניסה לאתר בנק. ומקדים את IPsec בפרק 8.</div></section>
+
+<section class="slide"><h2>סיכום פרק 7</h2><ul>
+<li class="fragment">קידוד ≠ הצפנה ≠ גיבוב</li>
+<li class="fragment">סימטרי (AES, מהיר) · א-סימטרי (RSA/DH, פותר חלוקת מפתח)</li>
+<li class="fragment">ציבורי מצפין ⇒ פרטי מפענח (הפוך לחתימה)</li>
+<li class="fragment">DH = הסכמה על מפתח · PKI = מי שייך למפתח</li>
+</ul><div class="notes">חזרה. הדגישו שכל זה חוזר בפרק 8 (IPsec): AES+SHA+DH+PKI בפעולה.</div></section>
+</div>
+<div id="hud"><button id="prev" title="הקודם">‹</button><span id="counter"></span><button id="next" title="הבא">›</button>
+<button id="notesBtn" title="הערות למורה (N)">✎</button><button id="fsBtn" title="מסך מלא (F)">⛶</button></div>
+<div id="progress"></div><div id="notes"></div>
+<script>(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const counter=document.getElementById('counter'), prog=document.getElementById('progress'), notesEl=document.getElementById('notes');
+  let i=0;
+  function fragsOf(s){return [...s.querySelectorAll('.fragment')];}
+  function show(n,allFrags){
+    n=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach(s=>s.classList.remove('active'));
+    i=n; const s=slides[i]; s.classList.add('active');
+    fragsOf(s).forEach(f=>f.classList.toggle('visible',!!allFrags));
+    counter.textContent=(i+1)+' / '+slides.length;
+    prog.style.width=((i+1)/slides.length*100)+'%';
+    const nt=s.querySelector('.notes'); notesEl.innerHTML=nt?nt.innerHTML:'<i>אין הערות לשקף זה</i>';
+    location.hash='#'+(i+1);
+  }
+  function next(){const f=fragsOf(slides[i]).find(x=>!x.classList.contains('visible')); if(f){f.classList.add('visible');return;} show(i+1,false);}
+  function prev(){const v=fragsOf(slides[i]).filter(x=>x.classList.contains('visible')); if(v.length){v[v.length-1].classList.remove('visible');return;} show(i-1,true);}
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT')return;
+    switch(e.key){
+      case 'ArrowRight': case ' ': case 'PageDown': case 'Enter': case 'ArrowDown': e.preventDefault(); next(); break;
+      case 'ArrowLeft': case 'PageUp': case 'Backspace': case 'ArrowUp': e.preventDefault(); prev(); break;
+      case 'Home': show(0,false); break; case 'End': show(slides.length-1,true); break;
+      case 'f': case 'F': toggleFS(); break;
+      case 'n': case 'N': notesEl.classList.toggle('show'); break;
+    }
+  });
+  function toggleFS(){ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }
+  document.getElementById('next').onclick=next; document.getElementById('prev').onclick=prev;
+  document.getElementById('fsBtn').onclick=toggleFS; document.getElementById('notesBtn').onclick=()=>notesEl.classList.toggle('show');
+  // click on slide: left third = prev, right third = next (works for RTL as "forward = left" too via keys)
+  document.getElementById('deck').addEventListener('click',e=>{ if(e.target.closest('a,button'))return; const x=e.clientX/innerWidth; if(x>0.66)next(); else if(x<0.33)prev(); });
+  // touch swipe
+  let tx=null; addEventListener('touchstart',e=>tx=e.touches[0].clientX); addEventListener('touchend',e=>{ if(tx===null)return; const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50){ dx<0?next():prev(); } tx=null; });
+  const h=parseInt(location.hash.slice(1)); show(isNaN(h)?0:h-1,false);
+})();
+</script></body></html>

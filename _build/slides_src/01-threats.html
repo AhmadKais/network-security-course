@@ -1,0 +1,183 @@
+<section class="slide title"><h1>פרק 1<br>מבוא לאיומי רשת חדשים</h1><div class="sub">מה מגנים · מפני מי · ואיך תוקפים</div><div class="course">אבטחת מידע · מגמת תקשוב</div>
+<div class="notes">שיעור פתיחה. פתחו בשאלה לכיתה: "מה הדבר הכי יקר בטלפון שלכם?" (רמז: לא המכשיר – התמונות, ההודעות, החשבונות). זה מוביל ישר לרעיון: מגנים על המידע, לא על החומרה.</div></section>
+
+<section class="slide"><h2>מה נלמד היום</h2><ul>
+<li class="fragment">על מה בכלל מגנים? (שלושת עקרונות ה-CIA)</li>
+<li class="fragment">מי הם התוקפים ומה הם רוצים</li>
+<li class="fragment">נוזקות: וירוס, תולעת, טרויאני, כופרה</li>
+<li class="fragment">איך נראית התקפה מההתחלה עד הסוף</li>
+<li class="fragment">התקפה שלא צריכה מחשב בכלל: הנדסה חברתית</li>
+</ul><div class="notes">מפה של השיעור. אל תעמיקו כאן – רק תראו לאן הולכים. הבטיחו שיהיו הרבה סיפורים אמיתיים.</div></section>
+
+<section class="slide"><h2>לפני הכול – 3 מילים באנגלית</h2>
+<div class="flow"><span class="n">מחשב / מכשיר<br>(Host)</span><span class="a">→</span><span class="n">כתובת<br>(IP)</span><span class="a">→</span><span class="n">"מעטפה"<br>(Packet)</span></div>
+<ul><li class="fragment"><b>Host</b> – כל מכשיר: מחשב, טלפון, שרת, מצלמה חכמה</li>
+<li class="fragment"><b>IP</b> – ה"כתובת" של המכשיר ברשת (כמו כתובת בית)</li>
+<li class="fragment"><b>Packet</b> – המידע נשלח בחתיכות קטנות, כל אחת עם כתובת</li>
+<li class="fragment"><b>Server / Client</b> – מי שנותן שירות (אתר) ומי שמבקש (הדפדפן שלכם)</li></ul>
+<div class="notes">רק מספיק כדי להתחיל. אל תלמדו רשתות – זה קורס אחר. אנלוגיה: הדואר – מכתב (packet) עם כתובת (IP) עובר בין בתים (hosts).</div></section>
+
+<section class="slide section"><h1>חלק א'<br>על מה מגנים?</h1></section>
+
+<section class="slide"><h2>הדבר הכי חשוב בקורס: CIA</h2>
+<p class="big fragment">כל האבטחה = להגן על שלושה דברים</p>
+<div class="cols"><div class="fragment"><div class="box ok"><span class="t">C – סודיות</span>רק מי שמורשה רואה</div></div>
+<div class="fragment"><div class="box tip"><span class="t">I – שלמות</span>המידע לא שונה בדרך</div></div>
+<div class="fragment"><div class="box q"><span class="t">A – זמינות</span>נגיש כשצריך</div></div></div>
+<div class="notes">חזרו על ה-CIA בכל פרק בקורס. זה המשפט שאם תלמיד יזכור רק אותו – הרווחתם. תכף נדגים עם דוגמה מהחיים.</div></section>
+
+<section class="slide"><h2>CIA – דוגמה מהחיים: חשבון הבנק שלכם</h2>
+<ul><li class="fragment"><b>סודיות</b> – רק אתם רואים את היתרה שלכם 🔒</li>
+<li class="fragment"><b>שלמות</b> – אף אחד לא משנה את הסכום מ-1,000 ל-10 ₪ ✍️</li>
+<li class="fragment"><b>זמינות</b> – הכספומט עובד כשאתם צריכים מזומן 🏧</li></ul>
+<div class="box warn fragment"><span class="t">שאלו את הכיתה</span>איזה עיקרון נפגע אם האתר של הבנק נופל ביום המשכורת?</div>
+<div class="notes">דוגמה שכולם מתחברים אליה. אחרי שהם עונים "זמינות" – עברו לשקף הבא (הכופרה) שמראה למה זמינות כל כך חשובה.</div></section>
+
+<section class="slide q"><h2>שאלה לכיתה</h2><p class="big">כופרה מצפינה את כל הקבצים שלכם ודורשת כסף.<br>איזה עיקרון היא פוגעת בעיקר?</p>
+<div class="answer fragment">זמינות! היא לא גונבת ולא משנה – היא <b>מונעת גישה</b>. (הצפנה כאן היא הנשק נגדכם, לא ההגנה.)</div>
+<div class="notes">תנו 30 שניות. רבים יגידו "סודיות" – טעות נפוצה וטובה ללמד ממנה. הנקודה: אותו כלי (הצפנה) יכול להיות הגנה או נשק.</div></section>
+
+<section class="slide"><h2>4 מילים שכל הקורס מסתובב סביבן</h2>
+<div class="flow"><span class="n">נכס</span><span class="a">←</span><span class="n">פגיעות</span><span class="a">←</span><span class="n">איום</span><span class="a">←</span><span class="n">בקרה</span></div>
+<table class="fragment"><tr><th>מונח</th><th>מה זה</th><th>משל הבית</th></tr>
+<tr><td><b>נכס</b></td><td>מה שמגנים עליו</td><td>הבית</td></tr>
+<tr><td><b>פגיעות</b></td><td>החולשה</td><td>חלון פתוח</td></tr>
+<tr><td><b>איום</b></td><td>מי שמנצל</td><td>הגנב</td></tr>
+<tr><td><b>בקרה</b></td><td>מה שמגן</td><td>סורג</td></tr></table>
+<div class="notes">משל הבית עובד מצוין. הדגישו: איום קיים תמיד (גנבים קיימים), פגיעות בשליטתנו (נסגור את החלון). אנחנו לא מבטלים גנבים – סוגרים חלונות.</div></section>
+
+<section class="slide section"><h1>חלק ב'<br>מי תוקף ולמה?</h1></section>
+
+<section class="slide"><h2>לא כל התוקפים דומים</h2>
+<table><tr><th>סוג</th><th>מה מניע אותו</th></tr>
+<tr><td class="fragment"><b>Script Kiddie</b></td><td class="fragment">חובבן, כלים מוכנים · יוקרה, שעמום</td></tr>
+<tr><td class="fragment"><b>Hacktivist</b></td><td class="fragment">אידיאולוגיה, מחאה</td></tr>
+<tr><td class="fragment"><b>פשע מאורגן</b></td><td class="fragment">כסף – כופרה, כרטיסי אשראי</td></tr>
+<tr><td class="fragment"><b>Insider</b> (עובד)</td><td class="fragment">נקמה / כסף · הכי מסוכן – כבר בפנים</td></tr>
+<tr><td class="fragment"><b>מדינה</b></td><td class="fragment">ריגול, חבלה · הכי מתוחכם</td></tr></table>
+<div class="notes">נשאל בבגרות (התאמה)! הדגישו insider – "האויב כבר בפנים ויש לו מפתח". דוגמה: עובד שפוטר ומחק קבצים.</div></section>
+
+<section class="slide story"><h2>סיפור אמיתי: הסטודנט שהפיל את האינטרנט (1988)</h2>
+<ul><li class="fragment">רוברט מוריס, בן 23, כתב תוכנה "כדי למדוד את גודל האינטרנט"</li>
+<li class="fragment">באג קטן גרם לה להדביק כל מחשב שוב ושוב</li>
+<li class="fragment">6,000 מחשבים – עשירית האינטרנט דאז – קרסו</li>
+<li class="fragment">הוא היה האדם הראשון שהורשע בחוק פריצה. היום פרופסור ב-MIT</li></ul>
+<div class="box q fragment"><span class="t">שאלו</span>וירוס או תולעת? (תולעת – התפשטה לבד, בלי אף פעולת אדם)</div>
+<div class="notes">סיפור פתיחה מצוין לנושא הנוזקות. הוא גם ממחיש: לפעמים הנזק הוא מטעות, לא מכוונה. עברו ממנו ישר לסוגי הנוזקות.</div></section>
+
+<section class="slide section"><h1>חלק ג'<br>נוזקות (Malware)</h1></section>
+
+<section class="slide"><h2>שלושת הסוגים הקלאסיים</h2>
+<table><tr><th></th><th>וירוס</th><th>תולעת</th><th>טרויאני</th></tr>
+<tr><td>איך מתפשט</td><td>נצמד לקובץ</td><td>לבד ברשת</td><td>אתם מתקינים</td></tr>
+<tr><td>צריך אתכם?</td><td>כן</td><td>לא</td><td>כן</td></tr>
+<tr><td>משכפל?</td><td>כן</td><td>כן</td><td>לא</td></tr></table>
+<div class="box tip fragment"><span class="t">השאלה שפותרת הכול</span>האם צריך פעולה של משתמש כדי שיתפשט? וירוס=כן · תולעת=לא</div>
+<div class="notes">הטבלה הכי נשאלת בקורס. תנו 3 דוגמאות ובקשו מהכיתה לסווג (שקף הבא).</div></section>
+
+<section class="slide q"><h2>תרגיל מהיר – סווגו</h2>
+<ul><li class="fragment">א. משחק "מיינקראפט חינם.exe" שמתקין תוכנת ריגול</li>
+<li class="fragment">ב. קובץ אקסל עם מאקרו שמדביק את כל קובצי האקסל במחשב</li>
+<li class="fragment">ג. תוכנה שסורקת את הרשת ומעתיקה את עצמה למחשבים פגיעים</li></ul>
+<div class="answer fragment">א. טרויאני · ב. וירוס · ג. תולעת</div>
+<div class="notes">תנו לכיתה לענות בקול. אם מתלבטים – חזרו לשאלה: "צריך שמישהו יריץ/יתקין?"</div></section>
+
+<section class="slide"><h2>נוזקות שכדאי להכיר בשמן</h2>
+<ul><li class="fragment"><b>כופרה (Ransomware)</b> – מצפינה קבצים ודורשת כסף 💰 (הכי מזיק היום)</li>
+<li class="fragment"><b>רוגלה / Keylogger</b> – מרגלת, מתעדת כל הקשה</li>
+<li class="fragment"><b>Rootkit</b> – מתחבאת עמוק, קשה מאוד לגלות</li>
+<li class="fragment"><b>Botnet</b> – צבא של מחשבים נגועים ("זומבים") בשליטת התוקף</li></ul>
+<div class="notes">Botnet מקשר לשקף ה-DDoS ולסיפור Mirai בהמשך. ספרו: המחשב שלכם יכול להיות "חייל" בצבא של פושע בלי שתדעו.</div></section>
+
+<section class="slide story"><h2>סיפור אמיתי: בית החולים שביטל ניתוחים (WannaCry, 2017)</h2>
+<ul><li class="fragment">בוקר אחד, מסכי מחשב ב-80 בתי חולים באנגליה הפכו אדומים</li>
+<li class="fragment">"הקבצים שלך הוצפנו. שלם 300$ בביטקוין"</li>
+<li class="fragment">19,000 תורים וניתוחים בוטלו; אמבולנסים הופנו למקום אחר</li>
+<li class="fragment">הכופרה נכנסה דרך חולשה שמיקרוסופט <u>כבר תיקנה חודשיים קודם</u></li></ul>
+<div class="box warn fragment"><span class="t">הלקח</span>עדכון תוכנה הוא אמצעי אבטחה, לא מטרד. פגיעה ב<b>זמינות</b> יכולה לעלות בחיי אדם.</div>
+<div class="notes">הסיפור שמחבר הכול: כופרה, זמינות, חשיבות העדכונים. תנו לזה לשקוע. שאלו: כמה מכם דוחים עדכונים בטלפון?</div></section>
+
+<section class="slide"><h2>הגנה בסיסית מפני נוזקות</h2>
+<ul><li class="fragment">אנטי-וירוס – אבל הוא מזהה רק נוזקות <u>מוכרות</u></li>
+<li class="fragment">עדכוני מערכת ותוכנה – סוגרים חולשות</li>
+<li class="fragment">גיבוי – התשובה מספר 1 לכופרה</li>
+<li class="fragment">משתמש שלא לוחץ על כל דבר 🧠</li></ul>
+<div class="box tip fragment"><span class="t">"הגנה לעומק"</span>כמה שכבות עצמאיות – אם אחת נכשלת, האחרות עדיין מגנות</div>
+<div class="notes">הדגישו שאנטי-וירוס לא מספיק (zero-day). "הגנה לעומק" הוא רעיון שחוזר בכל הקורס.</div></section>
+
+<section class="slide section"><h1>חלק ד'<br>איך נראית התקפה?</h1></section>
+
+<section class="slide"><h2>שלושה שלבים</h2>
+<div class="flow"><span class="n">1. סיור<br>לומדים על המטרה</span><span class="a">→</span><span class="n">2. גישה<br>נכנסים פנימה</span><span class="a">→</span><span class="n">3. נזק<br>DoS / גניבה</span></div>
+<ul><li class="fragment"><b>סיור</b> – מי המטרה? אילו דלתות (פורטים) פתוחות? (כלי: Nmap)</li>
+<li class="fragment"><b>גישה</b> – ניחוש סיסמה, ניצול חולשה, MITM</li>
+<li class="fragment"><b>נזק</b> – השבתת שירות, גניבת מידע, הצפנה</li></ul>
+<div class="notes">כמו פורץ: קודם משגיח על הבית (מתי יוצאים), מוצא חלון פתוח, ואז נכנס. כל שלב יופיע שוב בקורס עם הגנות.</div></section>
+
+<section class="slide"><h2>DoS ו-DDoS – מציפים עד קריסה</h2>
+<ul><li class="fragment"><b>DoS</b> – הצפת שירות בבקשות עד שהוא נופל (מקור אחד)</li>
+<li class="fragment"><b>DDoS</b> – אותו דבר, אבל מ<u>אלפי</u> מחשבים בו-זמנית (botnet)</li></ul>
+<div class="box q fragment"><span class="t">אנלוגיה</span>100 אנשים מזמינים פיצה לכתובת שלכם בו-זמנית – המשלוח האמיתי לא יכול להגיע</div>
+<div class="notes">נפגע: זמינות. שאלו למה קשה לחסום DDoS – כי אין כתובת אחת, זה בא מכל מקום (מוביל לסיפור Mirai).</div></section>
+
+<section class="slide story"><h2>סיפור אמיתי: הצבא של מצלמות האבטחה (Mirai, 2016)</h2>
+<ul><li class="fragment">נוזקה השתלטה על 600,000 מכשירים: מצלמות, ראוטרים ביתיים</li>
+<li class="fragment">איך? ניסתה 62 סיסמאות ברירת מחדל (admin/admin, root/12345…)</li>
+<li class="fragment">עם הצבא הזה הפילה ב-DDoS את Twitter, Netflix, Spotify, PayPal</li></ul>
+<div class="box warn fragment"><span class="t">שאלו</span>כמה מכם שינו את הסיסמה של הראוטר בבית?</div>
+<div class="notes">ממחיש כמה שסיסמת ברירת מחדל מסוכנת, ומה זה botnet בפועל. מוביל יפה לנושא הסיסמאות.</div></section>
+
+<section class="slide"><h2>סיסמאות – למה אורך מנצח</h2>
+<table><tr><th>סיסמה</th><th>זמן לפריצה</th></tr>
+<tr><td>6 ספרות</td><td>פחות משנייה</td></tr>
+<tr><td>8 אותיות קטנות</td><td>~20 שניות</td></tr>
+<tr><td>8 תווים מכל הסוגים</td><td>~שבוע</td></tr>
+<tr><td>12 תווים מכל הסוגים</td><td>~מיליון שנה</td></tr></table>
+<div class="box tip fragment"><span class="t">המסקנה</span>כל תו נוסף מכפיל את הזמן. משפט-סיסמה ארוך עדיף על "Aa1!" קצר.</div>
+<div class="notes">Brute force = ניחוש שיטתי. הגנות: אורך, נעילה אחרי X ניסיונות, ו-MFA. הראו את הטבלה – היא משכנעת מאוד.</div></section>
+
+<section class="slide section"><h1>חלק ה'<br>ההתקפה שלא צריכה מחשב:<br>הנדסה חברתית</h1></section>
+
+<section class="slide"><h2>תוקפים את האדם, לא את המכונה</h2>
+<ul><li class="fragment"><b>Phishing</b> – מייל/SMS מתחזה שמבקש ללחוץ או למסור פרטים</li>
+<li class="fragment"><b>Pretexting</b> – סיפור כיסוי ("אני מהתמיכה, תן לי את הסיסמה")</li>
+<li class="fragment"><b>Baiting</b> – דיסק-און-קי "אבוד" עם תווית "משכורות" 🎣</li></ul>
+<div class="box warn fragment"><span class="t">אין פגיעות טכנית – רק פסיכולוגיה</span>סמכות + דחיפות + סקרנות</div>
+<div class="notes">זו הדרך מספר 1 שבה פורצים לארגונים. הדגישו: אין כאן האקינג של מחשב – יש כאן שכנוע של בן אדם.</div></section>
+
+<section class="slide q"><h2>שאלת בגרות אמיתית</h2>
+<div class="box fragment"><span class="t">קיבלתם מייל:</span>שולח: <span class="en">UPS &lt;info@hotmail.com&gt;</span> · "Last Call! אשר את הכתובת שלך עכשיו"</div>
+<p class="fragment">מהו סוג ההודעה?</p>
+<div class="answer fragment">Social Engineering (phishing). סימנים: שולח מ-hotmail ולא מ-UPS, דחיפות, בקשה לאשר פרטים.</div>
+<div class="notes">שאלה אמיתית מהבגרות. עברו על 5 סימני הזיהוי: שולח לא תואם, דחיפות, בקשת פרטים, שגיאות ניסוח, קישור חשוד.</div></section>
+
+<section class="slide story"><h2>סיפור אמיתי: המייל ששווה 70 מיליון (2016)</h2>
+<ul><li class="fragment">עובד כספים קיבל מייל "מהמנכ"ל": "העבר דחוף כסף לעסקה סודית"</li>
+<li class="fragment">הכתובת הייתה כמעט זהה – בהבדל של אות אחת</li>
+<li class="fragment">הכסף הועבר. הבנק הבלגי Crelan הפסיד ~70 מיליון אירו</li></ul>
+<div class="box q fragment"><span class="t">שאלו</span>איזה <u>נוהל</u> פשוט היה מונע את זה? (אישור כפול + אימות טלפוני)</div>
+<div class="notes">בלי נוזקה, בלי פריצה – רק פסיכולוגיה: סמכות + דחיפות + סודיות. מראה שהגנה היא גם נהלים, לא רק טכנולוגיה.</div></section>
+
+<section class="slide"><h2>3 סוגי הגנות (בקרות)</h2>
+<div class="cols"><div class="fragment"><div class="box"><span class="t">מנהלית</span>נהלים, מדיניות, הדרכות</div></div>
+<div class="fragment"><div class="box"><span class="t">פיזית</span>מנעול על חדר שרתים, מצלמות</div></div>
+<div class="fragment"><div class="box"><span class="t">לוגית</span>סיסמאות, הצפנה, חומת אש</div></div></div>
+<div class="box tip fragment"><span class="t">בבגרות</span>שאלת התאמה – נחזור לזה בהרחבה בפרק 9</div>
+<div class="notes">הסיפור הקודם (Crelan) מדגים בקרה מנהלית (נוהל אישור). זה מקשר את שני העולמות.</div></section>
+
+<section class="slide"><h2>מפת הקורס – כל ההגנות שנלמד</h2>
+<div class="cols"><div><ul><li>נתב מוקשח (פרק 2)</li><li>AAA (פרק 3)</li><li>חומת אש (פרק 4)</li><li>IDS/IPS (פרק 5)</li></ul></div>
+<div><ul><li>אבטחת מתג (פרק 6)</li><li>הצפנה (פרק 7)</li><li>VPN (פרק 8)</li><li>ניהול סיכונים (פרק 9)</li></ul></div></div>
+<div class="box tip fragment"><span class="t">הרעיון</span>כל פרק בקורס עונה על איום שראינו היום</div>
+<div class="notes">סוגרים מעגל: התחלנו באיומים, עכשיו רואים שכל הקורס הוא סדרת תשובות לאיומים האלה.</div></section>
+
+<section class="slide"><h2>סיכום פרק 1</h2><ul>
+<li class="fragment">מגנים על <b>סודיות · שלמות · זמינות</b> (CIA)</li>
+<li class="fragment">תוקפים נבדלים ב<b>מניע</b> וב<b>יכולת</b></li>
+<li class="fragment">וירוס / תולעת / טרויאני – לפי <b>אופן ההתפשטות</b></li>
+<li class="fragment">התקפה: <b>סיור → גישה → נזק</b></li>
+<li class="fragment">האדם הוא החוליה החלשה – <b>הנדסה חברתית</b></li>
+</ul><div class="box warn fragment"><span class="t">אתיקה – חשוב</span>כל מה שנלמד – רק ברשת שלכם ובאישור. חוק המחשבים 1995.</div>
+<div class="notes">חזרה מהירה על 5 הנקודות. סיימו באזהרה האתית – חובה לפני שממשיכים לפרקים המעשיים.</div></section>
+
+<section class="slide title"><h1>סוף פרק 1</h1><div class="sub">שאלות? · בשיעור הבא: הקשחת נתב (פרק 2)</div></section>

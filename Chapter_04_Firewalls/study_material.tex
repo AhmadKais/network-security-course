@@ -1,0 +1,520 @@
+\documentclass[11pt]{article}
+\usepackage{fontspec}
+\directlua{luaotfload.add_fallback("hebfb",{"DejaVu Sans:mode=harf"})}
+\usepackage{polyglossia}
+\setdefaultlanguage{hebrew}
+\setotherlanguage{english}
+\setmainfont{Noto Sans Hebrew}[Script=Hebrew,RawFeature={fallback=hebfb}]
+\newfontfamily\codefont{DejaVu Sans Mono}[RawFeature={fallback=hebfb}]
+\usepackage[a4paper,margin=18mm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{mdframed}
+\usepackage{tabularx}
+\usepackage{xltabular}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\setlist{leftmargin=1.6em,itemsep=1pt,topsep=2pt}
+% colors
+\definecolor{h1}{HTML}{1E3A8A}\definecolor{h2}{HTML}{1E40AF}\definecolor{h3}{HTML}{0F172A}
+\definecolor{subgray}{HTML}{64748B}\definecolor{hdrbg}{HTML}{E0E7FF}
+\definecolor{cfg}{HTML}{E2E8F0}\definecolor{cbg}{HTML}{0F172A}\definecolor{cbold}{HTML}{7DD3FC}\definecolor{ccom}{HTML}{94A3B8}
+\definecolor{metabg}{HTML}{F1F5F9}
+\newcommand{\enLR}[1]{\textenglish{#1}}
+\newcommand{\code}[1]{\textenglish{\codefont #1}}
+\newcommand{\chapterheading}[1]{\vspace{2pt}{\LARGE\bfseries\color{h1}#1\par}\vskip2pt{\color{h1}\hrule height 2pt}\vskip6pt}
+\newcommand{\sectionheading}[1]{\vskip10pt\penalty-200{\large\bfseries\color{h2}#1\par}\vskip3pt}
+\newcommand{\subheading}[1]{\vskip6pt{\bfseries\color{h3}#1\par}\vskip2pt}
+\newcommand{\boxtitle}[1]{{\bfseries\color{boxti}#1}}
+% box environments (right border, tinted bg)
+\newmdenv[topline=false,bottomline=false,leftline=false,rightline=true,linewidth=2pt,innermargin=0pt,skipabove=6pt,skipbelow=6pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt]{genericbox}
+\definecolor{faqbg}{HTML}{ECFDF5}\definecolor{faqfr}{HTML}{10B981}\definecolor{faqti}{HTML}{065F46}
+\definecolor{misbg}{HTML}{FEF2F2}\definecolor{misfr}{HTML}{EF4444}\definecolor{misti}{HTML}{991B1B}
+\definecolor{tipbg}{HTML}{FFFBEB}\definecolor{tipfr}{HTML}{F59E0B}\definecolor{tipti}{HTML}{92400E}
+\definecolor{exabg}{HTML}{EFF6FF}\definecolor{exafr}{HTML}{3B82F6}\definecolor{exati}{HTML}{1E3A8A}
+\definecolor{defbg}{HTML}{F5F3FF}\definecolor{deffr}{HTML}{8B5CF6}\definecolor{defti}{HTML}{5B21B6}
+\definecolor{stobg}{HTML}{FDF4FF}\definecolor{stofr}{HTML}{D946EF}\definecolor{stoti}{HTML}{86198F}
+\definecolor{exbg}{HTML}{F0FDFA}\definecolor{exfr}{HTML}{14B8A6}\definecolor{exti}{HTML}{115E59}
+\newenvironment{faqbox}{\colorlet{boxti}{faqti}\begin{mdframed}[backgroundcolor=faqbg,linecolor=faqfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{mistakebox}{\colorlet{boxti}{misti}\begin{mdframed}[backgroundcolor=misbg,linecolor=misfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{tipbox}{\colorlet{boxti}{tipti}\begin{mdframed}[backgroundcolor=tipbg,linecolor=tipfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{exambox}{\colorlet{boxti}{exati}\begin{mdframed}[backgroundcolor=exabg,linecolor=exafr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{defbox}{\colorlet{boxti}{defti}\begin{mdframed}[backgroundcolor=defbg,linecolor=deffr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{storybox}{\colorlet{boxti}{stoti}\begin{mdframed}[backgroundcolor=stobg,linecolor=stofr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{exbox}{\colorlet{boxti}{exti}\begin{mdframed}[backgroundcolor=exbg,linecolor=exfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{metabox}{\begin{mdframed}[backgroundcolor=metabg,linewidth=0pt,innertopmargin=5pt,innerbottommargin=5pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=4pt,skipbelow=8pt]}{\end{mdframed}}
+\newmdenv[backgroundcolor=cbg,linewidth=0pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=8pt]{codebox}
+\setlength{\parindent}{0pt}\setlength{\parskip}{4pt}
+\renewcommand{\thepage}{\enLR{\arabic{page}}}
+\pagestyle{fancy}\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}
+\begin{document}
+\sloppy
+\chapterheading{פרק \enLR{4} – חומות אש ברשת הבינונית והרחבה}{\small\color{subgray}\enLR{11} שעות עיוני + \enLR{2} מעשי · שבועות \enLR{10}–\enLR{12}\par}\vskip4pt
+
+\begin{metabox}\textbf{מטרות:} \enLR{ACL} סטנדרטי/מורחב · \enLR{ACL} מבוסס זמן · עצירת התקפות ב-\enLR{ACL} · \enLR{CBAC} · \enLR{ZPF}\\ \textbf{בבגרות:} \enLR{ACL} סטנדרטי (חסימת רשת), מיקום \enLR{ACL} וכיוון \enLR{in/out, ACL} מורחב עם \enLR{host}\end{metabox}
+
+\begin{defbox}\boxtitle{לפני שמתחילים – איך תעבורה "עוברת" בנתב? (למי שאין רקע)}\par  חומת אש מחליטה אילו חבילות לעבור. כדי להבין זאת צריך שני מושגים:  \textbf{כיוון תעבורה} – לכל ממשק (פורט) בנתב יש שני כיוונים: \textbf{\enLR{in}} = חבילות שנכנסות לנתב דרך הפורט, \textbf{\enLR{out}} = חבילות שיוצאות מהנתב דרך הפורט. תמיד חושבים מנקודת המבט של \underline{הנתב}, לא של המשתמש. \textbf{סינון לפי כותרת החבילה} – כל חבילה נושאת בכותרת שלה: כתובת מקור, כתובת יעד, סוג פרוטוקול \enLR{(TCP/UDP/ICMP)}, ופורט. חומת אש קוראת את הכותרת ומחליטה \enLR{permit} (לעבור) או \enLR{deny} (לחסום). \textbf{\enLR{Wildcard mask}} – דרך לומר "התאם רק חלק מהכתובת". נסביר לעומק בהמשך; רק דעו שזה ההפך ממסכת רשת רגילה: \enLR{0 = "}בדוק את הביט הזה", \enLR{1 = "}לא אכפת לי".  \textbf{אנלוגיה:} חומת אש היא כמו שומר בכניסה לבניין עם רשימה. כל אדם (חבילה) שמגיע – השומר בודק ברשימה \enLR{(ACL)} לפי הזהות שלו (כתובת/פורט), ומחליט להכניס או לא. הרשימה נבדקת \underline{מלמעלה למטה}, והשומר עוצר בהתאמה הראשונה.\end{defbox}
+
+\sectionheading{\enLR{4.1} מהי חומת אש}
+
+\textbf{חומת אש} \enLR{(Firewall)} היא מערכת – חומרה, תוכנה או שילוב – שעומדת בין רשתות ברמות אמון שונות ומחליטה לפי מדיניות אילו חבילות לעבור ואילו לחסום. המונח מגיע מקיר בטון שמונע התפשטות שריפה בין דירות. המאפיינים: \textbf{עמידה בפני התקפות} (היא עצמה מוקשחת), \textbf{נקודת מעבר יחידה} (כל התעבורה חייבת לעבור דרכה – אחרת אין טעם), ו\textbf{אכיפת מדיניות}.\par
+
+\begin{storybox}\boxtitle{סיפור מהחיים: הקזינו שנפרץ דרך האקווריום \enLR{(2017)}}\par  קזינו בלאס וגאס התקין אקווריום חכם עם חיישן טמפרטורה המחובר לאינטרנט. התוקפים פרצו לחיישן (סיסמת ברירת מחדל), ומכיוון שהאקווריום היה מחובר לאותה רשת של שאר הקזינו – עברו ממנו למסד הנתונים של "השחקנים הגדולים" ושאבו \enLR{10GB} החוצה דרך… החיישן. אם היה \enLR{ACL} אחד שאומר "מהאקווריום מותר רק לשרת הבקרה שלו" – הסיפור היה נגמר בחיישן. חומת אש היא לא רק בין "הפנים" ל"אינטרנט"; היא גם בין חלקי הפנים.\end{storybox}
+
+\sectionheading{\enLR{4.2} סוגי חומות אש}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{חסרונות} & \textbf{יתרונות} & \textbf{איך זה עובד} & \textbf{סוג} \\
+\hline
+\endhead
+לא מבינה "שיחה": כדי לאפשר תשובות חייבים לפתוח פורטים לכיוון פנימה; ניתנת לעקיפה ב-\enLR{spoofing} & מהיר, זול, בכל נתב & בודקת כל חבילה לבד לפי כותרות שכבה \enLR{3}–\enLR{4: IP} מקור/יעד, פרוטוקול, פורט & \textbf{סינון חבילות} \enLR{(Packet filtering, stateless)} – \enLR{ACL} \\
+\hline
+לא מבינה את תוכן האפליקציה; \enLR{UDP/ICMP "}חסרי מצב" מטופלים לפי \enLR{timeout} & מאובטחת הרבה יותר, פשוטה להגדרה; הסטנדרט היום \enLR{(ASA, ZPF, CBAC)} & שומרת טבלת חיבורים \enLR{(state table).} תעבורה שיוצאת מהפנים נרשמת; רק התשובות שתואמות לרשומה מורשות להיכנס & \textbf{\enLR{Stateful}} (בדיקת מצב) \\
+\hline
+איטית, צריך \enLR{proxy} לכל פרוטוקול & מבינה תוכן, יכולה לסנן \enLR{URL}, וירוסים & מסיימת את החיבור, קוראת את תוכן שכבה \enLR{7 (HTTP, FTP)} ופותחת חיבור חדש ליעד & \textbf{\enLR{Application gateway / Proxy}} \\
+\hline
+אינה חומת אש אמיתית – רק מסתירה & חינם & מסתירה כתובות פנימיות & \textbf{\enLR{NAT}} כ"חומת אש" \\
+\hline
+יקרה, דורשת כוונון & מקיפה & \enLR{Stateful} + זיהוי אפליקציה \enLR{(Facebook} מול \enLR{YouTube} על אותו פורט \enLR{443) + IPS} + זהות משתמש + בדיקת \enLR{TLS} & \textbf{\enLR{NGFW}} (דור הבא) \\
+\hline
+מנוהלת בנפרד בכל מחשב & מגנה גם מפני מחשבים באותה רשת & על המחשב עצמו & \textbf{\enLR{Host-based}} \enLR{(Windows Firewall)} \\
+\hline
+ & מוסיפים בלי לשנות כתובות & בשכבה \enLR{2} – ללא כתובת \enLR{IP, "}שקופה" & \textbf{\enLR{Transparent}} \\
+\hline
+\end{xltabular}
+
+\sectionheading{\enLR{4.3 ACL} – רשימות בקרת גישה}
+
+\textbf{\enLR{ACL}} \enLR{(Access Control List)} היא רשימה סדורה של משפטי \enLR{permit/deny} שהנתב עובר עליה \textbf{מלמעלה למטה} עבור כל חבילה; ב\textbf{התאמה הראשונה} הוא מבצע את הפעולה ומפסיק. אם אף שורה לא תואמת – יש \textbf{\enLR{deny any} סמוי \enLR{(implicit deny)}} בסוף כל \enLR{ACL.} שלושת החוקים האלה מסבירים \enLR{90\%} מהטעויות.\par
+
+\begin{defbox}\boxtitle{\enLR{ACL} יכולה לשמש לא רק לסינון}\par  גם לזהות תעבורה עבור \enLR{NAT, QoS, route-map, VPN} (פרק \enLR{8)}, ו-\code{access-class} על קווי \enLR{VTY.} בפרק זה – סינון.\end{defbox}
+
+\subheading{מסכת \enLR{wildcard} – הדבר שתלמידים הכי מתבלבלים בו}
+
+ב-\enLR{ACL} לא כותבים \enLR{subnet mask} אלא \textbf{\enLR{wildcard mask}}: ביט \textbf{\enLR{0} = חייב להתאים}, ביט \textbf{\enLR{1} = לא אכפת לי}. במסכת רשת רגילה זה הפוך. הדרך המהירה: \textbf{\enLR{wildcard = 255.255.255.255} − \enLR{subnet mask}}.\par
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{משמעות} & \textbf{\enLR{Wildcard}} & \textbf{\enLR{Subnet mask}} & \textbf{רשת} \\
+\hline
+\endhead
+\enLR{3} האוקטטים הראשונים חייבים להתאים & \textbf{\enLR{0.0.0.255}} & \enLR{255.255.255.0} & \enLR{192.168.1.0/24} \\
+\hline
+\enLR{172.16.16.0}–\enLR{172.16.16.15} & \textbf{\enLR{0.0.0.15}} & \enLR{255.255.255.240} & \enLR{172.16.16.0/28} \\
+\hline
+כל מה שמתחיל ב-\enLR{10} & \textbf{\enLR{0.255.255.255}} & \enLR{255.0.0.0} & \enLR{10.0.0.0/8} \\
+\hline
+הכול חייב להתאים & \textbf{\enLR{0.0.0.0}} = \code{host 10.1.1.7} & /\enLR{32} & מארח בודד \enLR{10.1.1.7} \\
+\hline
+\enLR{0.0.0.0 255.255.255.255} & \textbf{\enLR{255.255.255.255}} = \code{any} & – & כל כתובת \\
+\hline
+ביט אחרון באוקטט השלישי חייב \enLR{0} – טריק לבחינות & \enLR{192.168.0.0} \textbf{\enLR{0.0.254.255}} &  & רשתות זוגיות \enLR{192.168.0.0, .2.0, .4.0}… \\
+\hline
+\end{xltabular}
+
+\begin{exambox}\boxtitle{בבגרות (חלק א, שאלה \enLR{1}ט)}\par  "נתונה \enLR{135.8.267/26"} – מהי ה-\enLR{subnet mask} ומהי ה-\enLR{wildcard}? \enLR{Subnet: 255.255.255.192} · \enLR{Wildcard: 0.0.0.63.} (שימו לב: \enLR{267} אינו אוקטט חוקי – טעות בשאלון; מתעלמים.)\end{exambox}
+
+\subheading{\enLR{ACL} סטנדרטית – רק לפי מקור}
+
+מספרים \textbf{\enLR{1}–\enLR{99}} ו-\enLR{1300}–\enLR{1999.} בודקת \textbf{רק את כתובת המקור}. לכן ממקמים אותה \textbf{קרוב ליעד} – אחרת היא תחסום את המקור מלהגיע גם ליעדים שלא התכוונו אליהם.\par
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+R1(config)\# \textcolor{cbold}{\textbf{access-list 10 deny 20.20.20.0 0.0.0.255}}    \textcolor{ccom}{\texthebrew{! בבגרות שאלה \enLR{4}ד – חסימת רשת /\enLR{24}}}\\
+R1(config)\# \textcolor{cbold}{\textbf{access-list 10 permit any}}                 \textcolor{ccom}{\texthebrew{! בלי זה – הכול נחסם \enLR{(implicit deny)}}}\\
+R1(config)\# interface g0/1\\
+R1(config-if)\# \textcolor{cbold}{\textbf{ip access-group 10 out}}
+\end{english}\end{codebox}
+
+\subheading{\enLR{ACL} מורחבת – מקור, יעד, פרוטוקול ופורט}
+
+מספרים \textbf{\enLR{100}–\enLR{199}} ו-\enLR{2000}–\enLR{2699.} תחביר: \code{access-list N \{permit|deny\} PROTOCOL SRC SRC-WC [op PORT] DST DST-WC [op PORT] [established] [log]}. ממקמים \textbf{קרוב למקור} – כדי לא להעביר תעבורה שתיחסם ממילא דרך כל הרשת.\par
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+\textcolor{ccom}{\texthebrew{! רשת \enLR{IT (172.18.1.0/24)} רשאית ל-\enLR{DNS} ול-\enLR{DHCP}, אך לא ל-\enLR{web 10.0.0.190} – בבגרות חלק א שאלה \enLR{3}ה}}\\
+R1(config)\# \textcolor{cbold}{\textbf{access-list 101 deny ip 172.18.1.0 0.0.0.255 host 10.0.0.190}}\\
+R1(config)\# \textcolor{cbold}{\textbf{access-list 101 permit ip any any}}\\
+R1(config)\# interface g0/0/1\\
+R1(config-if)\# \textcolor{cbold}{\textbf{ip access-group 101 in}}\\
+\textcolor{ccom}{\texthebrew{! דוגמאות לפורטים}}\\
+R1(config)\# access-list 110 permit tcp 192.168.1.0 0.0.0.255 any \textcolor{cbold}{\textbf{eq 80}}\\
+R1(config)\# access-list 110 permit tcp 192.168.1.0 0.0.0.255 any eq 443\\
+R1(config)\# access-list 110 permit udp 192.168.1.0 0.0.0.255 host 8.8.8.8 eq 53\\
+R1(config)\# access-list 110 deny icmp any any \textcolor{cbold}{\textbf{echo}}            \textcolor{ccom}{\texthebrew{! חסימת \enLR{ping}}}\\
+R1(config)\# access-list 110 permit tcp any any \textcolor{cbold}{\textbf{established}}      \textcolor{ccom}{\texthebrew{! רק תשובות \enLR{(ACK/RST} דלוק) – "\enLR{stateful} לעניים"}}\\
+R1(config)\# access-list 110 deny ip any any \textcolor{cbold}{\textbf{log}}                 \textcolor{ccom}{\texthebrew{! רשום מה נחסם (רק בסוף!)}}
+\end{english}\end{codebox}
+
+אופרטורים: \code{eq} שווה, \code{neq}, \code{gt}, \code{lt}, \code{range 20 21}. פורטים ניתן לכתוב בשם (\code{eq www}, \code{eq ftp}, \code{eq domain}).\par
+
+\subheading{\enLR{ACL} בשם \enLR{(Named)} – הדרך המומלצת}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+R1(config)\# \textcolor{cbold}{\textbf{ip access-list extended BLOCK-WEB}}\\
+R1(config-ext-nacl)\# \textcolor{cbold}{\textbf{remark}} IT may not reach the web server\\
+R1(config-ext-nacl)\# \textcolor{cbold}{\textbf{10}} deny tcp 172.18.1.0 0.0.0.255 host 10.0.0.190 eq 80\\
+R1(config-ext-nacl)\# 20 permit ip any any\\
+R1(config-ext-nacl)\# exit\\
+R1(config)\# interface g0/0/1\\
+R1(config-if)\# ip access-group BLOCK-WEB in\\
+\textcolor{ccom}{\texthebrew{! עריכה: מוחקים/מוסיפים שורה לפי מספר רצף – בלי למחוק את כל הרשימה}}\\
+R1(config)\# ip access-list extended BLOCK-WEB\\
+R1(config-ext-nacl)\# no 10\\
+R1(config-ext-nacl)\# 15 deny tcp 172.18.1.0 0.0.0.255 host 10.0.0.190 eq 443\\
+\textcolor{ccom}{\texthebrew{! סטנדרטית בשם – זה מה שמופיע בבגרות \enLR{(config-std-nacl)}}}\\
+R1(config)\# \textcolor{cbold}{\textbf{ip access-list standard BLOCK\_LAN2}}\\
+R1(config-std-nacl)\# deny 192.168.2.0 0.0.0.255\\
+R1(config-std-nacl)\# permit any
+\end{english}\end{codebox}
+
+\subheading{כיוון: \enLR{in} או \enLR{out}?}
+
+הכיוון הוא \textbf{מנקודת מבטו של הנתב} על ממשק מסוים. \textbf{\enLR{in}} = חבילות שנכנסות לנתב דרך הממשק הזה (לפני ניתוב). \textbf{\enLR{out}} = חבילות שיוצאות מהנתב דרך הממשק הזה (אחרי ניתוב). \enLR{ACL} אחת לכל ממשק, לכל כיוון, לכל פרוטוקול.\par
+
+\begin{exambox}\boxtitle{בבגרות (שאלה \enLR{7}ה) – הדוגמה המושלמת}\par  \enLR{R1} עם שלוש רשתות: \enLR{G0/0}→\enLR{192.168.1.0, G0/1}→\enLR{192.168.2.0, G0/2}→\enLR{192.168.3.0 (Restricted).} חוסמים את \enLR{192.168.2.0} ל-\enLR{192.168.3.0} בלבד. \enLR{ACL} סטנדרטית ⇒ קרוב ליעד ⇒ \textbf{\enLR{G0/2}}. כיוון: התעבורה \emph{יוצאת} מהנתב לרשת \enLR{3} ⇒ \textbf{\enLR{out}}. סדר: \code{deny 192.168.2.0} ואז \code{permit any}. תשובה \enLR{2.} אם היינו שמים \code{in} על \enLR{G0/1} – רשת \enLR{2} הייתה נחסמת גם לרשת \enLR{1} ולאינטרנט. אם \enLR{permit any} היה ראשון – ה-\enLR{deny} לעולם לא היה מגיע.\end{exambox}
+
+\begin{mistakebox}\boxtitle{טעויות נפוצות ב-\enLR{ACL}}\par  • שוכחים \code{permit} בסוף ⇒ הכול נחסם. תלמידים מגדירים "\enLR{deny X"} ומתפלאים שאין אינטרנט.\newline  • סדר הפוך – שורה כללית לפני ספציפית.\newline  • \enLR{wildcard} כ-\enLR{subnet mask (255.255.255.0} במקום \enLR{0.0.0.255).}\newline  • \enLR{ACL} מוגדרת אך לא הוחלה על ממשק (\code{ip access-group}) – ב-\code{show ip interface} רואים "\enLR{Outgoing access list is not set".}\newline  • \enLR{ACL} סטנדרטית שממוקמת קרוב למקור – חוסמת הרבה יותר מהמתוכנן.\newline  • \enLR{ACL} על \enLR{VTY}: לא \code{ip access-group} אלא \code{access-class 10 in} תחת \enLR{line vty.}\newline  • ה-\enLR{ACL} לא בודקת תעבורה \emph{שהנתב עצמו יוצר} \enLR{(ping} מהנתב) – רק תעבורה שעוברת דרכו.\end{mistakebox}
+
+\subheading{וריפיקציה}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+R1\# \textcolor{cbold}{\textbf{show access-lists}}                \textcolor{ccom}{\texthebrew{! כולל מונה התאמות \enLR{(matches)} לכל שורה – הכלי הכי טוב לדיבוג}}\\
+R1\# \textcolor{cbold}{\textbf{show ip access-lists 101}}\\
+R1\# \textcolor{cbold}{\textbf{show ip interface g0/1}}           \textcolor{ccom}{\texthebrew{! איזו \enLR{ACL} מוחלת ובאיזה כיוון}}\\
+R1\# show running-config | section access-list\\
+R1\# \textcolor{cbold}{\textbf{clear access-list counters}}
+\end{english}\end{codebox}
+
+\sectionheading{\enLR{4.4 ACL} מורכבות: מבוססות זמן, דינמיות ורפלקסיביות}
+
+\subheading{\enLR{Time-based ACL}}
+
+מאפשרת כלל שתקף רק בזמנים מסוימים. דורש שעון נכון \enLR{(NTP} – פרק \enLR{2).}\par
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+R1(config)\# \textcolor{cbold}{\textbf{time-range WORK-HOURS}}\\
+R1(config-time-range)\# \textcolor{cbold}{\textbf{periodic weekdays 8:00 to 17:00}}\\
+R1(config-time-range)\# exit\\
+R1(config)\# access-list 120 permit tcp 192.168.1.0 0.0.0.255 any eq 80 \textcolor{cbold}{\textbf{time-range WORK-HOURS}}\\
+R1(config)\# access-list 120 deny ip any any\\
+\textcolor{ccom}{\texthebrew{! אפשרויות: \enLR{periodic Monday Wednesday 9:00 to 12:00 / absolute start 08:00 1 Jan 2026 end 17:00 31 Jan 2026}}}
+\end{english}\end{codebox}
+
+\subheading{\enLR{Dynamic ACL (Lock-and-Key)}}
+
+המשתמש מבצע \enLR{Telnet/SSH} לנתב ומזדהה; רק אז נפתחת לו דלת זמנית דרך הנתב. "מנעול ומפתח".\par
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+R1(config)\# username student password 0 pass\\
+R1(config)\# access-list 101 permit tcp any host 10.0.0.1 eq telnet\\
+R1(config)\# \textcolor{cbold}{\textbf{access-list 101 dynamic OPEN-DOOR timeout 15 permit ip any any}}\\
+R1(config)\# interface g0/0\\
+R1(config-if)\# ip access-group 101 in\\
+R1(config)\# line vty 0 4\\
+R1(config-line)\# login local\\
+R1(config-line)\# \textcolor{cbold}{\textbf{autocommand access-enable host timeout 5}}
+\end{english}\end{codebox}
+
+\subheading{\enLR{Reflexive ACL}}
+
+"מראה": כשתעבורה יוצאת החוצה, הנתב יוצר אוטומטית שורה זמנית שמאפשרת \emph{רק את התשובה} \enLR{(IP}/פורט הפוכים) להיכנס. זה מנגנון \enLR{stateful} פשוט ב-\enLR{ACL}, ועדיף על \code{established} כי עובד גם ל-\enLR{UDP} ו-\enLR{ICMP.}\par
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+R1(config)\# ip access-list extended OUTBOUND\\
+R1(config-ext-nacl)\# permit tcp any any \textcolor{cbold}{\textbf{reflect TCP-TRAFFIC}}\\
+R1(config-ext-nacl)\# permit udp any any reflect UDP-TRAFFIC\\
+R1(config)\# ip access-list extended INBOUND\\
+R1(config-ext-nacl)\# \textcolor{cbold}{\textbf{evaluate TCP-TRAFFIC}}\\
+R1(config-ext-nacl)\# evaluate UDP-TRAFFIC\\
+R1(config-ext-nacl)\# deny ip any any\\
+R1(config)\# interface s0/0/0\\
+R1(config-if)\# ip access-group OUTBOUND out\\
+R1(config-if)\# ip access-group INBOUND in
+\end{english}\end{codebox}
+
+\sectionheading{\enLR{4.5} עצירת התקפות בעזרת \enLR{ACL}}
+
+\subheading{\enLR{Anti-spoofing} – מה לחסום בכניסה מהאינטרנט \enLR{(ingress)}}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+R1(config)\# ip access-list extended ANTI-SPOOF\\
+\textcolor{ccom}{\texthebrew{! כתובות פרטיות \enLR{(RFC 1918)} לא אמורות להגיע מהאינטרנט – מישהו מזייף}}\\
+R1(config-ext-nacl)\# deny ip 10.0.0.0 0.255.255.255 any\\
+R1(config-ext-nacl)\# deny ip 172.16.0.0 0.15.255.255 any\\
+R1(config-ext-nacl)\# deny ip 192.168.0.0 0.0.255.255 any\\
+\textcolor{ccom}{\texthebrew{! הרשת שלנו כמקור מבחוץ – זיוף ודאי}}\\
+R1(config-ext-nacl)\# deny ip 203.0.113.0 0.0.0.255 any\\
+R1(config-ext-nacl)\# deny ip 127.0.0.0 0.255.255.255 any     \textcolor{ccom}{\texthebrew{! \enLR{loopback}}}\\
+R1(config-ext-nacl)\# deny ip 0.0.0.0 0.255.255.255 any\\
+R1(config-ext-nacl)\# deny ip 224.0.0.0 15.255.255.255 any    \textcolor{ccom}{\texthebrew{! \enLR{multicast}}}\\
+\textcolor{ccom}{\texthebrew{! \enLR{ICMP} – לאפשר רק מה שצריך, לחסום \enLR{echo} מבחוץ (נגד \enLR{ping sweep} ו-\enLR{Smurf)}}}\\
+R1(config-ext-nacl)\# permit icmp any any echo-reply\\
+R1(config-ext-nacl)\# permit icmp any any unreachable\\
+R1(config-ext-nacl)\# permit icmp any any time-exceeded      \textcolor{ccom}{\texthebrew{! \enLR{traceroute}}}\\
+R1(config-ext-nacl)\# deny icmp any any\\
+\textcolor{ccom}{\texthebrew{! שירותי ניהול לא נגישים מבחוץ}}\\
+R1(config-ext-nacl)\# deny tcp any any eq 23\\
+R1(config-ext-nacl)\# deny udp any any eq 161\\
+\textcolor{ccom}{\texthebrew{! רק תשובות ל-\enLR{TCP} שהפנים פתח + שירותי \enLR{DMZ}}}\\
+R1(config-ext-nacl)\# permit tcp any any established\\
+R1(config-ext-nacl)\# permit tcp any host 203.0.113.10 eq 80\\
+R1(config-ext-nacl)\# permit tcp any host 203.0.113.10 eq 443\\
+R1(config-ext-nacl)\# deny ip any any log\\
+R1(config)\# interface g0/0\\
+R1(config-if)\# ip access-group ANTI-SPOOF in
+\end{english}\end{codebox}
+
+\textbf{\enLR{Egress filtering}} – גם ביציאה: לאפשר רק את כתובות המקור שלנו; כך הרשת שלנו לא תשמש ל-\enLR{DDoS} עם כתובות מזויפות.\par
+
+\sectionheading{\enLR{4.6 CBAC} – \enLR{Context-Based Access Control} (חומת אש "קלאסית" ב-\enLR{IOS)}}
+
+\enLR{ACL} היא \enLR{stateless.} \textbf{\enLR{CBAC}} (נקראת גם \enLR{Classic Firewall)} מוסיפה מצב: היא \emph{בוחנת} \enLR{(inspect)} תעבורה שיוצאת מהפנים, זוכרת את השיחה בטבלת \enLR{state}, ופותחת \textbf{אוטומטית וזמנית} חור ב-\enLR{ACL} הנכנסת לתשובות בלבד. היא גם מבינה פרוטוקולים עם פורטים דינמיים \enLR{(FTP active)} ומגנה מ-\enLR{SYN flood (TCP intercept-like).}\par
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+\textcolor{ccom}{\texthebrew{! \enLR{1. ACL} שחוסמת הכול מבחוץ (התשובות ייפתחו על ידי \enLR{CBAC)}}}\\
+R1(config)\# ip access-list extended OUTSIDE-IN\\
+R1(config-ext-nacl)\# permit icmp any any echo-reply\\
+R1(config-ext-nacl)\# deny ip any any\\
+R1(config)\# interface s0/0/0\\
+R1(config-if)\# ip access-group OUTSIDE-IN in\\
+\textcolor{ccom}{\texthebrew{! \enLR{2.} כלל בדיקה}}\\
+R1(config)\# \textcolor{cbold}{\textbf{ip inspect name FW tcp}}\\
+R1(config)\# \textcolor{cbold}{\textbf{ip inspect name FW udp}}\\
+R1(config)\# ip inspect name FW http\\
+R1(config)\# ip inspect name FW ftp\\
+\textcolor{ccom}{\texthebrew{! \enLR{3.} החלה בכיוון שבו התעבורה "מתחילה" – יוצאת החוצה}}\\
+R1(config)\# interface s0/0/0\\
+R1(config-if)\# \textcolor{cbold}{\textbf{ip inspect FW out}}\\
+R1\# \textcolor{cbold}{\textbf{show ip inspect sessions}}\\
+R1\# show ip inspect config
+\end{english}\end{codebox}
+
+\enLR{CBAC} היא "מבוססת ממשק": ככל שיש יותר ממשקים, ההגדרה מסתבכת. לכן סיסקו החליפה אותה ב-\enLR{ZPF.}\par
+
+\sectionheading{\enLR{4.7 ZPF} – \enLR{Zone-Based Policy Firewall}}
+
+הגישה המודרנית ב-\enLR{IOS}: במקום לחשוב על ממשקים, מגדירים \textbf{אזורים} \enLR{(zones)} ומדיניות \textbf{בין זוגות אזורים} \enLR{(zone-pair)}, בכיוון אחד. חוקים:\par
+
+\begin{itemize}
+\item ממשק שייך לאזור אחד לכל היותר.
+\item תעבורה בין ממשקים \textbf{באותו אזור} – מותרת תמיד.
+\item תעבורה בין ממשק באזור לממשק שלא באזור – \textbf{נחסמת}.
+\item תעבורה בין שני אזורים – \textbf{נחסמת כברירת מחדל}, אלא אם יש \enLR{zone-pair} עם מדיניות.
+\item אזור מיוחד \textbf{\enLR{self}} = הנתב עצמו (תעבורה אל הנתב וממנו – \enLR{SSH, OSPF).} ברירת המחדל ל-\enLR{self}: הכול מותר.
+\end{itemize}
+
+\subheading{שלוש פעולות}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{משמעות} & \textbf{פעולה} \\
+\hline
+\endhead
+בדיקה \enLR{stateful} – מאפשר את התעבורה \emph{ואת התשובות} חזרה אוטומטית. זה מה שרוצים כמעט תמיד. & \textbf{\enLR{inspect}} \\
+\hline
+מאפשר את התעבורה בכיוון הזה בלבד, בלי מעקב (כמו \enLR{permit} ב-\enLR{ACL).} לתשובה צריך \enLR{pass} בזוג ההפוך. & \textbf{\enLR{pass}} \\
+\hline
+חוסם (ברירת מחדל, אפשר להוסיף \enLR{log).} & \textbf{\enLR{drop}} \\
+\hline
+\end{xltabular}
+
+\subheading{ההגדרה – \enLR{C3PL (Cisco Common Classification Policy Language)} בחמישה שלבים}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+\textcolor{ccom}{\texthebrew{! \enLR{1.} אזורים}}\\
+R1(config)\# \textcolor{cbold}{\textbf{zone security INSIDE}}\\
+R1(config)\# \textcolor{cbold}{\textbf{zone security OUTSIDE}}\\
+\textcolor{ccom}{\texthebrew{! \enLR{2. class-map} – איזו תעבורה \enLR{(match-any} = מספיק תנאי אחד; \enLR{match-all} = כולם)}}\\
+R1(config)\# \textcolor{cbold}{\textbf{class-map type inspect match-any WEB-DNS}}\\
+R1(config-cmap)\# \textcolor{cbold}{\textbf{match protocol http}}\\
+R1(config-cmap)\# match protocol https\\
+R1(config-cmap)\# match protocol dns\\
+R1(config-cmap)\# match protocol icmp\\
+R1(config-cmap)\# exit\\
+\textcolor{ccom}{\texthebrew{! (אפשר גם \enLR{match access-group 101} – לשלב \enLR{ACL)}}}\\
+\textcolor{ccom}{\texthebrew{! \enLR{3. policy-map} – מה עושים עם התעבורה}}\\
+R1(config)\# \textcolor{cbold}{\textbf{policy-map type inspect IN-TO-OUT}}\\
+R1(config-pmap)\# \textcolor{cbold}{\textbf{class type inspect WEB-DNS}}\\
+R1(config-pmap-c)\# \textcolor{cbold}{\textbf{inspect}}\\
+R1(config-pmap-c)\# exit\\
+R1(config-pmap)\# class class-default          \textcolor{ccom}{\texthebrew{! כל השאר}}\\
+R1(config-pmap-c)\# drop log\\
+R1(config-pmap-c)\# exit\\
+\textcolor{ccom}{\texthebrew{! \enLR{4. zone-pair} – מקור, יעד, ומדיניות}}\\
+R1(config)\# \textcolor{cbold}{\textbf{zone-pair security IN-OUT source INSIDE destination OUTSIDE}}\\
+R1(config-sec-zone-pair)\# \textcolor{cbold}{\textbf{service-policy type inspect IN-TO-OUT}}\\
+R1(config-sec-zone-pair)\# exit\\
+\textcolor{ccom}{\texthebrew{! \enLR{5.} שיוך ממשקים לאזורים – ברגע זה החסימה מתחילה!}}\\
+R1(config)\# interface g0/1\\
+R1(config-if)\# \textcolor{cbold}{\textbf{zone-member security INSIDE}}\\
+R1(config)\# interface s0/0/0\\
+R1(config-if)\# \textcolor{cbold}{\textbf{zone-member security OUTSIDE}}\\
+\textcolor{ccom}{\texthebrew{! וריפיקציה}}\\
+R1\# \textcolor{cbold}{\textbf{show zone security}}\\
+R1\# \textcolor{cbold}{\textbf{show zone-pair security}}\\
+R1\# \textcolor{cbold}{\textbf{show policy-map type inspect zone-pair IN-OUT sessions}}\\
+R1\# show class-map type inspect
+\end{english}\end{codebox}
+
+\begin{faqbox}\boxtitle{שאלת תלמיד: "הגדרתי \enLR{INSIDE}→\enLR{OUTSIDE} עם \enLR{inspect.} איך התשובות חוזרות, הרי אין \enLR{zone-pair OUTSIDE}→\enLR{INSIDE}?"}\par  זה בדיוק מה ש-\enLR{inspect} עושה: הנתב רושם את השיחה בטבלת \enLR{state}, וכשמגיעה תשובה מ-\enLR{OUTSIDE} שתואמת לשיחה קיימת – היא עוברת, בלי צורך ב-\enLR{zone-pair} הפוך. תעבורה \emph{חדשה} מ-\enLR{OUTSIDE} (למשל מישהו מבחוץ מנסה \enLR{SSH} למחשב פנימי) – נחסמת. אם היינו משתמשים ב-\code{pass} במקום \enLR{inspect}, התשובות היו נחסמות.\end{faqbox}
+
+\begin{faqbox}\boxtitle{שאלת תלמיד: "אחרי שהגדרתי \enLR{ZPF}, אני לא מצליח לעשות \enLR{SSH} לנתב מבחוץ / \enLR{OSPF} נפל"}\par  תעבורה אל הנתב עצמו שייכת לאזור \textbf{\enLR{self}}. ברירת המחדל ל-\enLR{self} היא \enLR{permit}, אז \enLR{SSH} אמור לעבוד. אם הגדרתם \enLR{zone-pair} שמערב \enLR{self} עם מדיניות – עכשיו רק מה שהוגדר עובר. יש להוסיף \enLR{class} ל-\enLR{SSH/OSPF} עם \enLR{pass/inspect.} גם בדקו ש-\enLR{CBAC} (\code{ip inspect}) לא מוגדרת על אותו ממשק – אסור לשלב.\end{faqbox}
+
+\sectionheading{\enLR{4.8} תכנון חומת אש ברשת – שיטות עבודה}
+
+\begin{itemize}
+\item \textbf{\enLR{DMZ}}: שלושה אזורים – \enLR{INSIDE, DMZ, OUTSIDE.} מדיניות: \enLR{INSIDE}→\enLR{OUTSIDE inspect; INSIDE}→\enLR{DMZ inspect; OUTSIDE}→\enLR{DMZ} – רק \enLR{http/https/smtp} אל השרתים; \enLR{DMZ}→\enLR{INSIDE} – \textbf{כלום} (אם שרת ה-\enLR{web} נפרץ – התוקף לא ממשיך פנימה). \enLR{OUTSIDE}→\enLR{INSIDE} – כלום.
+\item \textbf{מינימום הרשאות} \enLR{(least privilege)}: מתחילים מ-\enLR{deny all} ופותחים רק מה שיש לו הצדקה עסקית.
+\item \textbf{תיעוד}: כל שורת \enLR{ACL} עם \code{remark}; מי ביקש, מתי, למה.
+\item \textbf{ביקורת}: פעם ברבעון – \code{show access-lists}; שורות עם \enLR{0 matches} – כנראה מיותרות.
+\item \textbf{\enLR{Logging}} – \code{log} על \enLR{deny} בסוף, אבל לא על \enLR{permit} (עומס).
+\end{itemize}
+
+\begin{storybox}\boxtitle{סיפור מהחיים: \enLR{32} מיליון שורות \enLR{ACL}}\par  בחברת ביטוח גדולה, בדיקת ביקורת מצאה חומת אש עם \enLR{8,000} כללים, מתוכם \enLR{3,200} שלא התאימו לאף חבילה במשך שנה – "כללים זומבי" שאף אחד לא העז למחוק כי "אולי משהו ישבר". בין הזומבים: כלל מ-\enLR{2009} שפתח \enLR{RDP} לכל האינטרנט לשרת שכבר לא קיים – אך הכתובת שלו הוקצתה מחדש לשרת \enLR{HR.} הלקח: חומת אש שלא מתחזקים היא לא חומת אש; והשוואת מוני \enLR{matches} היא לא רק לדיבוג.\end{storybox}
+
+\sectionheading{\enLR{4.9} מדריך פקודות מרוכז – פרק \enLR{4}}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{תפקיד} & \textbf{פקודה} \\
+\hline
+\endhead
+\enLR{ACL} סטנדרטית ממוספרת & \code{access-list 1-99 \{permit|deny\} SRC WC} \\
+\hline
+\enLR{ACL} מורחבת ממוספרת & \code{access-list 100-199 \{permit|deny\} PROTO SRC WC [eq P] DST WC [eq P]} \\
+\hline
+\enLR{ACL} בשם, עם מספרי רצף & \code{ip access-list \{standard|extended\} NAME} \\
+\hline
+החלת \enLR{ACL} & \code{ip access-group N \{in|out\}} (ממשק) \\
+\hline
+\enLR{ACL} על גישת ניהול & \code{access-class N in} \enLR{(line vty)} \\
+\hline
+קיצורים ל-\enLR{wildcard 0.0.0.0 / 255.255.255.255} & \code{host A} / \code{any} \\
+\hline
+מילות מפתח מתקדמות & \code{established}, \code{log}, \code{time-range}, \code{reflect}/\code{evaluate}, \code{dynamic} \\
+\hline
+וריפיקציה & \code{show access-lists}, \code{show ip interface} \\
+\hline
+\enLR{CBAC} & \code{ip inspect name N PROTO} + \code{ip inspect N out} \\
+\hline
+\enLR{ZPF}, בסדר הזה & \code{zone security} → \code{class-map type inspect} → \code{policy-map type inspect} → \code{zone-pair security} → \code{zone-member security} \\
+\hline
+וריפיקציה \enLR{ZPF} & \code{show zone-pair security}, \code{show policy-map type inspect zone-pair sessions} \\
+\hline
+\end{xltabular}
+
+\sectionheading{\enLR{4.10} תרגילים לתלמידים}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{1} – \enLR{wildcard}}\par  כתבו את ה-\enLR{wildcard}: א. \enLR{192.168.10.0/25} ב. \enLR{10.10.0.0/16} ג. \enLR{172.16.4.0/22} ד. המארח \enLR{8.8.8.8} ה. כל הכתובות \enLR{192.168.0.0} עד \enLR{192.168.7.255} \par\vskip2pt\hrule\vskip3pt\textbf{}א. \enLR{0.0.0.127} ב. \enLR{0.0.255.255} ג. \enLR{0.0.3.255} ד. \enLR{0.0.0.0 (host 8.8.8.8)} ה. \enLR{192.168.0.0 0.0.7.255}\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{2} – מה עובר?}\par  \enLR{access-list 105 permit tcp 192.168.1.0 0.0.0.255 any eq 443 access-list 105 deny tcp 192.168.1.0 0.0.0.255 any eq 80 access-list 105 permit udp any host 8.8.8.8 eq 53 interface g0/0 (LAN 192.168.1.0/24) ip access-group 105 in} עבור כל חבילה שנכנסת ב-\enLR{g0/0} מ-\enLR{192.168.1.20}: א. \enLR{HTTPS} ל-\enLR{1.1.1.1} ב. \enLR{HTTP} ל-\enLR{1.1.1.1} ג. \enLR{DNS} ל-\enLR{8.8.8.8} ד. \enLR{DNS} ל-\enLR{1.1.1.1} ה. \enLR{ping} ל-\enLR{1.1.1.1} ו. \enLR{SSH} לנתב עצמו \par\vskip2pt\hrule\vskip3pt\textbf{}א. עובר (שורה \enLR{1).} ב. נחסם (שורה \enLR{2).} ג. עובר \enLR{(3).} ד. נחסם \enLR{(implicit deny).} ה. נחסם \enLR{(implicit deny} – אין שורה ל-\enLR{icmp).} ו. נחסם – גם תעבורה אל הנתב עוברת דרך \enLR{ACL} נכנסת. תלמידים רבים חושבים שרק "מה שכתוב \enLR{deny"} נחסם – זו הנקודה.\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{3} – תכנון \enLR{ACL}}\par  נתב עם \enLR{G0/0}→רשת תלמידים \enLR{10.1.0.0/16, G0/1}→רשת מורים \enLR{10.2.0.0/16, G0/2}→שרתים \enLR{10.3.0.0/24} (שרת ציונים \enLR{10.3.0.10}, שרת קבצים \enLR{10.3.0.20).} דרישות: תלמידים לא ניגשים לשרת הציונים אך כן לשרת הקבצים; מורים ניגשים להכול; תלמידים לא רשאים ל-\enLR{Telnet/SSH} לשום מקום. כתבו \enLR{ACL} מורחבת בשם, ובחרו ממשק וכיוון. \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{ip access-list extended STUDENTS deny ip 10.1.0.0 0.0.255.255 host 10.3.0.10 deny tcp 10.1.0.0 0.0.255.255 any eq 22 deny tcp 10.1.0.0 0.0.255.255 any eq 23 permit ip any any interface g0/0 ip access-group STUDENTS in}מורחבת ⇒ קרוב למקור ⇒ \enLR{G0/0 in.} מורים לא מופיעים – \enLR{permit any} מכסה אותם (הם ממילא לא נכנסים ב-\enLR{G0/0).}\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{4} – \enLR{ZPF}}\par  ציירו טבלה של אזורים \enLR{INSIDE / DMZ / OUTSIDE} וכתבו לכל זוג \enLR{(6} כיוונים) איזו מדיניות תגדירו ומדוע. \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{IN}→\enLR{OUT: inspect} (הכול/רשימת פרוטוקולים). \enLR{IN}→\enLR{DMZ: inspect. OUT}→\enLR{DMZ: inspect http, https, smtp} בלבד (ל-\enLR{match access-group} עם ה-\enLR{IP} של השרתים). \enLR{OUT}→\enLR{IN}: אין \enLR{zone-pair (drop). DMZ}→\enLR{IN}: אין \enLR{(drop)} – עיקרון "שרת נפרץ לא ממשיך פנימה". \enLR{DMZ}→\enLR{OUT: inspect dns, ntp, http} (עדכונים) בלבד – ולא הכול, כדי ששרת נפרץ לא ישמש ל-\enLR{DDoS.}\end{exbox}
+
+\sectionheading{\enLR{4.11} שאלות בסגנון בגרות}
+
+\begin{exambox}\boxtitle{שאלה \enLR{1}}\par  איזו פקודה חוסמת את המארח \enLR{10.5.5.5} בלבד ב-\enLR{ACL} סטנדרטית?\newline \enLR{1.} \code{access-list 10 deny 10.5.5.5 255.255.255.255} \enLR{2.} \code{access-list 10 deny host 10.5.5.5} \enLR{3.} \code{access-list 100 deny 10.5.5.5 0.0.0.0} \enLR{4.} \code{access-list 10 deny 10.5.5.0 0.0.0.255} \par\vskip2pt\hrule\vskip3pt\textbf{}\textbf{\enLR{2.}} \enLR{(1} – \enLR{wildcard} של \enLR{any; 3} – מספר של מורחבת ותחביר חסר; \enLR{4} – חוסם רשת שלמה.)\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{2}}\par  מנהל הגדיר \enLR{ACL} עם שורה אחת: \code{access-list 20 deny 192.168.5.0 0.0.0.255} והחיל אותה. אף אחד לא מצליח לצאת. מדוע? \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{implicit deny any} בסוף. חסר \code{access-list 20 permit any}.\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{3}}\par  היכן נכון למקם \enLR{ACL} מורחבת – קרוב למקור או ליעד? ומדוע? \par\vskip2pt\hrule\vskip3pt\textbf{}קרוב למקור – היא מזהה בדיוק את התעבורה (מקור+יעד+פורט), ולכן אפשר לחסום אותה מוקדם ולא לבזבז רוחב פס. סטנדרטית – קרוב ליעד, כי היא בודקת רק מקור ותחסום יותר מדי אם תמוקם קרוב אליו.\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{4}}\par  ב-\enLR{ZPF}, ממשק \enLR{G0/0} באזור \enLR{INSIDE} וממשק \enLR{G0/1} לא שויך לאף אזור. מה יקרה לתעבורה ביניהם? \par\vskip2pt\hrule\vskip3pt\textbf{}תיחסם. ממשק באזור לא מתקשר עם ממשק שאינו באזור.\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{5}}\par  מה ההבדל בין הפעולות \enLR{inspect} ו-\enLR{pass} ב-\enLR{ZPF}? \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{inspect} – מעקב \enLR{stateful}, התשובות מורשות אוטומטית. \enLR{pass} – מעבר בכיוון אחד בלבד ללא מעקב; לתשובות נדרש \enLR{pass} בזוג ההפוך.\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{6}}\par  השלימו: \code{R1(config)\# access-list 101 deny ip \_\_\_\_\_\_ host \_\_\_\_\_\_} · \code{R1(config)\# access-list 101 permit \_\_\_\_\_\_} · \code{R1(config-if)\# \_\_\_\_\_\_} – כך שמשתמשי \enLR{IT (172.18.1.0/16} לפי הטבלה) יקבלו \enLR{DNS} ו-\enLR{DHCP} אך לא \enLR{WEB (10.0.0.190).} \par\vskip2pt\hrule\vskip3pt\textbf{}\code{172.18.1.0 0.0.255.255} (או לפי /\enLR{24}: \code{0.0.0.255}) · \code{10.0.0.190} · \code{ip any any} · \code{ip access-group 101 in}\end{exambox}
+
+\sectionheading{\enLR{4.12} מעבדה \enLR{(2} שעות) – \enLR{ACL} ו-\enLR{ZPF} ב-\enLR{Packet Tracer}}
+
+\begin{enumerate}
+\item \textbf{\enLR{ACL}:} בנו את הטופולוגיה משאלה \enLR{7}ה בבגרות \enLR{(R1} עם \enLR{3} רשתות). הגדירו את \enLR{BLOCK\_LAN2} והחילו \enLR{out} על \enLR{G0/2.} בדקו \enLR{ping} מרשת \enLR{2} לרשת \enLR{3} (נכשל) ולרשת \enLR{1} (מצליח). הריצו \code{show access-lists} וראו את המונים עולים.
+\item הזיזו את אותה \enLR{ACL} ל-\enLR{G0/1 in.} מה נשבר? (רשת \enLR{2} מאבדת הכול.) הסבירו.
+\item \textbf{\enLR{ACL} מורחבת:} אפשרו לרשת \enLR{2} רק \enLR{HTTP} לשרת ברשת \enLR{3} וחסמו \enLR{ping.} בדקו בדפדפן של ה-\enLR{PC.}
+\item \textbf{\enLR{ZPF}:} טופולוגיה \enLR{INSIDE(PC)}–\enLR{R1}–\enLR{OUTSIDE(Server).} הגדירו \enLR{zones, class-map} ל-\enLR{http+icmp, policy inspect, zone-pair IN-OUT.} מה-\enLR{PC}: דפדפן לשרת עובד, \enLR{ping} עובד. מהשרת: \enLR{ping} ל-\enLR{PC} נכשל. הריצו \code{show policy-map type inspect zone-pair sessions} תוך כדי גלישה.
+\item החליפו \enLR{inspect} ב-\enLR{pass.} מה קרה לגלישה? הסבירו בעזרת מושג ה-\enLR{state.}
+\end{enumerate}
+
+\sectionheading{בנק שאלות שתלמידים שואלים – ותשובות מוכנות}
+
+שאלות נפוצות בפרק חומות האש וה-\enLR{ACL}, עם תשובות מוכנות.\par
+
+\subheading{הבנת \enLR{ACL}}
+
+\textbf{ש: "הגדרתי רק שורת \code{deny} אחת ופתאום שום דבר לא עובד. למה?"}\newline ת: בגלל ה-\textbf{\enLR{deny any} הסמוי} בסוף כל \enLR{ACL.} ברגע שיש \enLR{ACL}, כל מה שלא הותר במפורש – נחסם. חייבים להוסיף \code{permit} מפורש למה שרוצים לאפשר, אחרת הכול נחסם.\par
+
+\textbf{ש: "למה \enLR{wildcard} הפוך ממסכת רשת רגילה? זה מבלבל."}\newline ת: כי הוא עונה על שאלה אחרת. מסכת רשת אומרת "איזה חלק הוא הרשת". \enLR{Wildcard} אומרת ל-\enLR{ACL "}אילו ביטים לבדוק": \enLR{0} = חייב להתאים, \enLR{1} = לא אכפת לי. טריק: \enLR{wildcard = 255.255.255.255} פחות מסכת הרשת.\par
+
+\textbf{ש: "איך אני יודע אם ה-\enLR{ACL} בכלל עובד?"}\newline ת: \code{show access-lists} – ליד כל שורה יש \underline{מונה התאמות} \enLR{(matches).} אם שולחים תעבורה והמונה לא עולה, ה-\enLR{ACL} לא נתפס (כנראה לא הוחל על ממשק, או בכיוון הלא נכון). זה כלי הדיבוג מספר \enLR{1.}\par
+
+\textbf{ש: "למה סטנדרטי קרוב ליעד, ומורחב קרוב למקור?"}\newline ת: סטנדרטי בודק \underline{רק מקור}, אז אם נמקם אותו קרוב למקור הוא יחסום את המקור מלהגיע לכל יעד – יותר מדי. לכן קרוב ליעד. מורחב מזהה בדיוק מקור+יעד+פורט, אז אפשר לחסום מוקדם (קרוב למקור) בלי לפגוע בתעבורה אחרת.\par
+
+\textbf{ש: "מה ההבדל בין \enLR{in} ל-\enLR{out}? אני מתבלבל."}\newline ת: תמיד מנקודת המבט של \underline{הנתב}: \textbf{\enLR{in}} = נכנס לנתב דרך הממשק (לפני שהנתב מנתב). \textbf{\enLR{out}} = יוצא מהנתב דרך הממשק (אחרי הניתוב). ציירו נתב עם חצים – זה מתבהר מיד.\par
+
+\textbf{ש: "האם \enLR{ACL} חוסם גם תעבורה שהנתב עצמו שולח (למשל \enLR{ping} מהנתב)?"}\newline ת: לא. \enLR{ACL} בודק תעבורה ש\underline{עוברת דרך} הנתב, לא תעבורה שהנתב עצמו יוצר. לכן \enLR{ping} מהנתב עצמו יעבור גם אם יש \enLR{ACL} חוסם.\par
+
+\subheading{חומות אש מתקדמות}
+
+\textbf{ש: "מה ההבדל בין חומת אש \enLR{stateless} ל-\enLR{stateful}?"}\newline ת: \textbf{\enLR{Stateless}} \enLR{(ACL} רגיל) בודקת כל חבילה בנפרד – לא "זוכרת" שיחות, אז צריך לפתוח ידנית פורטים לתשובות. \textbf{\enLR{Stateful}} \enLR{(ZPF/CBAC)} זוכרת שיחות שיצאו, ומאפשרת רק את התשובות התואמות להיכנס – בטוח וקל בהרבה.\par
+
+\textbf{ש: "ב-\enLR{ZPF} הגדרתי \enLR{INSIDE}→\enLR{OUTSIDE} עם \enLR{inspect.} איך התשובות חוזרות אם אין \enLR{zone-pair} בכיוון ההפוך?"}\newline ת: זה בדיוק מה ש-\code{inspect} עושה: הנתב זוכר את השיחה בטבלת \enLR{state}, וכשמגיעה תשובה תואמת – היא עוברת אוטומטית, בלי צורך ב-\enLR{zone-pair} הפוך. תעבורה \underline{חדשה} מבחוץ עדיין נחסמת.\par
+
+\textbf{ש: "מה ההבדל בין \enLR{inspect} ל-\enLR{pass} ב-\enLR{ZPF}?"}\newline ת: \code{inspect} עוקב אחרי השיחה ומאפשר תשובות אוטומטית \enLR{(stateful).} \code{pass} רק מעביר בכיוון אחד בלי מעקב – לתשובה צריך \enLR{pass} נפרד בכיוון ההפוך. כמעט תמיד רוצים \enLR{inspect.}\par
+
+\textbf{ש: "מה זה \enLR{DMZ} ולמה צריך אותו?"}\newline ת: אזור "מפורז" בין הרשת הפנימית לאינטרנט, שבו יושבים השרתים הציבוריים (אתר, מייל). הרעיון: אם שרת ב-\enLR{DMZ} נפרץ, התוקף עדיין לא נמצא ברשת הפנימית – יש חומת אש נוספת בין ה-\enLR{DMZ} לפנים.\par
+
+\textbf{ש: "אם יש לי חומת אש, אני מוגן לגמרי?"}\newline ת: לא. חומת אש בודקת כתובות ופורטים, אבל התקפה יכולה להגיע בפורט שפתחת \enLR{(SQL injection} דרך פורט \enLR{80).} לכן צריך גם \enLR{IPS} (פרק \enLR{5)} שבודק תוכן, וגם הגנות בשכבה \enLR{2} (פרק \enLR{6). "}הגנה לעומק".\par
+
+\sectionheading{מילון מונחים – הגדרות}
+
+הגדרות תמציתיות של המונחים המרכזיים בפרק. שימושי גם כדף עזר לבחינה.\par
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{הגדרה} & \textbf{מונח} \\
+\hline
+\endhead
+מערכת שמסננת תעבורה בין רשתות לפי מדיניות \enLR{(permit/deny).} & \textbf{חומת אש \enLR{(Firewall)}} \\
+\hline
+רשימה סדורה של כללי \enLR{permit/deny}; נסרקת מלמעלה למטה, עצירה בהתאמה ראשונה. & \textbf{\enLR{ACL (Access Control List)}} \\
+\hline
+חסימה סמויה של כל מה שלא הותר במפורש, בסוף כל \enLR{ACL.} & \textbf{\enLR{implicit deny}} \\
+\hline
+סינון כל חבילה בנפרד, ללא זכירת שיחות \enLR{(ACL} רגיל). & \textbf{\enLR{Stateless}} \\
+\hline
+זכירת שיחות שיצאו והתרת התשובות התואמות בלבד \enLR{(ZPF/CBAC/ASA).} & \textbf{\enLR{Stateful}} \\
+\hline
+מספרים \enLR{1}–\enLR{99}; בודק רק כתובת מקור; ממקמים קרוב ליעד. & \textbf{\enLR{ACL} סטנדרטי} \\
+\hline
+מספרים \enLR{100}–\enLR{199}; בודק מקור, יעד, פרוטוקול ופורט; ממקמים קרוב למקור. & \textbf{\enLR{ACL} מורחב} \\
+\hline
+מסכה הפוכה למסכת רשת: \enLR{0}=חייב להתאים, \enLR{1}=לא אכפת. = \enLR{255.255.255.255} פחות המסכה. & \textbf{\enLR{Wildcard mask}} \\
+\hline
+כיוון החלת \enLR{ACL} מנקודת מבט הנתב: נכנס לממשק \enLR{(in)} או יוצא ממנו \enLR{(out).} & \textbf{\enLR{in / out}} \\
+\hline
+קיצורי \enLR{wildcard: host}=כתובת בודדת \enLR{(0.0.0.0), any}=כל כתובת \enLR{(255.255.255.255).} & \textbf{\enLR{host / any}} \\
+\hline
+מילת מפתח ב-\enLR{ACL} המתירה רק חבילות תשובה של חיבור \enLR{TCP} קיים. & \textbf{\enLR{established}} \\
+\hline
+כלל \enLR{ACL} שתקף רק בזמנים מוגדרים (דורש שעון \enLR{NTP).} & \textbf{\enLR{Time-based ACL}} \\
+\hline
+\enLR{ACL '}מראה' שיוצר אוטומטית התר זמני לתשובות של תעבורה שיצאה. & \textbf{\enLR{Reflexive ACL}} \\
+\hline
+דלת זמנית שנפתחת רק לאחר שהמשתמש מזדהה בנתב. & \textbf{\enLR{Dynamic ACL (Lock-and-Key)}} \\
+\hline
+חומת אש \enLR{stateful} קלאסית ב-\enLR{IOS}; בוחנת תעבורה יוצאת ופותחת התר לתשובות. & \textbf{\enLR{CBAC}} \\
+\hline
+חומת אש מודרנית ב-\enLR{IOS} מבוססת אזורים ומדיניות בין זוגות אזורים. & \textbf{\enLR{ZPF (Zone-Based Firewall)}} \\
+\hline
+אזור אבטחה שממשקים משויכים אליו; מדיניות מוגדרת בין זוג אזורים בכיוון אחד. & \textbf{\enLR{Zone / Zone-pair}} \\
+\hline
+פעולות \enLR{ZPF: inspect=stateful} (תשובות אוטומטית), \enLR{pass}=מעבר חד-כיווני, \enLR{drop}=חסימה. & \textbf{\enLR{inspect / pass / drop}} \\
+\hline
+אזור מפורז לשרתים ציבוריים, מבודד מהרשת הפנימית. & \textbf{\enLR{DMZ}} \\
+\hline
+חסימת כתובות מקור מזויפות (פרטיות/פנימיות) בכניסה מהאינטרנט. & \textbf{\enLR{Anti-spoofing}} \\
+\hline
+\end{xltabular}
+\end{document}

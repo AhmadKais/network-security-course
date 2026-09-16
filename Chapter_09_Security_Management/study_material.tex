@@ -1,0 +1,358 @@
+\documentclass[11pt]{article}
+\usepackage{fontspec}
+\directlua{luaotfload.add_fallback("hebfb",{"DejaVu Sans:mode=harf"})}
+\usepackage{polyglossia}
+\setdefaultlanguage{hebrew}
+\setotherlanguage{english}
+\setmainfont{Noto Sans Hebrew}[Script=Hebrew,RawFeature={fallback=hebfb}]
+\newfontfamily\codefont{DejaVu Sans Mono}[RawFeature={fallback=hebfb}]
+\usepackage[a4paper,margin=18mm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{mdframed}
+\usepackage{tabularx}
+\usepackage{xltabular}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\setlist{leftmargin=1.6em,itemsep=1pt,topsep=2pt}
+% colors
+\definecolor{h1}{HTML}{1E3A8A}\definecolor{h2}{HTML}{1E40AF}\definecolor{h3}{HTML}{0F172A}
+\definecolor{subgray}{HTML}{64748B}\definecolor{hdrbg}{HTML}{E0E7FF}
+\definecolor{cfg}{HTML}{E2E8F0}\definecolor{cbg}{HTML}{0F172A}\definecolor{cbold}{HTML}{7DD3FC}\definecolor{ccom}{HTML}{94A3B8}
+\definecolor{metabg}{HTML}{F1F5F9}
+\newcommand{\enLR}[1]{\textenglish{#1}}
+\newcommand{\code}[1]{\textenglish{\codefont #1}}
+\newcommand{\chapterheading}[1]{\vspace{2pt}{\LARGE\bfseries\color{h1}#1\par}\vskip2pt{\color{h1}\hrule height 2pt}\vskip6pt}
+\newcommand{\sectionheading}[1]{\vskip10pt\penalty-200{\large\bfseries\color{h2}#1\par}\vskip3pt}
+\newcommand{\subheading}[1]{\vskip6pt{\bfseries\color{h3}#1\par}\vskip2pt}
+\newcommand{\boxtitle}[1]{{\bfseries\color{boxti}#1}}
+% box environments (right border, tinted bg)
+\newmdenv[topline=false,bottomline=false,leftline=false,rightline=true,linewidth=2pt,innermargin=0pt,skipabove=6pt,skipbelow=6pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt]{genericbox}
+\definecolor{faqbg}{HTML}{ECFDF5}\definecolor{faqfr}{HTML}{10B981}\definecolor{faqti}{HTML}{065F46}
+\definecolor{misbg}{HTML}{FEF2F2}\definecolor{misfr}{HTML}{EF4444}\definecolor{misti}{HTML}{991B1B}
+\definecolor{tipbg}{HTML}{FFFBEB}\definecolor{tipfr}{HTML}{F59E0B}\definecolor{tipti}{HTML}{92400E}
+\definecolor{exabg}{HTML}{EFF6FF}\definecolor{exafr}{HTML}{3B82F6}\definecolor{exati}{HTML}{1E3A8A}
+\definecolor{defbg}{HTML}{F5F3FF}\definecolor{deffr}{HTML}{8B5CF6}\definecolor{defti}{HTML}{5B21B6}
+\definecolor{stobg}{HTML}{FDF4FF}\definecolor{stofr}{HTML}{D946EF}\definecolor{stoti}{HTML}{86198F}
+\definecolor{exbg}{HTML}{F0FDFA}\definecolor{exfr}{HTML}{14B8A6}\definecolor{exti}{HTML}{115E59}
+\newenvironment{faqbox}{\colorlet{boxti}{faqti}\begin{mdframed}[backgroundcolor=faqbg,linecolor=faqfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{mistakebox}{\colorlet{boxti}{misti}\begin{mdframed}[backgroundcolor=misbg,linecolor=misfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{tipbox}{\colorlet{boxti}{tipti}\begin{mdframed}[backgroundcolor=tipbg,linecolor=tipfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{exambox}{\colorlet{boxti}{exati}\begin{mdframed}[backgroundcolor=exabg,linecolor=exafr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{defbox}{\colorlet{boxti}{defti}\begin{mdframed}[backgroundcolor=defbg,linecolor=deffr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{storybox}{\colorlet{boxti}{stoti}\begin{mdframed}[backgroundcolor=stobg,linecolor=stofr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{exbox}{\colorlet{boxti}{exti}\begin{mdframed}[backgroundcolor=exbg,linecolor=exfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{metabox}{\begin{mdframed}[backgroundcolor=metabg,linewidth=0pt,innertopmargin=5pt,innerbottommargin=5pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=4pt,skipbelow=8pt]}{\end{mdframed}}
+\newmdenv[backgroundcolor=cbg,linewidth=0pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=8pt]{codebox}
+\setlength{\parindent}{0pt}\setlength{\parskip}{4pt}
+\renewcommand{\thepage}{\enLR{\arabic{page}}}
+\pagestyle{fancy}\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}
+\begin{document}
+\sloppy
+\chapterheading{פרק \enLR{9} – ניהול אבטחת רשת מתקדם}{\small\color{subgray}\enLR{11} שעות עיוני + \enLR{3} מעשי · שבועות \enLR{27}–\enLR{29}\par}\vskip4pt
+
+\begin{metabox}\textbf{מטרות:} עיצוב רשת מאובטחת · ניתוח פגיעות · ניהול סיכונים · הגנה עצמית · \enLR{Nessus/Nmap}\\ \textbf{בבגרות:} בקרות מנהלי/פיזי/לוגי, \enLR{Nmap}, אתיקה וחוק\end{metabox}
+
+\begin{defbox}\boxtitle{לפני שמתחילים – מהניהול הטכני לניהול הארגוני (למי שאין רקע)}\par  עד כה למדנו \underline{כלים} (חומת אש, הצפנה, \enLR{VPN).} פרק זה עוסק ב\underline{ניהול} – ההחלטות והנהלים סביב הכלים:  \textbf{סיכון \enLR{(Risk)}} – ההסתברות שמשהו רע יקרה, כפול הנזק. אבטחה = ניהול סיכונים, לא ביטולם המוחלט (שבלתי אפשרי). \textbf{מדיניות \enLR{(Policy)}} – מסמך שקובע מה מותר ומה אסור בארגון (למשל "אסור להתחבר לרשת הארגון מ-\enLR{Wi-Fi} ציבורי"). \textbf{בקרה \enLR{(Control)}} – כל אמצעי שמקטין סיכון. יש שלושה סוגים: \textbf{מנהלית} (נהלים), \textbf{פיזית} (מנעולים), \textbf{לוגית} (סיסמאות, הצפנה). \textbf{גיבוי \enLR{(Backup)}} – עותק של המידע שנשמר בנפרד, כדי לשחזר אחרי תקלה/מתקפה. \textbf{בדיקת חדירה \enLR{(Penetration Test)}} – לשכור "האקר טוב" שינסה לפרוץ בכוונה, כדי למצוא חולשות לפני שהרעים ימצאו.  \textbf{הרעיון:} הפרק מחבר את כל הקורס – איך משלבים את כל הכלים לכדי תוכנית אבטחה שלמה לארגון, ומה החוק והאתיקה דורשים.\end{defbox}
+
+\sectionheading{\enLR{9.1} מהניתוק הטכני לתמונה הניהולית}
+
+שמונת הפרקים הקודמים היו על \emph{כלים} \enLR{(ACL, IPS, VPN}…). פרק \enLR{9} הוא על \emph{המערכת הניהולית} שמחליטה איזה כלי, איפה, וכמה – כי אבטחה מושלמת עולה אינסוף, ואבטחה אפסית עולה בפריצה. זהו איזון של סיכון מול עלות. זה גם הפרק שקושר את הקורס לעולם המקצועי \enLR{(SOC, CISO}, ביקורת, חוק).\par
+
+\sectionheading{\enLR{9.2} ניהול סיכונים \enLR{(Risk Management)}}
+
+\begin{defbox}\boxtitle{הנוסחה}\par  \textbf{סיכון = איום × פגיעות × ערך הנכס}. אם אחד מהם אפס – אין סיכון. אי אפשר לבטל איומים (הם קיימים), אבל אפשר להקטין פגיעות (בקרות) ולהקטין את ההשפעה.\end{defbox}
+
+\subheading{תהליך ניהול הסיכונים}
+
+\begin{enumerate}
+\item \textbf{זיהוי נכסים} – מה יש לנו ומה ערכו (מידע, שרתים, מוניטין).
+\item \textbf{הערכת איומים ופגיעויות} – מה עלול לקרות (סריקות, ראיונות, בדיקות – \enLR{9.5).}
+\item \textbf{ניתוח סיכונים} – \textbf{כמותי} (בכסף: \enLR{ALE = SLE} × \enLR{ARO} – ההפסד השנתי הצפוי) או \textbf{איכותי} (מטריצה גבוה/בינוני/נמוך).
+\item \textbf{טיפול בסיכון} – ראו להלן.
+\item \textbf{ניטור וחזרה} – סיכון משתנה עם הזמן.
+\end{enumerate}
+
+\subheading{ארבע דרכי טיפול בסיכון (נושא מרכזי)}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{דוגמה} & \textbf{משמעות} & \textbf{אסטרטגיה} \\
+\hline
+\endhead
+התקנת \enLR{IPS}; הפסקת שירות ישן ופגיע & בקרות שמקטינות סיכון, או הפסקת הפעילות המסוכנת & \textbf{הפחתה / הימנעות} \enLR{(Mitigate/Avoid)} \\
+\hline
+ביטוח סייבר; מיקור חוץ לענן & מעבירים את הנטל לגורם אחר & \textbf{העברה} \enLR{(Transfer)} \\
+\hline
+לא מצפינים מסך פנימי בעל ערך נמוך & הסיכון נמוך/עלות הטיפול גבוהה – חיים איתו במודע & \textbf{קבלה} \enLR{(Accept)} \\
+\hline
+רשת נפרדת למערכת \enLR{legacy; DMZ; air-gap} & מפרידים את המערכת המסוכנת & \textbf{בידוד} \enLR{(Isolation)} \\
+\hline
+\end{xltabular}
+
+\sectionheading{\enLR{9.3} עקרונות עיצוב רשת מאובטחת}
+
+\begin{itemize}
+\item \textbf{הגנה לעומק} \enLR{(Defense in Depth)} – שכבות עצמאיות; כשל באחת לא מפיל הכול.
+\item \textbf{מינימום הרשאות} \enLR{(Least Privilege)} – כל אחד מקבל בדיוק מה שצריך, לא יותר.
+\item \textbf{הפרדת תפקידים} \enLR{(Separation of Duties)} – פעולה קריטית דורשת שני אנשים; מי שמאשר תשלום ≠ מי שמבצע. מונע הונאה פנימית.
+\item \textbf{סבב תפקידים} \enLR{(Job Rotation)} – חושף הונאות, מפחית תלות באדם יחיד.
+\item \textbf{\enLR{Fail-Secure}} – במקרה כשל, ברירת המחדל היא לחסום \enLR{(deny by default).}
+\item \textbf{\enLR{Zero Trust}} – "לעולם אל תסמוך, תמיד תאמת"; אין "פנים מהימן".
+\item \textbf{\enLR{KISS} / פשטות} – מערכת מורכבת קשה לאבטח; מורכבות היא אויב האבטחה.
+\item \textbf{מגוון הגנות} \enLR{(Diversity)} – ספקים שונים בשכבות שונות, כדי שחולשה אחת לא תפיל הכול.
+\end{itemize}
+
+\begin{exambox}\boxtitle{בבגרות (שאלה \enLR{6}ב) – שלוש קטגוריות בקרה}\par  \textbf{מנהלית}: כתיבת מדיניות, הנחיות, נהלים, תקנים, איסור עבודה ב-\enLR{Zoom} מרשת לא מאובטחת.\newline  \textbf{פיזית}: הגנה על חדר שרתים וארונות תקשורת.\newline  \textbf{לוגית}: שימוש ברשימות גישה, סיסמאות, מערכות למניעת גישה.\end{exambox}
+
+חלוקה משלימה לפי \emph{מתי} הבקרה פועלת: \textbf{מונעת} \enLR{(Preventive} – מנעול, הצפנה), \textbf{מגלה} \enLR{(Detective} – \enLR{IDS}, מצלמה, לוג), \textbf{מתקנת} \enLR{(Corrective} – גיבוי, \enLR{patch)}, \textbf{מרתיעה} \enLR{(Deterrent} – שלט אזהרה), \textbf{משחזרת} \enLR{(Recovery} – \enLR{DRP).}\par
+
+\sectionheading{\enLR{9.4} מדיניות, נהלים ותקנים}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+מסמך-על: \emph{מה} ולמה. "כל גישה מרחוק דרך \enLR{VPN".} & \textbf{מדיניות \enLR{(Policy)}} \\
+\hline
+חובה מדידה: "סיסמה ≥ \enLR{12} תווים, \enLR{MFA".} & \textbf{תקן \enLR{(Standard)}} \\
+\hline
+המלצה גמישה. & \textbf{הנחיה \enLR{(Guideline)}} \\
+\hline
+צעד-אחר-צעד: \emph{איך} מגדירים \enLR{VPN.} & \textbf{נוהל \enLR{(Procedure)}} \\
+\hline
+\end{xltabular}
+
+מסמכים חשובים: \textbf{\enLR{AUP}} \enLR{(Acceptable Use Policy} – מה מותר לעובד לעשות עם הציוד), מדיניות סיסמאות, מדיניות גיבוי, מדיניות תגובה לאירועים, סיווג מידע (סודי/פנימי/ציבורי).\par
+
+\sectionheading{\enLR{9.5} בדיקות אבטחה: הערכה, סריקה ובדיקת חדירה}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{מה זה} & \textbf{סוג בדיקה} \\
+\hline
+\endhead
+בדיקת עמידה במדיניות/תקן \enLR{(ISO 27001)} – מסמכים ותצורות & \textbf{\enLR{Security Audit}} \\
+\hline
+סריקה אוטומטית לזיהוי פגיעויות ידועות \enLR{(Nessus)} & \textbf{\enLR{Vulnerability Assessment}} \\
+\hline
+ניסיון פריצה מבוקר – "לחשוב כמו תוקף" ולהוכיח ניצול & \textbf{\enLR{Penetration Test}} \\
+\hline
+בדיקה שיטתית שהבקרות עובדות כמתוכנן (מוזכר בתכנית) & \textbf{\enLR{ST\&E}} \enLR{(Security Test \& Evaluation)} \\
+\hline
+\end{xltabular}
+
+\subheading{סוגי \enLR{pentest}}
+
+\textbf{\enLR{Black box}} (התוקף לא יודע כלום – כמו תוקף חיצוני), \textbf{\enLR{White box}} (יודע הכול – יעיל, מהיר), \textbf{\enLR{Gray box}} (ידע חלקי – כמו עובד/משתמש). שלבים: תכנון והרשאה → סיור → סריקה → ניצול → דוח.\par
+
+\begin{mistakebox}\boxtitle{חובה: אישור בכתב \enLR{(Scope \& Authorization)}}\par  בדיקת חדירה ללא אישור כתוב = עבירה פלילית. חייבים: היקף מוגדר (אילו כתובות), חלון זמן, "\enLR{get out of jail" letter}, ואיש קשר. זה גם מה שמלמדים לתלמידים לגבי הכלים בהמשך.\end{mistakebox}
+
+\sectionheading{\enLR{9.6} כלי סריקת פגיעויות (נשאל בבגרות)}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{מה עושה} & \textbf{כלי} \\
+\hline
+\endhead
+\textbf{גילוי, ניתוח ובקרה ברשתות תקשורת}: מיפוי מארחים חיים, סריקת פורטים פתוחים, זיהוי שירותים וגרסאות (-\enLR{sV)}, זיהוי מערכת הפעלה (-\enLR{O).} זו התשובה בבגרות. \enLR{Zenmap} = ה-\enLR{GUI.} & \textbf{\enLR{Nmap}} \enLR{(Network Mapper)} \\
+\hline
+סורק פגיעויות: מריץ אלפי בדיקות מול מארח ומדווח על חולשות ידועות \enLR{(CVE)} עם דירוג חומרה והמלצות תיקון. (התכנית כותבת "\enLR{NESUS".)} & \textbf{\enLR{Nessus}} \\
+\hline
+סורק פורטים ותיקוני \enLR{TCP/UDP} למערכות \enLR{Windows} (ישן; מוזכר בתכנית). & \textbf{\enLR{SuperScan}} \\
+\hline
+חלופה חינמית ל-\enLR{Nessus} & \enLR{OpenVAS} \\
+\hline
+ניתוח תעבורה \enLR{(packet analyzer)} & \enLR{Wireshark} \\
+\hline
+מסגרת לניצול פגיעויות (בדיקות חדירה) & \enLR{Metasploit} \\
+\hline
+הפצת לינוקס עם כל כלי הבדיקה מותקנים & \enLR{Kali Linux} \\
+\hline
+\end{xltabular}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+\textcolor{ccom}{\texthebrew{! דוגמאות \enLR{Nmap} (רק ברשת מעבדה מבודדת ובאישור!)}}\\
+nmap 192.168.1.0/24              \textcolor{ccom}{\texthebrew{\# אילו מארחים חיים ואילו פורטים}}\\
+nmap -sV 192.168.1.10            \textcolor{ccom}{\texthebrew{\# גרסאות שירותים}}\\
+nmap -O 192.168.1.10             \textcolor{ccom}{\texthebrew{\# ניחוש מערכת הפעלה}}\\
+nmap -sS -p 1-1000 192.168.1.10  \textcolor{ccom}{\texthebrew{\# \enLR{SYN scan}}}
+\end{english}\end{codebox}
+
+\begin{storybox}\boxtitle{סיפור מהחיים: \enLR{Equifax} – פגיעות אחת שלא תוקנה \enLR{(2017)}}\par  דליפת המידע של \enLR{Equifax} חשפה נתונים של \enLR{147} מיליון אמריקאים (מספרי ביטוח לאומי, תאריכי לידה). הסיבה: פגיעות ידועה ב-\enLR{Apache Struts (CVE-2017-5638)} עם תיקון זמין \emph{חודשיים} קודם. סורק פגיעויות היה מוצא אותה תוך דקות – אבל התהליך של \enLR{Equifax} לא סרק את השרת הזה. הלקח: ניהול פגיעויות הוא לא אירוע חד-פעמי אלא תהליך מתמשך \enLR{(scan} → \enLR{prioritize} → \enLR{patch} → \enLR{verify).} זה הלב של פרק \enLR{9.}\end{storybox}
+
+\sectionheading{\enLR{9.7} הגנה עצמית ותגובה לאירועים}
+
+"מערכות הגנה עצמית" בתכנית: היכולת של הרשת לזהות ולהגיב אוטומטית. סיסקו קראה לזה \textbf{\enLR{SDN}} \enLR{(Self-Defending Network)} בעבר – שילוב \enLR{IPS, NAC}, קורלציה ותגובה אוטומטית (בידוד מחשב נגוע). היום: \textbf{\enLR{SOAR}} \enLR{(Security Orchestration, Automation and Response)} ו-\textbf{\enLR{XDR}}.\par
+
+\subheading{\enLR{Incident Response} – \enLR{6} שלבים \enLR{(SANS/NIST)}}
+
+\begin{center}\fbox{\enLR{Preparation}} \;→\; \fbox{\enLR{Identification}} \;→\; \fbox{\enLR{Containment}} \;→\; \fbox{\enLR{Eradication}} \;→\; \fbox{\enLR{Recovery}} \;→\; \fbox{\enLR{Lessons Learned}}\end{center}
+
+הכנה (נהלים, כלים) → זיהוי \enLR{(SIEM, IDS)} → בלימה (ניתוק מהרשת) → מיגור (הסרת הנוזקה) → שחזור (החזרה לפעילות) → הפקת לקחים. הצוות: \textbf{\enLR{CSIRT/CERT}}.\par
+
+\sectionheading{\enLR{9.8} המשכיות עסקית והתאוששות מאסון}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{\enLR{DRP (Disaster Recovery Plan)}} & \textbf{\enLR{BCP (Business Continuity Plan)}} & \textbf{} \\
+\hline
+\endhead
+שחזור מערכות ה-\enLR{IT} אחרי אסון & שהעסק ימשיך לתפקד בזמן אסון & מטרה \\
+\hline
+טכנולוגי (שרתים, נתונים) & כל העסק (אנשים, תהליכים, מבנים) & היקף \\
+\hline
+\end{xltabular}
+
+\textbf{\enLR{BIA}} \enLR{(Business Impact Analysis)} מזהה תהליכים קריטיים ומגדיר שני יעדים: \textbf{\enLR{RTO}} \enLR{(Recovery Time Objective} – כמה זמן מותר להיות מושבתים) ו-\textbf{\enLR{RPO}} \enLR{(Recovery Point Objective} – כמה נתונים מותר לאבד = תדירות הגיבוי). \textbf{\enLR{WCS}} \enLR{(Worst Case Scenario} – בתכנית) = תכנון לתרחיש הגרוע ביותר.\par
+
+\subheading{גיבויים ואתרי גיבוי}
+
+\begin{itemize}
+\item \textbf{כלל \enLR{3-2-1}}: \enLR{3} עותקים, \enLR{2} מדיות שונות, \enLR{1} מחוץ לאתר \enLR{(off-site).} קריטי נגד כופרה.
+\item סוגים: מלא \enLR{(Full)}, הפרשי \enLR{(Differential)}, משלים \enLR{(Incremental).}
+\item אתרי גיבוי: \textbf{\enLR{Hot site}} (פעיל, מיידי, יקר), \textbf{\enLR{Warm site}} (חלקי), \textbf{\enLR{Cold site}} (מבנה ריק, זול, איטי).
+\item \textbf{בדיקת גיבוי} – גיבוי שלא נבדק שחזור ממנו = לא גיבוי. תרגלו שחזור!
+\end{itemize}
+
+\sectionheading{\enLR{9.9 SDLC} – פיתוח מאובטח}
+
+\textbf{\enLR{SDLC}} \enLR{(Software/System Development Life Cycle)} – מחזור חיי פיתוח מערכת. אבטחה חייבת להיכנס \textbf{מההתחלה} ("\enLR{Security by Design")}, לא כטלאי בסוף – זול ויעיל פי כמה. שלבים: תכנון → ניתוח דרישות → עיצוב → מימוש → בדיקות → הטמעה → תחזוקה (וזה חוזר במעגל). התכנית מציינת "תוכנית מערך \enLR{SDLC"} ו"תחזוקה ותפעול \enLR{SDLC".}\par
+
+ב-\textbf{\enLR{DevSecOps}} משלבים בדיקות אבטחה אוטומטיות בכל \enLR{commit.} עקרונות קוד מאובטח: בדיקת קלט (נגד \enLR{injection} ו-\enLR{buffer overflow} – פרק \enLR{1), least privilege}, ניהול סודות נכון, עדכון ספריות \enLR{(Log4Shell).}\par
+
+\sectionheading{\enLR{9.10} אבטחת מערכות מגוונות ושילוב גורמים}
+
+\begin{itemize}
+\item \textbf{מייל} – \enLR{ESA/anti-spam, SPF/DKIM/DMARC} (נגד זיוף שולח – פרק \enLR{1 phishing).}
+\item \textbf{טלפוניה \enLR{(VoIP)}} – \enLR{SRTP, voice VLAN} (פרק \enLR{6).}
+\item \textbf{אפליקציות} – \enLR{WAF, OWASP Top 10.}
+\item \textbf{אלחוט} – \enLR{WPA3-Enterprise, WIPS} (פרק \enLR{6).}
+\item \textbf{שילוב גורמים} – לקוחות, שותפים, עובדים: לכל אחד רמת גישה ומדיניות \enLR{(least privilege}, פילוח).
+\item ניהול מרכזי וחלוקת תפקידים \enLR{(SOC, NOC}, הפרדת תפקידים).
+\end{itemize}
+
+\sectionheading{\enLR{9.11} אתיקה, חוק ואחריות מקצועית}
+
+\begin{mistakebox}\boxtitle{חובה ללמד – זו לא רק "המלצה"}\par  בישראל: \textbf{חוק המחשבים, התשנ"ה-\enLR{1995}} אוסר חדירה לחומר מחשב שלא כדין (סעיף \enLR{4)} – עד \enLR{3} שנות מאסר; שיבוש/הפרעה – עד \enLR{5} שנים. \textbf{חוק הגנת הפרטיות} ותקנות אבטחת מידע \enLR{(2017)} מחייבים ארגונים. באירופה: \textbf{\enLR{GDPR}} (קנסות עד \enLR{4\%} מהמחזור). הבהירו לתלמידים: הרצת \enLR{Nmap} או כלי פריצה על רשת שאינה שלכם וללא אישור בכתב – עבירה פלילית, גם "רק כדי לבדוק".\end{mistakebox}
+
+\begin{itemize}
+\item \textbf{\enLR{Hacker} אתי \enLR{(White hat)}} פועל תמיד עם אישור והיקף מוגדר.
+\item קודים אתיים מקצועיים: \enLR{(ISC)}², \enLR{EC-Council.}
+\item \textbf{\enLR{Responsible/Coordinated Disclosure}} – מצאתם פגיעות? מדווחים ליצרן ונותנים זמן לתקן לפני פרסום.
+\item דילמות: פרטיות מול ניטור עובדים; חשיפת פגיעות מול ניצולה.
+\end{itemize}
+
+\sectionheading{\enLR{9.12} תרגילים לתלמידים}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{1} – סיווג בקרות}\par  סווגו כל בקרה (מנהלית/פיזית/לוגית) וגם (מונעת/מגלה/מתקנת):\newline  א. מצלמת אבטחה בכניסה. ב. נוהל גיבוי יומי. ג. חומת אש. ד. הדרכת מודעות לעובדים. ה. גיבוי ששוחזר אחרי כופרה. ו. מנעול ביומטרי לחדר שרתים. \par\vskip2pt\hrule\vskip3pt\textbf{}א. פיזית/מגלה ב. מנהלית/מתקנת (מכינה לשחזור) ג. לוגית/מונעת ד. מנהלית/מונעת ה. לוגית או מנהלית/מתקנת \enLR{(recovery)} ו. פיזית/מונעת\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{2} – טיפול בסיכון}\par  לכל מצב בחרו: הפחתה / העברה / קבלה / בידוד.\newline  א. שרת ישן הכרחי שאי אפשר לעדכן. ב. רכשו ביטוח סייבר. ג. סיכון נמוך של הדפסה בזבזנית – מתעלמים. ד. מתקינים \enLR{IPS} מול האינטרנט. \par\vskip2pt\hrule\vskip3pt\textbf{}א. בידוד (רשת נפרדת) ב. העברה ג. קבלה ד. הפחתה\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{3} – \enLR{RTO/RPO}}\par  חנות אונליין מגבה כל \enLR{6} שעות ולוקח לה \enLR{2} שעות לשחזר. אירע כשל ב-\enLR{13:00}, הגיבוי האחרון ב-\enLR{12:00.} א. כמה נתונים אבדו \enLR{(RPO} בפועל)? ב. מתי חוזרים לפעול \enLR{(RTO)}? ג. אם החברה דורשת \enLR{RPO} של שעה – מה משנים? \par\vskip2pt\hrule\vskip3pt\textbf{}א. שעה \enLR{(12:00}–\enLR{13:00).} ב. \textasciitilde{}\enLR{15:00 (2} שעות שחזור). ג. מגבים כל שעה (או רפליקציה רציפה) כדי לצמצם את חלון האובדן.\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{4} – דיון אתי}\par  תלמיד גילה שאתר בית הספר חושף ציונים דרך שינוי כתובת ב-\enLR{URL.} מה עליו לעשות (ומה אסור)? נמקו לפי חוק המחשבים. \par\vskip2pt\hrule\vskip3pt\textbf{}מותר/ראוי: לדווח למורה/מנהל הרשת מיד, לתעד בלי לגשת לנתונים של אחרים. אסור: להוריד/לשנות ציונים, לשתף, "לבדוק עד כמה זה גרוע" בגישה נרחבת – זו חדירה לחומר מחשב שלא כדין. \enLR{Responsible disclosure.}\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{5} – פרויקט מסכם}\par  בחרו ארגון דמיוני (מרפאה / חנות / בית ספר). כתבו מסמך של עמוד: \enLR{3} נכסים קריטיים, איום ופגיעות לכל אחד, ובקרה מכל פרק בקורס שתגן עליו. (זה מחבר את כל \enLR{9} הפרקים.) \par\vskip2pt\hrule\vskip3pt\textbf{}דוגמה למרפאה: נכס=תיקים רפואיים → הצפנה \enLR{(7)+ACL (4)+AAA (3)}; נכס=זמינות מערכת → \enLR{IPS (5)}+גיבוי/\enLR{DRP (9)+storm control (6)}; נכס=גישה מרחוק של רופאים → \enLR{VPN (8)+MFA (3)}+נתב מוקשח \enLR{(2).} מודעות עובדים נגד \enLR{phishing (1).}\end{exbox}
+
+\sectionheading{\enLR{9.13} שאלות בסגנון בגרות}
+
+\begin{exambox}\boxtitle{שאלה \enLR{1}}\par  התאימו אמצעי אבטחה (מנהלי/פיזי/לוגי) לתיאור: \enLR{(1)} הגנה על חדר שרתים; \enLR{(2)} כתיבת מדיניות ונהלים; \enLR{(3)} שימוש ברשימות גישה וסיסמאות. \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{(1)} פיזי \enLR{(2)} מנהלי \enLR{(3)} לוגי\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{2}}\par  מה מאפשרת תוכנת \enLR{Nmap}? \enLR{1.} זיהוי וירוסים \enLR{2.} זיהוי סוסים טרויאנים \enLR{3.} גילוי, ניתוח ובקרה ברשתות תקשורת \enLR{4.} חסימת פורטים \par\vskip2pt\hrule\vskip3pt\textbf{}\textbf{\enLR{3}} – גילוי מארחים, סריקת פורטים וזיהוי שירותים. אינה אנטי-וירוס ואינה חוסמת.\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{3}}\par  מהן ארבע הדרכים לטיפול בסיכון? תנו דוגמה לכל אחת. \par\vskip2pt\hrule\vskip3pt\textbf{}הפחתה \enLR{(IPS)}, העברה (ביטוח), קבלה (חיים עם סיכון נמוך), בידוד/הימנעות (רשת נפרדת/הפסקת שירות).\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{4}}\par  מה ההבדל בין \enLR{BCP} ל-\enLR{DRP}? \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{BCP} – המשכיות תפקוד כלל העסק בזמן אסון (אנשים, תהליכים). \enLR{DRP} – שחזור מערכות ה-\enLR{IT} והנתונים.\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{5}}\par  עובד הריץ \enLR{Nmap} על רשת חברה מתחרה "כדי לבדוק". האם זו עבירה? נמקו. \par\vskip2pt\hrule\vskip3pt\textbf{}כן – סריקה של רשת שאינה שלו וללא אישור מהווה ניסיון חדירה/גישה לפי חוק המחשבים התשנ"ה-\enLR{1995.} גם "רק בדיקה" אסורה ללא היקף ואישור בכתב.\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{6}}\par  מדוע עדיף לשלב אבטחה כבר בשלב העיצוב של \enLR{SDLC} ולא בסוף? \par\vskip2pt\hrule\vskip3pt\textbf{}תיקון פגיעות בשלב מוקדם זול ויעיל בהרבה; "\enLR{Security by Design"} מונע פגמים מבניים שקשה וריקם לתקן במערכת גמורה.\end{exambox}
+
+\sectionheading{\enLR{9.14} מעבדה \enLR{(3} שעות)}
+
+\begin{enumerate}
+\item \textbf{\enLR{Nmap} במעבדה מבודדת בלבד} (רשת סגורה, לא רשת בית הספר, באישור): מפו מארחים, סרקו פורטים, זהו שירותים וגרסאות. דונו בכל פלט: מה תוקף לומד ומה מגן לומד.
+\item סרקו \enLR{VM} עם שירות ישן; זהו פורט/גרסה פגיעים; הציעו טיפול \enLR{(patch}/כיבוי/\enLR{ACL)} – מדגים את מעגל ניהול הפגיעויות.
+\item \textbf{תכנון (על נייר):} קבלו טופולוגיה של ארגון וסמנו את כל הבקרות מ-\enLR{9} הפרקים במקומן (נתב מוקשח, \enLR{AAA, ACL/ZPF, IPS}, מתג מאובטח, \enLR{VPN}, גיבוי).
+\item \textbf{סימולציית אירוע:} "מחשב עובד נדבק בכופרה" – עברו בכיתה את \enLR{6} שלבי ה-\enLR{Incident Response.}
+\item \textbf{פרויקט מסכם} (תרגיל \enLR{5)} כמצגת קבוצתית – חזרה מצוינת לבגרות.
+\end{enumerate}
+
+\sectionheading{בנק שאלות שתלמידים שואלים – ותשובות מוכנות}
+
+שאלות נפוצות בפרק ניהול האבטחה, עם תשובות מוכנות.\par
+
+\textbf{ש: "אם יש לנו את כל הכלים (חומת אש, \enLR{IPS, VPN)}, למה בכלל צריך 'ניהול'?"}\newline ת: כי כלים בלי מדיניות ותהליך לא מספיקים. מי מחליט מה לחסום? מי בודק שהגיבוי עובד? מה עושים כשקורה אירוע? אבטחה היא תהליך ניהולי מתמשך, לא מוצר שקונים פעם אחת.\par
+
+\textbf{ש: "אפשר להגיע לאבטחה מושלמת \enLR{(100\%)}?"}\newline ת: לא, וזו לא המטרה. אבטחה מושלמת עולה אינסוף ומשתקת עבודה. המטרה היא \underline{ניהול סיכונים}: להשקיע היכן שהסיכון (הסתברות × נזק) הכי גבוה, ולקבל סיכונים קטנים במודע.\par
+
+\textbf{ש: "מה ההבדל בין בקרה מנהלית, פיזית ולוגית?"}\newline ת: \textbf{מנהלית} = מדיניות, נהלים, הדרכות (מה שאנשים עושים). \textbf{פיזית} = מנעולים, מצלמות, חדר שרתים נעול (הגנה על החומרה). \textbf{לוגית/טכנית} = סיסמאות, הצפנה, חומת אש, \enLR{ACL} (הגנה בתוכנה). שאלה נפוצה בבגרות.\par
+
+\textbf{ש: "מה מאפשרת תוכנת \enLR{Nmap}? האם היא כלי תקיפה או הגנה?"}\newline ת: \enLR{Nmap} מגלה מארחים חיים, סורק פורטים פתוחים ומזהה שירותים/גרסאות. היא \underline{דו-שימושית}: תוקף משתמש בה לסיור (פרק \enLR{1)}, ומגן משתמש בה כדי לגלות מה חשוף ברשת שלו לפני שהתוקף יעשה זאת. היא \textbf{אינה} אנטי-וירוס ואינה חוסמת פורטים.\par
+
+\textbf{ש: "מה ההבדל בין סריקת פגיעויות \enLR{(Nessus)} לבדיקת חדירה \enLR{(pentest)}?"}\newline ת: סורק פגיעויות \enLR{(Nessus)} הוא כלי \underline{אוטומטי} שמדווח על חולשות ידועות. בדיקת חדירה היא \underline{אדם} שמנסה בפועל לנצל אותן ולפרוץ, "לחשוב כמו תוקף", ולהוכיח את הנזק. הסריקה מוצאת דלתות; ה-\enLR{pentest} בודק אילו באמת נפתחות.\par
+
+\textbf{ש: "מה ההבדל בין \enLR{BCP} ל-\enLR{DRP}?"}\newline ת: \textbf{\enLR{BCP}} (המשכיות עסקית) = איך העסק \underline{ממשיך לתפקד} בזמן אסון (אנשים, תהליכים, מבנים). \textbf{\enLR{DRP}} (התאוששות מאסון) = איך \underline{משחזרים את מערכות ה-\enLR{IT}} והנתונים. \enLR{DRP} הוא חלק טכני בתוך ה-\enLR{BCP} הרחב.\par
+
+\textbf{ש: "מהו כלל \enLR{3-2-1} לגיבויים?"}\newline ת: \enLR{3} עותקים של המידע, על \enLR{2} סוגי מדיה שונים, כשלפחות \enLR{1} נמצא \underline{מחוץ לאתר} \enLR{(off-site}/ענן). זה קריטי נגד כופרה: אם המתקפה הצפינה את הרשת, יש עותק מנותק לשחזר ממנו. וזכרו – \underline{גיבוי שלא נבדק שחזור ממנו אינו גיבוי}.\par
+
+\textbf{ש: "תלמיד מצא חולשה באתר בית הספר. מה מותר לו לעשות?"}\newline ת: לדווח מיד למורה/מנהל הרשת, ולתעד בלי לגשת למידע של אחרים. \underline{אסור} להוריד/לשנות נתונים, לשתף, או "לבדוק עד כמה זה חמור" בגישה נרחבת – זו חדירה לחומר מחשב שלא כדין (חוק המחשבים \enLR{1995).} זה נקרא \enLR{Responsible Disclosure.}\par
+
+\textbf{ש: "למה לשלב אבטחה כבר בשלב התכנון \enLR{(SDLC)} ולא בסוף?"}\newline ת: כי תיקון חולשה שהתגלתה בסוף עולה פי כמה, ולפעמים דורש לבנות מחדש. "אבטחה מהעיצוב" \enLR{(Security by Design)} זולה ויעילה בהרבה מטלאי מאוחר.\par
+
+\sectionheading{מילון מונחים – הגדרות}
+
+הגדרות תמציתיות של המונחים המרכזיים בפרק. שימושי גם כדף עזר לבחינה.\par
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{הגדרה} & \textbf{מונח} \\
+\hline
+\endhead
+תהליך זיהוי, הערכה וטיפול בסיכוני אבטחה. & \textbf{ניהול סיכונים} \\
+\hline
+= איום × פגיעות × ערך הנכס. & \textbf{סיכון \enLR{(Risk)}} \\
+\hline
+הפחתה, העברה (ביטוח), קבלה, או בידוד/הימנעות. & \textbf{טיפול בסיכון} \\
+\hline
+מסמך הקובע מה מותר ואסור בארגון (לא איך). & \textbf{מדיניות \enLR{(Policy)}} \\
+\hline
+הוראות צעד-אחר-צעד ליישום המדיניות. & \textbf{נוהל \enLR{(Procedure)}} \\
+\hline
+מדיניות, נהלים, הדרכות, בדיקות רקע. & \textbf{בקרה מנהלית} \\
+\hline
+מנעולים, מצלמות, חדר שרתים נעול. & \textbf{בקרה פיזית} \\
+\hline
+סיסמאות, הצפנה, חומת אש, \enLR{ACL.} & \textbf{בקרה לוגית} \\
+\hline
+שכבות הגנה עצמאיות; כשל באחת אינו מפיל הכול. & \textbf{הגנה לעומק \enLR{(Defense in Depth)}} \\
+\hline
+מתן בדיוק ההרשאות הנדרשות, לא יותר. & \textbf{מינימום הרשאות} \\
+\hline
+פעולה קריטית דורשת שני אנשים; מונע הונאה. & \textbf{הפרדת תפקידים} \\
+\hline
+'לעולם אל תסמוך, תמיד אמת' – אין אזור פנימי מהימן. & \textbf{\enLR{Zero Trust}} \\
+\hline
+סריקה אוטומטית לזיהוי פגיעויות ידועות \enLR{(Nessus).} & \textbf{\enLR{Vulnerability Assessment}} \\
+\hline
+ניסיון פריצה מבוקר, באישור, כדי לאתר חולשות. & \textbf{\enLR{Penetration Test}} \\
+\hline
+כלי לגילוי מארחים, סריקת פורטים וזיהוי שירותים. & \textbf{\enLR{Nmap}} \\
+\hline
+סורק פגיעויות המדווח על חולשות ידועות \enLR{(CVE).} & \textbf{\enLR{Nessus}} \\
+\hline
+בדיקה שיטתית שהבקרות עובדות כמתוכנן. & \textbf{\enLR{ST\&E}} \\
+\hline
+תוכנית המשכיות עסקית – שהעסק ימשיך לתפקד בזמן אסון. & \textbf{\enLR{BCP}} \\
+\hline
+תוכנית התאוששות מאסון – שחזור מערכות ה-\enLR{IT} והנתונים. & \textbf{\enLR{DRP}} \\
+\hline
+זמן ההשבתה המרבי המותר \enLR{(RTO)} וכמות הנתונים המרבית לאיבוד \enLR{(RPO).} & \textbf{\enLR{RTO / RPO}} \\
+\hline
+\enLR{3} עותקי גיבוי, \enLR{2} מדיות, \enLR{1} מחוץ לאתר. & \textbf{כלל \enLR{3-2-1}} \\
+\hline
+מחזור חיי פיתוח מערכת; משלבים אבטחה כבר בעיצוב. & \textbf{\enLR{SDLC}} \\
+\hline
+החוק האוסר חדירה ושיבוש של חומר מחשב שלא כדין. & \textbf{חוק המחשבים התשנ"ה-\enLR{1995}} \\
+\hline
+\end{xltabular}
+\end{document}

@@ -1,0 +1,187 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>פרק 5 IDS / IPS</title>
+<style>* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #0b1220; color: #e5e7eb; font-family: "Noto Sans Hebrew", "Segoe UI", Arial, sans-serif; overflow: hidden; }
+#deck { position: fixed; inset: 0; }
+.slide { position: absolute; inset: 0; padding: 4vh 6vw 9vh; display: none; flex-direction: column; font-size: clamp(20px, 3.1vh, 40px); line-height: 1.45; overflow: hidden; }
+.slide.active { display: flex; }
+.slide h1 { font-size: 2.1em; margin: 0 0 .3em; color: #7dd3fc; line-height: 1.15; }
+.slide h2 { font-size: 1.55em; margin: 0 0 .5em; color: #7dd3fc; border-bottom: 3px solid #1d4ed8; padding-bottom: .2em; line-height: 1.2; }
+.slide h3 { font-size: 1.15em; margin: .4em 0 .2em; color: #fbbf24; }
+.slide p { margin: .25em 0; }
+.slide ul, .slide ol { margin: .2em 0; padding-right: 1.2em; }
+.slide li { margin: .22em 0; }
+.slide li li { font-size: .88em; color: #cbd5e1; }
+.slide .sub { color: #94a3b8; font-size: .8em; }
+.slide code { font-family: "Liberation Mono", Consolas, monospace; background: #1e293b; padding: 0 .3em; border-radius: 4px; direction: ltr; unicode-bidi: embed; font-size: .9em; color: #fde68a; }
+.slide pre { font-family: "Liberation Mono", Consolas, monospace; background: #111827; border: 1px solid #334155; border-radius: 10px; padding: .6em .9em; direction: ltr; text-align: left; font-size: .78em; line-height: 1.4; white-space: pre-wrap; margin: .4em 0; color: #e5e7eb; }
+.slide pre b { color: #7dd3fc; font-weight: bold; }
+.slide pre .c { color: #6b7280; font-style: italic; }
+.title { justify-content: center; align-items: center; text-align: center; background: radial-gradient(ellipse at top, #1e3a8a 0%, #0b1220 60%); }
+.title h1 { font-size: 2.6em; color: #fff; }
+.title .sub { font-size: 1.1em; color: #93c5fd; }
+.title .course { position: absolute; bottom: 12vh; color: #64748b; font-size: .7em; }
+.section { justify-content: center; align-items: center; text-align: center; background: linear-gradient(135deg, #172554, #0b1220); }
+.section h1 { color: #fbbf24; }
+.cols { display: flex; gap: 3vw; flex: 1; min-height: 0; }
+.cols > div { flex: 1; min-width: 0; }
+.cols > div.narrow { flex: .7; }
+table { border-collapse: collapse; width: 100%; font-size: .78em; margin: .3em 0; }
+th, td { border: 1px solid #334155; padding: .3em .6em; text-align: right; vertical-align: top; }
+th { background: #1e3a8a; color: #fff; }
+td { background: #0f172a; }
+.box { border-radius: 12px; padding: .5em .9em; margin: .4em 0; border-right: 8px solid; background: #111827; }
+.box .t { font-weight: bold; display: block; margin-bottom: .1em; }
+.def { border-color: #a78bfa; } .def .t { color: #c4b5fd; }
+.warn { border-color: #f87171; } .warn .t { color: #fca5a5; }
+.tip { border-color: #fbbf24; } .tip .t { color: #fde68a; }
+.ok { border-color: #34d399; } .ok .t { color: #6ee7b7; }
+.q { border-color: #60a5fa; background: #0c1a3a; } .q .t { color: #93c5fd; }
+.fragment { visibility: hidden; opacity: 0; transition: opacity .25s; }
+.fragment.visible { visibility: visible; opacity: 1; }
+.answer { background: #052e16; border: 2px solid #16a34a; border-radius: 10px; padding: .4em .8em; margin-top: .5em; color: #bbf7d0; }
+.answer::before { content: "תשובה: "; font-weight: bold; color: #4ade80; }
+.big { font-size: 1.5em; text-align: center; margin: .4em 0; color: #fbbf24; }
+.center { text-align: center; }
+.diagram { display: block; margin: .3em auto; max-width: 100%; max-height: 62vh; }
+.diagram text { font-family: "Noto Sans Hebrew", "Segoe UI", Arial, sans-serif; }
+.pill { display: inline-block; background: #1e3a8a; color: #bfdbfe; border-radius: 999px; padding: .05em .7em; margin: .1em; font-size: .85em; }
+.flow { display: flex; align-items: center; justify-content: center; gap: .4em; flex-wrap: wrap; margin: .5em 0; }
+.flow .n { background: #1e293b; border: 2px solid #3b82f6; border-radius: 12px; padding: .4em .8em; text-align: center; font-size: .85em; }
+.flow .a { color: #fbbf24; font-size: 1.3em; }
+.notes { display: none; }
+.en { direction: ltr; unicode-bidi: embed; display: inline-block; }
+#hud { position: fixed; bottom: 10px; left: 14px; display: flex; gap: 6px; align-items: center; z-index: 10; direction: ltr; opacity: .35; transition: opacity .2s; }
+#hud:hover { opacity: 1; }
+#hud button { background: #1e293b; color: #e5e7eb; border: 1px solid #475569; border-radius: 8px; font-size: 20px; width: 40px; height: 36px; cursor: pointer; }
+#counter { color: #94a3b8; font-size: 15px; min-width: 60px; text-align: center; font-family: monospace; }
+#progress { position: fixed; bottom: 0; left: 0; height: 5px; background: #3b82f6; width: 0; z-index: 10; transition: width .2s; }
+#notes { position: fixed; left: 0; right: 0; bottom: 0; max-height: 34vh; overflow: auto; background: rgba(15,23,42,.97); border-top: 3px solid #fbbf24; color: #fde68a; padding: 10px 24px 24px; font-size: 18px; line-height: 1.5; display: none; z-index: 9; }
+#notes.show { display: block; }
+#notes::before { content: "הערות למורה"; display: block; font-weight: bold; color: #fbbf24; margin-bottom: 4px; font-size: 14px; }
+.foot { position: absolute; bottom: 2.2vh; right: 6vw; color: #475569; font-size: .55em; }
+@media print { @page { size: 1280px 720px; margin: 0; } html,body{overflow:visible;height:auto} #deck{position:static} .slide { display: flex !important; position: relative; height: 720px; width:1280px; page-break-after: always; overflow: hidden; } #hud, #progress, #notes { display: none !important; } .fragment { visibility: visible; opacity: 1; } }
+.story { border-color: #e879f9; background: #2a0f33; } .story .t { color: #f0abfc; } .story .t::before { content: "📖 "; }
+.ex { border-color: #2dd4bf; } .ex .t { color: #5eead4; }
+</style></head><body>
+<div id="deck"><section class="slide title"><h1>פרק 5<br>IDS / IPS</h1><div class="sub">זיהוי ומניעת פלישה · חתימות · HIPS/NIPS · אזעקות</div><div class="course">אבטחת מידע · מגמת תקשוב</div>
+<div class="notes">חומת אש בודקת כתובות ופורטים. אבל התקפה יכולה להגיע בפורט שפתחנו. היום – מי שמסתכל לתוך התוכן.</div></section>
+
+<section class="slide"><h2>למה חומת אש לא מספיקה</h2>
+<ul><li class="fragment">חומת אש: "TCP 80 ל-web – מותר" ✓</li>
+<li class="fragment">אבל בתוך אותה בקשה: SQL injection, ניצול חולשה</li>
+<li class="fragment">IDS/IPS מסתכלים על ה<b>תוכן</b> וההתנהגות</li></ul>
+<div class="box warn fragment"><span class="t">SQL Slammer (2003)</span>חבילת UDP אחת הדביקה 75,000 שרתים ב-10 דקות. IPS עם חתימה אחת עצר את זה</div>
+<div class="notes">Slammer ממחיש: מי שהיה עם IPS מעודכן – חתימה אחת חסמה. מי שרק חומת אש – נדבק.</div></section>
+
+<section class="slide"><h2>IDS מול IPS – ההבדל המהותי</h2>
+<table><tr><th></th><th>IDS</th><th>IPS</th></tr>
+<tr><td>תגובה</td><td>מתריע בלבד</td><td>מזהה <b>וחוסם</b></td></tr>
+<tr><td>מיקום</td><td>מחוץ לנתיב (עותק)</td><td>בתוך הנתיב (inline)</td></tr>
+<tr><td>השהיה</td><td>אין</td><td>מוסיף</td></tr>
+<tr><td>סיכון</td><td>רעש</td><td>חוסם לגיטימי בטעות</td></tr></table>
+<div class="notes">נשאל בבגרות (התאמה): IPS=ניטור+חסימה, IDS=ניטור+התראה. המיקום קובע – עותק מול inline.</div></section>
+
+<section class="slide q"><h2>שאלה</h2><p>למה שמישהו יבחר IDS אם IPS גם מזהה וגם חוסם?</p>
+<div class="answer fragment">1. סיכון false positive – בבית חולים/בורסה חסימה בטעות גרועה מהחמצה. 2. ביצועים (inline יקר). 3. IDS פנימי רואה תנועה רוחבית שלא עוברת בחומת אש.</div>
+<div class="notes">בפועל מפעילים את שניהם. מתחילים ב-IDS, מכווננים, עוברים ל-IPS.</div></section>
+
+<section class="slide"><h2>HIPS מול NIPS</h2>
+<table><tr><th></th><th>HIPS (מארח)</th><th>NIPS (רשת)</th></tr>
+<tr><td>איפה</td><td>על המחשב/שרת</td><td>בנתיב הרשת</td></tr>
+<tr><td>רואה</td><td>קבצים, זיכרון, <b>גם מוצפן</b></td><td>תעבורת רשת</td></tr>
+<tr><td>יתרון</td><td>מגן גם מחוץ לרשת</td><td>מכשיר אחד → מאות מחשבים</td></tr></table>
+<p class="fragment sub">CSA (בתכנית) = HIPS של סיסקו. היום: EDR</p>
+<div class="notes">HIPS רואה תעבורה מוצפנת אחרי הפענוח – יתרון מרכזי שנשאל.</div></section>
+
+<section class="slide"><h2>שיטות זיהוי</h2>
+<ul><li class="fragment"><b>חתימות</b> – תבניות ידועות. מדויק, אך לא מזהה חדש (zero-day)</li>
+<li class="fragment"><b>אנומליה</b> – לומד "נורמלי", מתריע על חריגה. מזהה חדש, הרבה שגיאות</li>
+<li class="fragment"><b>מדיניות</b> – כללים שהמנהל מגדיר</li>
+<li class="fragment"><b>Honeypot</b> – פיתיון; כל גישה חשודה</li></ul>
+<div class="notes">חתימות = הנפוץ. אנומליה = ה-baseline. הדגישו את ה-trade-off דיוק מול כיסוי.</div></section>
+
+<section class="slide"><h2>חתימות: אטומית מול מורכבת</h2>
+<table><tr><th></th><th>אטומית</th><th>מורכבת</th></tr>
+<tr><td>בודקת</td><td>חבילה אחת</td><td>רצף חבילות לאורך זמן</td></tr>
+<tr><td>מצב</td><td>לא שומרת</td><td>שומרת (state)</td></tr>
+<tr><td>דוגמה</td><td>Ping of Death</td><td>port scan, SYN flood</td></tr></table>
+<div class="notes">נשאל בתכנית. אטומית=חבילה בודדת (מהיר, זול); מורכבת=רצף (זוכרת).</div></section>
+
+<section class="slide"><h2>4 סוגי תוצאות</h2>
+<table><tr><th></th><th>הייתה התקפה</th><th>לא הייתה</th></tr>
+<tr><td>התריע</td><td>True Positive ✓</td><td><b>False Positive</b> (שווא)</td></tr>
+<tr><td>שתק</td><td><b>False Negative</b> (הכי גרוע)</td><td>True Negative ✓</td></tr></table>
+<div class="box tip fragment"><span class="t">כוונון (tuning)</span>מכבים חתימות לא רלוונטיות, מחריגים כתובות מהימנות – עבודת ה-SOC</div>
+<div class="notes">False negative = פריצה שלא ראינו. False positive ב-IPS חוסם עסק. זה מה שאנשי SOC עושים כל היום.</div></section>
+
+<section class="slide"><h2>הגדרת IOS IPS</h2>
+<pre>R1# mkdir ipsdir
+R1(config)# ip ips config location flash:ipsdir
+R1(config)# ip ips name MYIPS
+R1(config)# ip ips signature-category
+  category all → retired true       <span class="c">! כבה הכול</span>
+  category ios_ips basic → retired false  <span class="c">! הפעל בסיסי</span>
+R1(config-if)# ip ips MYIPS in</pre>
+<div class="notes">קטגוריה all retired ואז ios_ips basic unretired – זה הדפוס. בלי unretire אין חתימות פעילות.</div></section>
+
+<section class="slide"><h2>דוגמה: התראה + חסימה על ping</h2>
+<pre>R1(config)# ip ips signature-definition
+R1(config-sigdef)# <b>signature 2004 0</b>   <span class="c">! ICMP echo</span>
+  status → retired false, enabled true
+  engine → <b>event-action produce-alert</b>
+           <b>event-action deny-packet-inline</b></pre>
+<div class="box tip fragment"><span class="t">זה התרגיל שעובד ב-Packet Tracer</span>ping נכשל + התראה בשרת syslog</div>
+<div class="notes">produce-alert = התנהגות IDS. מוסיפים deny-packet-inline = IPS. הדגמה מצוינת להבדל.</div></section>
+
+<section class="slide q"><h2>שאלה</h2><p>איזו פעולה <b>לא</b> זמינה ל-IDS שמחוץ לנתיב? 1. produce-alert 2. deny-packet-inline 3. reset-tcp-connection</p>
+<div class="answer fragment">2 – אי אפשר להפיל חבילה שכבר עברה; ה-IDS רואה רק עותק. הוא כן יכול לשלוח TCP reset.</div>
+<div class="notes">מקשר את המיקום (מחוץ לנתיב) לפעולות האפשריות. reset הוא היחיד שגם IDS יכול.</div></section>
+
+<section class="slide"><h2>סיכום פרק 5</h2><ul>
+<li class="fragment"><b>IDS</b> מתריע (עותק) · <b>IPS</b> חוסם (inline)</li>
+<li class="fragment"><b>HIPS</b> על המארח · <b>NIPS</b> ברשת</li>
+<li class="fragment">חתימה <b>אטומית</b> (חבילה) מול <b>מורכבת</b> (רצף)</li>
+<li class="fragment">False Positive/Negative – למה כוונון חשוב</li>
+</ul><div class="notes">חזרה. IDS מקבל תעבורה דרך SPAN – חיבור לפרק 6 הבא.</div></section>
+</div>
+<div id="hud"><button id="prev" title="הקודם">‹</button><span id="counter"></span><button id="next" title="הבא">›</button>
+<button id="notesBtn" title="הערות למורה (N)">✎</button><button id="fsBtn" title="מסך מלא (F)">⛶</button></div>
+<div id="progress"></div><div id="notes"></div>
+<script>(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const counter=document.getElementById('counter'), prog=document.getElementById('progress'), notesEl=document.getElementById('notes');
+  let i=0;
+  function fragsOf(s){return [...s.querySelectorAll('.fragment')];}
+  function show(n,allFrags){
+    n=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach(s=>s.classList.remove('active'));
+    i=n; const s=slides[i]; s.classList.add('active');
+    fragsOf(s).forEach(f=>f.classList.toggle('visible',!!allFrags));
+    counter.textContent=(i+1)+' / '+slides.length;
+    prog.style.width=((i+1)/slides.length*100)+'%';
+    const nt=s.querySelector('.notes'); notesEl.innerHTML=nt?nt.innerHTML:'<i>אין הערות לשקף זה</i>';
+    location.hash='#'+(i+1);
+  }
+  function next(){const f=fragsOf(slides[i]).find(x=>!x.classList.contains('visible')); if(f){f.classList.add('visible');return;} show(i+1,false);}
+  function prev(){const v=fragsOf(slides[i]).filter(x=>x.classList.contains('visible')); if(v.length){v[v.length-1].classList.remove('visible');return;} show(i-1,true);}
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT')return;
+    switch(e.key){
+      case 'ArrowRight': case ' ': case 'PageDown': case 'Enter': case 'ArrowDown': e.preventDefault(); next(); break;
+      case 'ArrowLeft': case 'PageUp': case 'Backspace': case 'ArrowUp': e.preventDefault(); prev(); break;
+      case 'Home': show(0,false); break; case 'End': show(slides.length-1,true); break;
+      case 'f': case 'F': toggleFS(); break;
+      case 'n': case 'N': notesEl.classList.toggle('show'); break;
+    }
+  });
+  function toggleFS(){ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }
+  document.getElementById('next').onclick=next; document.getElementById('prev').onclick=prev;
+  document.getElementById('fsBtn').onclick=toggleFS; document.getElementById('notesBtn').onclick=()=>notesEl.classList.toggle('show');
+  // click on slide: left third = prev, right third = next (works for RTL as "forward = left" too via keys)
+  document.getElementById('deck').addEventListener('click',e=>{ if(e.target.closest('a,button'))return; const x=e.clientX/innerWidth; if(x>0.66)next(); else if(x<0.33)prev(); });
+  // touch swipe
+  let tx=null; addEventListener('touchstart',e=>tx=e.touches[0].clientX); addEventListener('touchend',e=>{ if(tx===null)return; const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50){ dx<0?next():prev(); } tx=null; });
+  const h=parseInt(location.hash.slice(1)); show(isNaN(h)?0:h-1,false);
+})();
+</script></body></html>

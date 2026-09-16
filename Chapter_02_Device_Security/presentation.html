@@ -1,0 +1,204 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>פרק 2 אבטחת אביזרי רשת</title>
+<style>* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #0b1220; color: #e5e7eb; font-family: "Noto Sans Hebrew", "Segoe UI", Arial, sans-serif; overflow: hidden; }
+#deck { position: fixed; inset: 0; }
+.slide { position: absolute; inset: 0; padding: 4vh 6vw 9vh; display: none; flex-direction: column; font-size: clamp(20px, 3.1vh, 40px); line-height: 1.45; overflow: hidden; }
+.slide.active { display: flex; }
+.slide h1 { font-size: 2.1em; margin: 0 0 .3em; color: #7dd3fc; line-height: 1.15; }
+.slide h2 { font-size: 1.55em; margin: 0 0 .5em; color: #7dd3fc; border-bottom: 3px solid #1d4ed8; padding-bottom: .2em; line-height: 1.2; }
+.slide h3 { font-size: 1.15em; margin: .4em 0 .2em; color: #fbbf24; }
+.slide p { margin: .25em 0; }
+.slide ul, .slide ol { margin: .2em 0; padding-right: 1.2em; }
+.slide li { margin: .22em 0; }
+.slide li li { font-size: .88em; color: #cbd5e1; }
+.slide .sub { color: #94a3b8; font-size: .8em; }
+.slide code { font-family: "Liberation Mono", Consolas, monospace; background: #1e293b; padding: 0 .3em; border-radius: 4px; direction: ltr; unicode-bidi: embed; font-size: .9em; color: #fde68a; }
+.slide pre { font-family: "Liberation Mono", Consolas, monospace; background: #111827; border: 1px solid #334155; border-radius: 10px; padding: .6em .9em; direction: ltr; text-align: left; font-size: .78em; line-height: 1.4; white-space: pre-wrap; margin: .4em 0; color: #e5e7eb; }
+.slide pre b { color: #7dd3fc; font-weight: bold; }
+.slide pre .c { color: #6b7280; font-style: italic; }
+.title { justify-content: center; align-items: center; text-align: center; background: radial-gradient(ellipse at top, #1e3a8a 0%, #0b1220 60%); }
+.title h1 { font-size: 2.6em; color: #fff; }
+.title .sub { font-size: 1.1em; color: #93c5fd; }
+.title .course { position: absolute; bottom: 12vh; color: #64748b; font-size: .7em; }
+.section { justify-content: center; align-items: center; text-align: center; background: linear-gradient(135deg, #172554, #0b1220); }
+.section h1 { color: #fbbf24; }
+.cols { display: flex; gap: 3vw; flex: 1; min-height: 0; }
+.cols > div { flex: 1; min-width: 0; }
+.cols > div.narrow { flex: .7; }
+table { border-collapse: collapse; width: 100%; font-size: .78em; margin: .3em 0; }
+th, td { border: 1px solid #334155; padding: .3em .6em; text-align: right; vertical-align: top; }
+th { background: #1e3a8a; color: #fff; }
+td { background: #0f172a; }
+.box { border-radius: 12px; padding: .5em .9em; margin: .4em 0; border-right: 8px solid; background: #111827; }
+.box .t { font-weight: bold; display: block; margin-bottom: .1em; }
+.def { border-color: #a78bfa; } .def .t { color: #c4b5fd; }
+.warn { border-color: #f87171; } .warn .t { color: #fca5a5; }
+.tip { border-color: #fbbf24; } .tip .t { color: #fde68a; }
+.ok { border-color: #34d399; } .ok .t { color: #6ee7b7; }
+.q { border-color: #60a5fa; background: #0c1a3a; } .q .t { color: #93c5fd; }
+.fragment { visibility: hidden; opacity: 0; transition: opacity .25s; }
+.fragment.visible { visibility: visible; opacity: 1; }
+.answer { background: #052e16; border: 2px solid #16a34a; border-radius: 10px; padding: .4em .8em; margin-top: .5em; color: #bbf7d0; }
+.answer::before { content: "תשובה: "; font-weight: bold; color: #4ade80; }
+.big { font-size: 1.5em; text-align: center; margin: .4em 0; color: #fbbf24; }
+.center { text-align: center; }
+.diagram { display: block; margin: .3em auto; max-width: 100%; max-height: 62vh; }
+.diagram text { font-family: "Noto Sans Hebrew", "Segoe UI", Arial, sans-serif; }
+.pill { display: inline-block; background: #1e3a8a; color: #bfdbfe; border-radius: 999px; padding: .05em .7em; margin: .1em; font-size: .85em; }
+.flow { display: flex; align-items: center; justify-content: center; gap: .4em; flex-wrap: wrap; margin: .5em 0; }
+.flow .n { background: #1e293b; border: 2px solid #3b82f6; border-radius: 12px; padding: .4em .8em; text-align: center; font-size: .85em; }
+.flow .a { color: #fbbf24; font-size: 1.3em; }
+.notes { display: none; }
+.en { direction: ltr; unicode-bidi: embed; display: inline-block; }
+#hud { position: fixed; bottom: 10px; left: 14px; display: flex; gap: 6px; align-items: center; z-index: 10; direction: ltr; opacity: .35; transition: opacity .2s; }
+#hud:hover { opacity: 1; }
+#hud button { background: #1e293b; color: #e5e7eb; border: 1px solid #475569; border-radius: 8px; font-size: 20px; width: 40px; height: 36px; cursor: pointer; }
+#counter { color: #94a3b8; font-size: 15px; min-width: 60px; text-align: center; font-family: monospace; }
+#progress { position: fixed; bottom: 0; left: 0; height: 5px; background: #3b82f6; width: 0; z-index: 10; transition: width .2s; }
+#notes { position: fixed; left: 0; right: 0; bottom: 0; max-height: 34vh; overflow: auto; background: rgba(15,23,42,.97); border-top: 3px solid #fbbf24; color: #fde68a; padding: 10px 24px 24px; font-size: 18px; line-height: 1.5; display: none; z-index: 9; }
+#notes.show { display: block; }
+#notes::before { content: "הערות למורה"; display: block; font-weight: bold; color: #fbbf24; margin-bottom: 4px; font-size: 14px; }
+.foot { position: absolute; bottom: 2.2vh; right: 6vw; color: #475569; font-size: .55em; }
+@media print { @page { size: 1280px 720px; margin: 0; } html,body{overflow:visible;height:auto} #deck{position:static} .slide { display: flex !important; position: relative; height: 720px; width:1280px; page-break-after: always; overflow: hidden; } #hud, #progress, #notes { display: none !important; } .fragment { visibility: visible; opacity: 1; } }
+.story { border-color: #e879f9; background: #2a0f33; } .story .t { color: #f0abfc; } .story .t::before { content: "📖 "; }
+.ex { border-color: #2dd4bf; } .ex .t { color: #5eead4; }
+</style></head><body>
+<div id="deck"><section class="slide title"><h1>פרק 2<br>אבטחת אביזרי רשת</h1><div class="sub">הקשחת נתב · SSH · syslog · NTP · SNMP · AutoSecure</div><div class="course">אבטחת מידע · מגמת תקשוב</div>
+<div class="notes">מהתיאוריה למעשה. היום נלמד להקשיח נתב סיסקו ב-CLI. פתחו Packet Tracer במקביל אם אפשר.</div></section>
+
+<section class="slide"><h2>למה הנתב הוא מטרה ראשונה</h2><ul>
+<li class="fragment">נתב הקצה = הגבול בין הרשת לאינטרנט</li>
+<li class="fragment">מי ששולט בו – מנתב, מאזין, חוסם, פותח פתח</li>
+<li class="fragment">3 תחומי הגנה: <b>פיזי</b> · <b>מערכת הפעלה</b> · <b>הקשחה</b></li>
+</ul><div class="box warn fragment"><span class="t">Mirai 2016</span>600,000 מכשירים נפרצו רק כי נשארה סיסמת ברירת מחדל admin/admin</div>
+<div class="notes">ספרו את סיפור Mirai – DDoS ענק שהפיל את Twitter/Netflix, בלי פגיעות מתוחכמת. רק סיסמאות ברירת מחדל.</div></section>
+
+<section class="slide"><h2>שלוש דרכי ניהול</h2>
+<table><tr><th>ממשק</th><th>גישה</th><th>אבטחה</th></tr>
+<tr><td>Console</td><td>כבל פיזי</td><td>סיסמה + timeout</td></tr>
+<tr><td>AUX</td><td>מודם (ישן)</td><td>לכבות</td></tr>
+<tr><td>VTY</td><td>Telnet/SSH ברשת</td><td>SSH בלבד!</td></tr></table>
+<div class="box tip fragment"><span class="t">In-band מול OOB</span>OOB = רשת ניהול נפרדת. אם הרשת נפלה או נפרצה – הניהול מוגן</div>
+<div class="notes">VTY הוא הרגיש ביותר – משם מתחברים מרחוק. כל הפרק סובב סביב אבטחתו.</div></section>
+
+<section class="slide"><h2>סיסמאות – secret מנצח password</h2>
+<pre>R1(config)# <b>enable secret</b> Str0ng    <span class="c">! מגובב MD5</span>
+R1(config)# enable password weak    <span class="c">! גלוי – לא!</span>
+R1(config)# <b>service password-encryption</b>
+R1(config)# username admin <b>secret</b> P@ss</pre>
+<ul><li class="fragment"><code>password</code> = טקסט גלוי / type 7 (נשבר בשנייה)</li>
+<li class="fragment"><code>secret</code> = גיבוב חד-כיווני – לא ניתן לשחזר ✓</li></ul>
+<div class="notes">הדגישו: type 7 (service password-encryption) מגן רק מהצצה מעבר לכתף. secret הוא האמיתי.</div></section>
+
+<section class="slide q"><h2>שאלה</h2><p>מה ההבדל בין <code>login</code> ל-<code>login local</code>?</p>
+<div class="answer fragment"><code>login</code> = רק סיסמת הקו (כולם אותה סיסמה, בלי שם). <code>login local</code> = שם משתמש + סיסמה מול מסד מקומי. <b>SSH דורש login local!</b></div>
+<div class="notes">זה מפתח להבנת SSH בשקף הבא, ונשאל בבגרות (שאלה 2א – התשובה עם login local).</div></section>
+
+<section class="slide"><h2>הגדרת SSH – 5 שלבים</h2>
+<pre>R1(config)# <b>hostname R1</b>
+R1(config)# <b>ip domain-name school.local</b>
+R1(config)# <b>crypto key generate rsa</b> modulus 2048
+R1(config)# username admin privilege 15 secret P@ss
+R1(config)# ip ssh version 2
+R1(config)# <b>line vty 0 4</b>
+R1(config-line)# <b>login local</b>
+R1(config-line)# <b>transport input ssh</b></pre>
+<div class="box warn fragment"><span class="t">חובה לפני crypto key</span>hostname + ip domain-name (אחרת: "Please define a domain-name")</div>
+<div class="notes">הריצו את זה בעצמכם קודם. הטעות #1: שוכחים domain-name. הראו Telnet נכשל אחרי transport input ssh.</div></section>
+
+<section class="slide"><h2>Telnet מול SSH</h2>
+<div class="cols"><div><div class="box warn"><span class="t">Telnet (23)</span>הכול בטקסט גלוי – שם וסיסמה נראים ב-Wireshark</div></div>
+<div><div class="box ok"><span class="t">SSH (22)</span>הכול מוצפן + אימות השרת. גרסה 2 בלבד</div></div></div>
+<p class="fragment big">מפתחות ה-RSA שיצרנו = הצפנת ה-SSH</p>
+<div class="notes">הדגמה מנצחת: לכדו Telnet ב-Wireshark, הראו את הסיסמה. זו הצצה לפרק 7 (RSA א-סימטרי).</div></section>
+
+<section class="slide"><h2>רמות הרשאה</h2>
+<table><tr><th>רמה</th><th>מה מותר</th></tr>
+<tr><td>1</td><td>show בסיסי, ping (R1&gt;)</td></tr>
+<tr><td>2–14</td><td>מותאם אישית</td></tr>
+<tr><td>15</td><td>הכול, כולל config (R1#)</td></tr></table>
+<pre class="fragment">R1(config)# privilege exec level 5 show running-config
+R1(config)# username helpdesk privilege 5 secret P@ss</pre>
+<div class="notes">מדויק יותר: Role-Based Views (parser view) – מזכירים, לא מעמיקים.</div></section>
+
+<section class="slide"><h2>Syslog – 8 רמות חומרה</h2>
+<div class="cols narrow"><div><table>
+<tr><td>0</td><td>Emergency</td></tr><tr><td>1</td><td>Alert</td></tr>
+<tr><td>2</td><td>Critical</td></tr><tr><td>3</td><td>Error</td></tr></table></div>
+<div><table><tr><td>4</td><td>Warning</td></tr>
+<tr><td>5</td><td>Notification</td></tr><tr><td>6</td><td>Informational</td></tr>
+<tr><td>7</td><td>Debug</td></tr></table></div></div>
+<pre class="fragment">R1(config)# <b>logging 2.9.20.22</b>
+R1(config)# logging trap warnings    <span class="c">! רמות 0–4</span></pre>
+<div class="notes">נשאל בבגרות (פקודת logging). כשבוחרים רמה מקבלים אותה וכל מה שחמור ממנה. 0 הכי חמור.</div></section>
+
+<section class="slide"><h2>NTP ו-SNMP</h2>
+<ul><li class="fragment"><b>NTP</b> (123) – זמן מדויק. בלי זה – לוגים חסרי ערך, תעודות נכשלות</li>
+<li class="fragment"><b>SNMP</b> (161) – ניטור ציוד. <b>גרסה 3 בלבד</b> (אימות + הצפנה)</li></ul>
+<pre class="fragment">R1(config)# ntp server 10.0.0.5
+R1(config)# snmp-server group ADMINS v3 priv</pre>
+<div class="box tip fragment"><span class="t">SNMPv1/v2c</span>community string בטקסט גלוי ("public") – חלש. תמיד v3</div>
+<div class="notes">קשרו NTP ללוגים: אירוע בנתב ב-3 ובחומת אש ב-5 – בלי זמן מסונכרן אי אפשר לשחזר.</div></section>
+
+<section class="slide"><h2>AutoSecure וכיבוי שירותים</h2>
+<pre>R1# <b>auto secure</b>       <span class="c">! הקשחה בפקודה אחת</span>
+R1(config)# no ip http server
+R1(config)# no cdp run
+R1(config)# no ip source-route</pre>
+<div class="box warn fragment"><span class="t">זהירות</span>AutoSecure "עיוור" – בדקו מה שינה עם <code>show auto secure config</code></div>
+<div class="notes">AutoSecure = המקבילה ל-One-step Lockdown של SDM. נוח אך צריך בדיקה.</div></section>
+
+<section class="slide q"><h2>שאלת בגרות</h2><p>מנהל הפיק מפתחות RSA בנתב. מה ניתן לעשות איתם?</p>
+<ul><li>1. רק אחרי איפוס, ל-SSH</li><li>2. ל-SSH</li><li>3. רק אחרי איפוס, ל-Telnet</li><li>4. ל-Telnet</li></ul>
+<div class="answer fragment">2 – ל-SSH (ללא איפוס). Telnet לא משתמש במפתחות כלל.</div>
+<div class="notes">שאלה אמיתית מהבגרות (5ב). מקשר בין הפרק הזה לפרק 7.</div></section>
+
+<section class="slide"><h2>סיכום פרק 2</h2><ul>
+<li class="fragment"><b>enable secret</b>, לא password</li>
+<li class="fragment"><b>SSH</b> בלבד ל-VTY (login local + transport input ssh)</li>
+<li class="fragment"><b>login block-for</b> נגד brute force</li>
+<li class="fragment"><b>syslog + NTP</b> מרכזיים – לניטור ולשחזור</li>
+<li class="fragment"><b>SNMPv3</b>, כיבוי שירותים, AutoSecure</li>
+</ul><div class="notes">חזרה. הזכירו שהמעבדה הבאה – הקשחת נתב מלאה ב-Packet Tracer.</div></section>
+</div>
+<div id="hud"><button id="prev" title="הקודם">‹</button><span id="counter"></span><button id="next" title="הבא">›</button>
+<button id="notesBtn" title="הערות למורה (N)">✎</button><button id="fsBtn" title="מסך מלא (F)">⛶</button></div>
+<div id="progress"></div><div id="notes"></div>
+<script>(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const counter=document.getElementById('counter'), prog=document.getElementById('progress'), notesEl=document.getElementById('notes');
+  let i=0;
+  function fragsOf(s){return [...s.querySelectorAll('.fragment')];}
+  function show(n,allFrags){
+    n=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach(s=>s.classList.remove('active'));
+    i=n; const s=slides[i]; s.classList.add('active');
+    fragsOf(s).forEach(f=>f.classList.toggle('visible',!!allFrags));
+    counter.textContent=(i+1)+' / '+slides.length;
+    prog.style.width=((i+1)/slides.length*100)+'%';
+    const nt=s.querySelector('.notes'); notesEl.innerHTML=nt?nt.innerHTML:'<i>אין הערות לשקף זה</i>';
+    location.hash='#'+(i+1);
+  }
+  function next(){const f=fragsOf(slides[i]).find(x=>!x.classList.contains('visible')); if(f){f.classList.add('visible');return;} show(i+1,false);}
+  function prev(){const v=fragsOf(slides[i]).filter(x=>x.classList.contains('visible')); if(v.length){v[v.length-1].classList.remove('visible');return;} show(i-1,true);}
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT')return;
+    switch(e.key){
+      case 'ArrowRight': case ' ': case 'PageDown': case 'Enter': case 'ArrowDown': e.preventDefault(); next(); break;
+      case 'ArrowLeft': case 'PageUp': case 'Backspace': case 'ArrowUp': e.preventDefault(); prev(); break;
+      case 'Home': show(0,false); break; case 'End': show(slides.length-1,true); break;
+      case 'f': case 'F': toggleFS(); break;
+      case 'n': case 'N': notesEl.classList.toggle('show'); break;
+    }
+  });
+  function toggleFS(){ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }
+  document.getElementById('next').onclick=next; document.getElementById('prev').onclick=prev;
+  document.getElementById('fsBtn').onclick=toggleFS; document.getElementById('notesBtn').onclick=()=>notesEl.classList.toggle('show');
+  // click on slide: left third = prev, right third = next (works for RTL as "forward = left" too via keys)
+  document.getElementById('deck').addEventListener('click',e=>{ if(e.target.closest('a,button'))return; const x=e.clientX/innerWidth; if(x>0.66)next(); else if(x<0.33)prev(); });
+  // touch swipe
+  let tx=null; addEventListener('touchstart',e=>tx=e.touches[0].clientX); addEventListener('touchend',e=>{ if(tx===null)return; const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50){ dx<0?next():prev(); } tx=null; });
+  const h=parseInt(location.hash.slice(1)); show(isNaN(h)?0:h-1,false);
+})();
+</script></body></html>

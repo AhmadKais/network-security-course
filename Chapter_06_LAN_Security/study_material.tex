@@ -1,0 +1,433 @@
+\documentclass[11pt]{article}
+\usepackage{fontspec}
+\directlua{luaotfload.add_fallback("hebfb",{"DejaVu Sans:mode=harf"})}
+\usepackage{polyglossia}
+\setdefaultlanguage{hebrew}
+\setotherlanguage{english}
+\setmainfont{Noto Sans Hebrew}[Script=Hebrew,RawFeature={fallback=hebfb}]
+\newfontfamily\codefont{DejaVu Sans Mono}[RawFeature={fallback=hebfb}]
+\usepackage[a4paper,margin=18mm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{mdframed}
+\usepackage{tabularx}
+\usepackage{xltabular}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\setlist{leftmargin=1.6em,itemsep=1pt,topsep=2pt}
+% colors
+\definecolor{h1}{HTML}{1E3A8A}\definecolor{h2}{HTML}{1E40AF}\definecolor{h3}{HTML}{0F172A}
+\definecolor{subgray}{HTML}{64748B}\definecolor{hdrbg}{HTML}{E0E7FF}
+\definecolor{cfg}{HTML}{E2E8F0}\definecolor{cbg}{HTML}{0F172A}\definecolor{cbold}{HTML}{7DD3FC}\definecolor{ccom}{HTML}{94A3B8}
+\definecolor{metabg}{HTML}{F1F5F9}
+\newcommand{\enLR}[1]{\textenglish{#1}}
+\newcommand{\code}[1]{\textenglish{\codefont #1}}
+\newcommand{\chapterheading}[1]{\vspace{2pt}{\LARGE\bfseries\color{h1}#1\par}\vskip2pt{\color{h1}\hrule height 2pt}\vskip6pt}
+\newcommand{\sectionheading}[1]{\vskip10pt\penalty-200{\large\bfseries\color{h2}#1\par}\vskip3pt}
+\newcommand{\subheading}[1]{\vskip6pt{\bfseries\color{h3}#1\par}\vskip2pt}
+\newcommand{\boxtitle}[1]{{\bfseries\color{boxti}#1}}
+% box environments (right border, tinted bg)
+\newmdenv[topline=false,bottomline=false,leftline=false,rightline=true,linewidth=2pt,innermargin=0pt,skipabove=6pt,skipbelow=6pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt]{genericbox}
+\definecolor{faqbg}{HTML}{ECFDF5}\definecolor{faqfr}{HTML}{10B981}\definecolor{faqti}{HTML}{065F46}
+\definecolor{misbg}{HTML}{FEF2F2}\definecolor{misfr}{HTML}{EF4444}\definecolor{misti}{HTML}{991B1B}
+\definecolor{tipbg}{HTML}{FFFBEB}\definecolor{tipfr}{HTML}{F59E0B}\definecolor{tipti}{HTML}{92400E}
+\definecolor{exabg}{HTML}{EFF6FF}\definecolor{exafr}{HTML}{3B82F6}\definecolor{exati}{HTML}{1E3A8A}
+\definecolor{defbg}{HTML}{F5F3FF}\definecolor{deffr}{HTML}{8B5CF6}\definecolor{defti}{HTML}{5B21B6}
+\definecolor{stobg}{HTML}{FDF4FF}\definecolor{stofr}{HTML}{D946EF}\definecolor{stoti}{HTML}{86198F}
+\definecolor{exbg}{HTML}{F0FDFA}\definecolor{exfr}{HTML}{14B8A6}\definecolor{exti}{HTML}{115E59}
+\newenvironment{faqbox}{\colorlet{boxti}{faqti}\begin{mdframed}[backgroundcolor=faqbg,linecolor=faqfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{mistakebox}{\colorlet{boxti}{misti}\begin{mdframed}[backgroundcolor=misbg,linecolor=misfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{tipbox}{\colorlet{boxti}{tipti}\begin{mdframed}[backgroundcolor=tipbg,linecolor=tipfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{exambox}{\colorlet{boxti}{exati}\begin{mdframed}[backgroundcolor=exabg,linecolor=exafr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{defbox}{\colorlet{boxti}{defti}\begin{mdframed}[backgroundcolor=defbg,linecolor=deffr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{storybox}{\colorlet{boxti}{stoti}\begin{mdframed}[backgroundcolor=stobg,linecolor=stofr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{exbox}{\colorlet{boxti}{exti}\begin{mdframed}[backgroundcolor=exbg,linecolor=exfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{metabox}{\begin{mdframed}[backgroundcolor=metabg,linewidth=0pt,innertopmargin=5pt,innerbottommargin=5pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=4pt,skipbelow=8pt]}{\end{mdframed}}
+\newmdenv[backgroundcolor=cbg,linewidth=0pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=8pt]{codebox}
+\setlength{\parindent}{0pt}\setlength{\parskip}{4pt}
+\renewcommand{\thepage}{\enLR{\arabic{page}}}
+\pagestyle{fancy}\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}
+\begin{document}
+\sloppy
+\chapterheading{פרק \enLR{6} – אבטחת הרשת המקומית \enLR{(LAN Security)}}{\small\color{subgray}\enLR{11} שעות עיוני + \enLR{2} מעשי · שבועות \enLR{17}–\enLR{19}\par}\vskip4pt
+
+\begin{metabox}\textbf{מטרות:} התקפות שכבה \enLR{2} · \enLR{port security} · \enLR{STP/VLAN} · \enLR{DHCP/ARP} · \enLR{storm control} · \enLR{SPAN} · \enLR{NAC} · \enLR{VoIP/SAN}\\ \textbf{בבגרות:} \enLR{MAC overflow}→\enLR{port security, DTP}→\enLR{VLAN hopping, BPDU Guard, Evil Twin, root bridge}\end{metabox}
+
+\begin{defbox}\boxtitle{לפני שמתחילים – מה קורה ב"שכבה \enLR{2"}? (למי שאין רקע)}\par  עד עכשיו דיברנו על כתובות \enLR{IP} (שכבה \enLR{3).} אבל בתוך רשת מקומית, המכשירים מדברים ביניהם דרך \textbf{מתג} לפי \textbf{כתובות \enLR{MAC}} (שכבה \enLR{2).} כמה מושגים:  \textbf{מתג \enLR{(Switch)}} – מחבר את כל המחשבים ברשת המקומית. הוא לומד איזו כתובת \enLR{MAC} נמצאת באיזה פורט, ושומר זאת ב\textbf{טבלת \enLR{MAC}}. \textbf{\enLR{VLAN}} – "רשת וירטואלית". מפצל מתג פיזי אחד לכמה רשתות נפרדות ומבודדות (למשל \enLR{VLAN} למחלקת כספים ו-\enLR{VLAN} לאורחים) בלי לקנות עוד מתגים. \textbf{\enLR{Trunk}} – קישור בין מתגים שנושא כמה \enLR{VLAN}ים יחד. \textbf{\enLR{Broadcast}} – הודעה שנשלחת ל\underline{כל} המכשירים ברשת בבת אחת ("שידור"). \textbf{\enLR{STP}} – פרוטוקול שמונע "לולאות" בין מתגים (נסביר בהמשך למה לולאה מפילה רשת).  \textbf{למה זה קריטי לאבטחה?} אם תוקף כבר מחובר לרשת המקומית (חיבר מחשב לשקע, פרץ ל-\enLR{Wi-Fi)}, הוא פועל בשכבה \enLR{2} – \underline{מתחת} לכל ההגנות של שכבה \enLR{3} (חומת אש, \enLR{IP).} לכן צריך להגן גם כאן.\end{defbox}
+
+\sectionheading{\enLR{6.1} למה שכבה \enLR{2} היא "הבטן הרכה"}
+
+כל מנגנוני האבטחה שלמדנו עד כה עובדים בשכבה \enLR{3} ומעלה \enLR{(ACL, IPS, VPN).} אבל אם התוקף כבר \textbf{ברשת המקומית} – חיבר לפטופ לשקע, פרץ ל-\enLR{Wi-Fi}, או השתלט על מחשב עובד – הוא פועל בשכבה \enLR{2}, מתחת לכל ההגנות האלה. עיקרון קריטי: \textbf{מודל \enLR{OSI} הוא שרשרת – אם שכבה \enLR{2} נפרצת, כל השכבות מעליה נפגעות.} מתג "בוטח" בכל מה שמחובר אליו כברירת מחדל, וזו הבעיה.\par
+
+\begin{storybox}\boxtitle{סיפור מהחיים: השקע בחדר הישיבות}\par  בבדיקת חדירה נפוצה, הבודק מגיע כ"טכניקאי", מבקש להמתין בחדר ישיבות, ומחבר מכשיר קטן \enLR{(Raspberry Pi)} לשקע רשת מתחת לשולחן. המכשיר מבצע \enLR{ARP spoofing} ומקליט תעבורה, או מריץ \enLR{Responder} לגניבת \enLR{hashes} של סיסמאות. הוא יוצא אחרי חצי שעה, והמכשיר ממשיך לשדר דרך \enLR{LTE.} אף חומת אש לא ראתה כלום – הכול קרה בשכבה \enLR{2}, בתוך ה-\enLR{VLAN.} ההגנות בפרק הזה \enLR{(port security, DHCP snooping, DAI, 802.1X)} הן בדיוק מה שהיה עוצר אותו.\end{storybox}
+
+\sectionheading{\enLR{6.2} מפת ההתקפות וההגנות בשכבה \enLR{2}}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{הגנה עיקרית} & \textbf{מה מנצלת} & \textbf{התקפה} \\
+\hline
+\endhead
+\textbf{\enLR{Port Security}} & גודל מוגבל של טבלת ה-\enLR{MAC} & \enLR{MAC table overflow (CAM flooding)} \\
+\hline
+כיבוי \enLR{DTP}, \code{switchport mode access} & \enLR{DTP} – משא-ומתן \enLR{trunk} אוטומטי & \enLR{VLAN hopping (switch spoofing)} \\
+\hline
+\enLR{Native VLAN} ייעודי ולא בשימוש & \enLR{Native VLAN} & \enLR{VLAN hopping (double tagging)} \\
+\hline
+\textbf{\enLR{BPDU Guard, Root Guard}} & בחירת \enLR{root bridge} לפי \enLR{priority} & \enLR{STP manipulation} \\
+\hline
+\textbf{\enLR{DHCP Snooping}} & אין אימות ל-\enLR{DHCP} & \enLR{DHCP starvation / spoofing (rogue DHCP)} \\
+\hline
+\textbf{\enLR{Dynamic ARP Inspection (DAI)}} (מסתמך על \enLR{DHCP snooping)} & \enLR{ARP} חסר אימות & \enLR{ARP spoofing / poisoning (MITM)} \\
+\hline
+\enLR{IP Source Guard} & אין קשירת כתובת לפורט & \enLR{MAC/IP spoofing} \\
+\hline
+\code{no cdp enable} על פורטי קצה & \enLR{CDP} משדר דגם, \enLR{IOS, IP} & \enLR{CDP reconnaissance} \\
+\hline
+\end{xltabular}
+
+\sectionheading{\enLR{6.3 MAC Table Overflow} ו-\enLR{Port Security}}
+
+מתג לומד כתובות \enLR{MAC} ורושם אותן בטבלת \enLR{CAM (Content Addressable Memory)} יחד עם הפורט. הטבלה מוגבלת (למשל \enLR{8,000} רשומות). כלי כמו \code{macof} מציף את המתג באלפי כתובות \enLR{MAC} מזויפות בשנייה; הטבלה מתמלאת, והמתג עובר ל\textbf{\enLR{fail-open}} – מתחיל לשדר \emph{כל} מסגרת לכל הפורטים (כמו \enLR{hub).} עכשיו התוקף רואה את תעבורת כולם. זהו "\enLR{MAC flooding".}\par
+
+\subheading{\enLR{Port Security} – ההגנה}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+S1(config)\# interface f0/1\\
+S1(config-if)\# \textcolor{cbold}{\textbf{switchport mode access}}              \textcolor{ccom}{\texthebrew{! חובה – \enLR{port security} לא עובד על \enLR{trunk} דינמי}}\\
+S1(config-if)\# \textcolor{cbold}{\textbf{switchport port-security}}\\
+S1(config-if)\# \textcolor{cbold}{\textbf{switchport port-security maximum 2}}    \textcolor{ccom}{\texthebrew{! עד \enLR{2 MAC} (מחשב + טלפון \enLR{IP)}}}\\
+S1(config-if)\# \textcolor{cbold}{\textbf{switchport port-security mac-address sticky}}  \textcolor{ccom}{\texthebrew{! לומד את הכתובת ושומר בקונפיג}}\\
+S1(config-if)\# \textcolor{cbold}{\textbf{switchport port-security violation shutdown}}\\
+S1(config-if)\# switchport port-security aging time 60\\
+\textcolor{ccom}{\texthebrew{! וריפיקציה}}\\
+S1\# \textcolor{cbold}{\textbf{show port-security}}\\
+S1\# \textcolor{cbold}{\textbf{show port-security interface f0/1}}\\
+S1\# show port-security address
+\end{english}\end{codebox}
+
+\subheading{שלושה מצבי הפרה \enLR{(violation)}}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{מונה} & \textbf{התראה} & \textbf{מה קורה בהפרה} & \textbf{מצב} \\
+\hline
+\endhead
+לא & לא & מפיל מסגרות מ-\enLR{MAC} לא מוכרות; הפורט נשאר \enLR{up} & \textbf{\enLR{protect}} \\
+\hline
+כן & כן \enLR{(syslog/SNMP)} & מפיל מסגרות; הפורט \enLR{up} & \textbf{\enLR{restrict}} \\
+\hline
+כן & כן & הפורט עובר ל-\textbf{\enLR{err-disabled}} – מושבת לגמרי & \textbf{\enLR{shutdown}} (ברירת מחדל) \\
+\hline
+\end{xltabular}
+
+\begin{faqbox}\boxtitle{שאלת תלמיד: "הפורט נכבה \enLR{(err-disabled).} איך מחזירים אותו?"}\par  ידנית: \code{shutdown} ואז \code{no shutdown} על הממשק. אוטומטית אחרי זמן: \code{errdisable recovery cause psecure-violation} + \code{errdisable recovery interval 300}. בדקו סיבה: \code{show interfaces status err-disabled}. הערה: \code{sticky} נדבק ל-\enLR{running-config} – אל תשכחו \code{write} אחרת הכתובת תיעלם ב-\enLR{reload.}\end{faqbox}
+
+\begin{mistakebox}\boxtitle{טעות נפוצה}\par  מגדירים \enLR{port security} ושוכחים \code{switchport mode access}. אם הפורט במצב \enLR{dynamic, port security} לא נכנס לתוקף כראוי. וגם: \enLR{maximum 1} עם טלפון \enLR{IP} + מחשב מאחוריו ⇒ הפרות מיידיות; להגדיר \enLR{maximum 2} או להשתמש ב-\enLR{voice VLAN.}\end{mistakebox}
+
+\sectionheading{\enLR{6.4 VLAN} – והתקפת \enLR{VLAN Hopping}}
+
+\textbf{\enLR{VLAN}} מפצל מתג פיזי אחד לכמה רשתות לוגיות מבודדות. מעבר בין \enLR{VLAN}ים דורש ניתוב \enLR{(router / L3 switch).} קישור בין מתגים שנושא כמה \enLR{VLAN}ים נקרא \textbf{\enLR{trunk}} ומשתמש בתיוג \textbf{\enLR{802.1Q}} (מוסיף תג של \enLR{4} בתים עם מספר ה-\enLR{VLAN} לכל מסגרת). \textbf{\enLR{Native VLAN}} – ה-\enLR{VLAN} היחיד שעובר ב-\enLR{trunk} \emph{בלי} תג (ברירת מחדל \enLR{VLAN 1).}\par
+
+\subheading{התקפה א': \enLR{Switch Spoofing} (ניצול \enLR{DTP)}}
+
+\textbf{\enLR{DTP}} \enLR{(Dynamic Trunking Protocol)} מאפשר לשני מתגים "לסכם" אוטומטית אם הקישור ביניהם יהיה \enLR{trunk.} הבעיה: פורט קצה במצב ברירת מחדל (\code{dynamic auto} / \code{dynamic desirable}) יסכים להפוך ל-\enLR{trunk} גם מול \emph{מחשב של תוקף} שמתחזה למתג ושולח \enLR{DTP.} ברגע שהקישור \enLR{trunk} – התוקף מקבל גישה לכל ה-\enLR{VLAN}ים. זו התשובה בבגרות: "השבתת \enLR{DTP} מונעת \enLR{VLAN hopping".}\par
+
+\subheading{התקפה ב': \enLR{Double Tagging}}
+
+התוקף (ב-\enLR{VLAN} של ה-\enLR{native)} שולח מסגרת עם \emph{שני} תגים: החיצוני = \enLR{native VLAN} (המתג הראשון מסיר אותו), הפנימי = ה-\enLR{VLAN} של הקורבן. המתג השני רואה את התג הפנימי ומעביר ל-\enLR{VLAN} הקורבן. חד-כיווני, אך מסוכן. הגנה: \enLR{native VLAN} שאינו בשימוש ואינו \enLR{VLAN 1.}\par
+
+\subheading{ההגנה על פורטים}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+\textcolor{ccom}{\texthebrew{! פורט קצה (למחשב) – מפורש \enLR{access}, כיבוי \enLR{DTP}}}\\
+S1(config)\# interface range f0/1 - 20\\
+S1(config-if-range)\# \textcolor{cbold}{\textbf{switchport mode access}}\\
+S1(config-if-range)\# \textcolor{cbold}{\textbf{switchport access vlan 10}}\\
+S1(config-if-range)\# \textcolor{cbold}{\textbf{switchport nonegotiate}}          \textcolor{ccom}{\texthebrew{! לא לשלוח \enLR{DTP}}}\\
+S1(config-if-range)\# \textcolor{cbold}{\textbf{spanning-tree portfast}}\\
+S1(config-if-range)\# \textcolor{cbold}{\textbf{spanning-tree bpduguard enable}}\\
+\textcolor{ccom}{\texthebrew{! פורט \enLR{trunk} – מפורש \enLR{trunk, native} ייעודי}}\\
+S1(config)\# interface g0/1\\
+S1(config-if)\# \textcolor{cbold}{\textbf{switchport mode trunk}}\\
+S1(config-if)\# \textcolor{cbold}{\textbf{switchport nonegotiate}}\\
+S1(config-if)\# \textcolor{cbold}{\textbf{switchport trunk native vlan 999}}       \textcolor{ccom}{\texthebrew{! \enLR{VLAN "}חור שחור", לא בשימוש}}\\
+S1(config-if)\# switchport trunk allowed vlan 10,20,30      \textcolor{ccom}{\texthebrew{! רק מה שצריך}}\\
+\textcolor{ccom}{\texthebrew{! פורטים לא בשימוש – לכבות ולשים ב-\enLR{VLAN} מבודד}}\\
+S1(config)\# interface range f0/21 - 24\\
+S1(config-if-range)\# switchport access vlan 999\\
+S1(config-if-range)\# shutdown
+\end{english}\end{codebox}
+
+\sectionheading{\enLR{6.5 STP} והתקפות עליו}
+
+\textbf{\enLR{STP}} \enLR{(Spanning Tree Protocol, 802.1D)} מונע \textbf{לולאות} בשכבה \enLR{2.} למה לולאות מסוכנות? למסגרת שכבה \enLR{2} \textbf{אין \enLR{TTL}} (בניגוד ל-\enLR{IP).} אם יש לולאה פיזית בין מתגים, מסגרת \enLR{broadcast} תסתובב \emph{לנצח}, תשוכפל בכל סיבוב, ותייצר \textbf{\enLR{broadcast storm}} שמשתק את הרשת תוך שניות. \enLR{STP} חוסם באופן לוגי פורטים כדי להשאיר מסלול יחיד, ופותח אותם אם קישור נופל.\par
+
+\begin{exambox}\boxtitle{בבגרות (שאלה \enLR{3}ו)}\par  "פרוטוקול \enLR{STP} מונע לולאות מיתוג במודל ה-\enLR{OSI} בשכבה מספר \_\_\_" – \textbf{\enLR{2}} \enLR{(Data Link). "}הפעולה של מניעת הלולאות נעשית על ידי \_\_\_" – \textbf{\enLR{Port blocking} (חסימת יציאות)}.\end{exambox}
+
+\subheading{איך נבחר ה-\enLR{Root Bridge} (נשאל בבגרות!)}
+
+המתג עם \textbf{\enLR{Bridge ID} הנמוך ביותר} הופך ל-\enLR{root. Bridge ID} = \textbf{\enLR{Priority (2} בתים) + \enLR{MAC address}}. ברירת מחדל \enLR{priority = 32768} לכולם. אם ה-\enLR{priority} שווה – מכריע ה-\textbf{\enLR{MAC} הנמוך ביותר}.\par
+
+\begin{exambox}\boxtitle{בבגרות (שאלה \enLR{3}ז)}\par  \enLR{4} מתגים, \enLR{priority} ברירת מחדל זהה. \enLR{MAC}ים: \enLR{SW1=0C:0E:15:22:05:97, SW2=0C:E0:38:00:36:75, SW3=0C:E0:18:A1:B3:19, SW4=0C:0E:15:1A:3C:9D.} מי ה-\enLR{root}? משווים בית-בית: \enLR{SW1} ו-\enLR{SW4} מתחילים ב-\enLR{0C:0E:15}, השאר ב-\enLR{0C:E0.} הבית הרביעי: \enLR{SW1=22, SW4=1A. 1A} < \enLR{22} ⇒ \textbf{\enLR{SW4} הוא ה-\enLR{root bridge}}. הסיבה: "כי כתובת ה-\enLR{MAC} שלו היא הנמוכה ביותר" (וה-\enLR{priority} זהה).\end{exambox}
+
+\subheading{\enLR{OSPF DR/BDR} – רקע לשאלה \enLR{2}ח (שכבה \enLR{3}, אך נשאל)}
+
+בבחירת \enLR{DR/BDR} ב-\enLR{OSPF}: קודם \textbf{\enLR{priority} הגבוה ביותר}, ואם שווה – \textbf{\enLR{Router-ID} הגבוה ביותר}. בשאלת הבגרות \enLR{R1(pri 2, RID 1.1.1.1), R2(pri 1), R3(pri 2, RID 3.3.3.3), R4(pri 1).} בין בעלי \enLR{priority 2: R3 (RID 3.3.3.3) > R1} ⇒ \textbf{\enLR{R3 = DR}}. ה-\enLR{BDR} הוא הבא: בין \enLR{priority 2, R1}; אבל אחרי \enLR{DR} משווים את השאר – \enLR{R1 (RID 1.1.1.1)} הוא הגבוה מבין הנותרים בעלי \enLR{priority 2.} תשובה: \textbf{\enLR{R3 = DR, R1 = BDR}}. (שימו לב: ההיגיון הפוך מ-\enLR{STP} – שם נמוך מנצח, כאן גבוה.)\par
+
+\subheading{הגנות \enLR{STP}}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{איפה} & \textbf{מה עושה} & \textbf{מנגנון} \\
+\hline
+\endhead
+פורטי \enLR{access} למחשבים & פורט קצה עובר מיד ל-\enLR{forwarding} (לא מחכה \enLR{30} שניות) & \textbf{\enLR{PortFast}} \\
+\hline
+פורטי קצה & אם פורט \enLR{PortFast} מקבל \enLR{BPDU} (כלומר חובר אליו מתג/תוקף) – \enLR{err-disable} מיידי & \textbf{\enLR{BPDU Guard}} \\
+\hline
+פורטים למתגי גישה מתחת & מונע ממתג בפורט זה להפוך ל-\enLR{root} (אם ישלח \enLR{BPDU} עדיף – הפורט נחסם) & \textbf{\enLR{Root Guard}} \\
+\hline
+קישורים \enLR{redundant} & מגן מלולאה כשפורט מפסיק לקבל \enLR{BPDU} & \textbf{\enLR{Loop Guard}} \\
+\hline
+\end{xltabular}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+\textcolor{ccom}{\texthebrew{! פר-ממשק}}\\
+S1(config-if)\# spanning-tree portfast\\
+S1(config-if)\# \textcolor{cbold}{\textbf{spanning-tree bpduguard enable}}\\
+\textcolor{ccom}{\texthebrew{! גלובלי – על כל פורטי \enLR{PortFast} (זו התשובה בבגרות שאלה \enLR{7}ד)}}\\
+S1(config)\# \textcolor{cbold}{\textbf{spanning-tree portfast default}}\\
+S1(config)\# \textcolor{cbold}{\textbf{spanning-tree portfast bpduguard default}}\\
+\textcolor{ccom}{\texthebrew{! שהמתג שלנו יהיה \enLR{root} בוודאות}}\\
+S1(config)\# \textcolor{cbold}{\textbf{spanning-tree vlan 10 root primary}}       \textcolor{ccom}{\texthebrew{! מוריד \enLR{priority} ל-\enLR{24576}}}\\
+S1(config)\# spanning-tree vlan 10 priority 4096            \textcolor{ccom}{\texthebrew{! ידני – חייב כפולה של \enLR{4096}}}\\
+S1\# \textcolor{cbold}{\textbf{show spanning-tree}}
+\end{english}\end{codebox}
+
+\sectionheading{\enLR{6.6 DHCP} – \enLR{Starvation, Spoofing} ו-\enLR{DHCP Snooping}}
+
+\textbf{\enLR{DHCP starvation}:} תוקף מבקש את כל הכתובות ב-\enLR{pool} (עם \enLR{MAC}ים מזויפים) – משתמשים אמיתיים לא מקבלים כתובת \enLR{(DoS).} \textbf{\enLR{DHCP spoofing (rogue server)}:} התוקף מקים שרת \enLR{DHCP} משלו שעונה מהר יותר, ומחלק לקורבנות \textbf{\enLR{default gateway} = הכתובת שלו} ו-\textbf{\enLR{DNS} שלו} ⇒ \enLR{MITM} על כל התעבורה.\par
+
+\subheading{\enLR{DHCP Snooping} – ההגנה}
+
+המתג מסמן פורטים כ-\textbf{\enLR{trusted}} (לכיוון שרת ה-\enLR{DHCP} הלגיטימי / \enLR{uplink)} או \textbf{\enLR{untrusted}} (פורטי קצה, ברירת מחדל). הודעות שרת \enLR{(OFFER, ACK)} מפורט \enLR{untrusted} – נחסמות. המתג בונה \textbf{\enLR{DHCP Snooping Binding Table}} \enLR{(MAC}↔\enLR{IP}↔פורט↔\enLR{VLAN)} – בסיס ל-\enLR{DAI} ו-\enLR{IP Source Guard.}\par
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+S1(config)\# \textcolor{cbold}{\textbf{ip dhcp snooping}}\\
+S1(config)\# \textcolor{cbold}{\textbf{ip dhcp snooping vlan 10,20}}\\
+S1(config)\# interface g0/1                    \textcolor{ccom}{\texthebrew{! לכיוון שרת \enLR{DHCP} הלגיטימי}}\\
+S1(config-if)\# \textcolor{cbold}{\textbf{ip dhcp snooping trust}}\\
+S1(config)\# interface range f0/1 - 20         \textcolor{ccom}{\texthebrew{! פורטי קצה}}\\
+S1(config-if-range)\# \textcolor{cbold}{\textbf{ip dhcp snooping limit rate 6}}   \textcolor{ccom}{\texthebrew{! נגד \enLR{starvation}}}\\
+S1\# \textcolor{cbold}{\textbf{show ip dhcp snooping binding}}
+\end{english}\end{codebox}
+
+\sectionheading{\enLR{6.7 ARP Spoofing} ו-\enLR{Dynamic ARP Inspection (DAI)}}
+
+\textbf{\enLR{ARP}} ממפה \enLR{IP} ל-\enLR{MAC}, וחסר כל אימות: כל מחשב יכול לשלוח "\enLR{Gratuitous ARP"} שאומר "אני ה-\enLR{gateway"} – והקורבנות יעדכנו את הטבלה שלהם ויתחילו לשלוח את התעבורה לתוקף \enLR{(MITM).} \textbf{\enLR{DAI}} בודק כל הודעת \enLR{ARP} מול טבלת ה-\enLR{DHCP Snooping}: אם ה-\enLR{IP}↔\enLR{MAC} לא תואם לרשומה – ההודעה נזרקת.\par
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+S1(config)\# \textcolor{cbold}{\textbf{ip arp inspection vlan 10,20}}\\
+S1(config)\# interface g0/1\\
+S1(config-if)\# \textcolor{cbold}{\textbf{ip arp inspection trust}}            \textcolor{ccom}{\texthebrew{! \enLR{uplink} מהימן}}\\
+\textcolor{ccom}{\texthebrew{! לפורטים סטטיים בלי \enLR{DHCP} – מגדירים \enLR{ACL} של \enLR{ARP} ידני}}\\
+S1(config)\# arp access-list STATIC-HOSTS\\
+S1(config-arp-nacl)\# permit ip host 10.0.0.5 mac host aaaa.bbbb.cccc\\
+S1\# \textcolor{cbold}{\textbf{show ip arp inspection}}
+\end{english}\end{codebox}
+
+המשלים: \textbf{\enLR{IP Source Guard}} – מוודא שכתובת ה-\enLR{IP} במסגרת תואמת לפורט לפי טבלת ה-\enLR{snooping} (נגד \enLR{IP spoofing).}\par
+
+\sectionheading{\enLR{6.8 Storm Control}}
+
+מגביל את אחוז התעבורה מסוג \enLR{broadcast / multicast / unknown-unicast} על פורט; אם עוברים סף – המתג מפיל את העודף (ומתריע). מגן מ-\enLR{broadcast storms} (גם מלולאה וגם מתקלה/התקפה). התכנית מציינת "\enLR{Storm Control (SC)".}\par
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+S1(config-if)\# \textcolor{cbold}{\textbf{storm-control broadcast level 5.00}}       \textcolor{ccom}{\texthebrew{! מעל \enLR{5\%} מרוחב הפס – הגבל}}\\
+S1(config-if)\# \textcolor{cbold}{\textbf{storm-control multicast level pps 1k}}\\
+S1(config-if)\# \textcolor{cbold}{\textbf{storm-control action shutdown}}            \textcolor{ccom}{\texthebrew{! או \enLR{trap}}}\\
+S1\# \textcolor{cbold}{\textbf{show storm-control}}
+\end{english}\end{codebox}
+
+\sectionheading{\enLR{6.9 SPAN} – שיקוף פורטים (הבסיס ל-\enLR{IDS)}}
+
+\textbf{\enLR{SPAN}} \enLR{(Switched Port Analyzer, "port mirroring")} מעתיק את כל התעבורה מפורט/\enLR{VLAN} מקור לפורט יעד – שאליו מחובר \enLR{Wireshark} או \textbf{\enLR{IDS}}. זה החיבור לפרק \enLR{5: IDS "}מחוץ לנתיב" מקבל את התעבורה דווקא דרך \enLR{SPAN.} \textbf{\enLR{RSPAN}} – שיקוף בין מתגים דרך \enLR{VLAN} ייעודי; \textbf{\enLR{ERSPAN}} – מעל \enLR{IP (GRE).}\par
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+S1(config)\# \textcolor{cbold}{\textbf{monitor session 1 source interface f0/1 - 10 both}}\\
+S1(config)\# \textcolor{cbold}{\textbf{monitor session 1 destination interface f0/24}}   \textcolor{ccom}{\texthebrew{! כאן ה-\enLR{IDS/Wireshark}}}\\
+S1\# \textcolor{cbold}{\textbf{show monitor session 1}}
+\end{english}\end{codebox}
+
+\begin{faqbox}\boxtitle{שאלת תלמיד: "אם ה-\enLR{IDS} רק מקבל עותק דרך \enLR{SPAN}, למה שלא נחבר אותו \enLR{inline} ונחסום?"}\par  כי אז הוא \enLR{IPS}, לא \enLR{IDS} – והוא מוסיף השהיה ונקודת כשל בנתיב. \enLR{SPAN} מאפשר לנטר בלי לגעת בזרימה: הפורט המשקף יכול אפילו ליפול בלי להשפיע על הרשת. זה בדיוק ה-\enLR{trade-off} מפרק \enLR{5.}\end{faqbox}
+
+\sectionheading{\enLR{6.10 NAC} ו-\enLR{802.1X}}
+
+\textbf{\enLR{NAC}} \enLR{(Network Access Control)} – "בקרת בריאות": לפני שמחשב מקבל גישה מלאה, בודקים שהוא עומד בתנאים (אנטי-וירוס מעודכן, \enLR{patch}, אין תוכנות אסורות). מחשב שנכשל מועבר ל-\enLR{VLAN "}הסגר" \enLR{(quarantine)} לתיקון. הבסיס הטכני: \textbf{\enLR{802.1X}} (פרק \enLR{3)} – המתג/\enLR{AP} חוסם את הפורט עד אימות מול \enLR{RADIUS.} שילוב: \enLR{802.1X} מאמת \emph{מי}, \enLR{NAC} בודק \emph{באיזה מצב} המכשיר.\par
+
+\sectionheading{\enLR{6.11} מערכות קצה: \enLR{IronPort, CSA}, ומיילים/אתרים}
+
+\begin{itemize}
+\item \textbf{\enLR{Cisco IronPort}} – משפחת מכשירים ל\textbf{אבטחת תוכן} בקצה: \textbf{\enLR{ESA}} \enLR{(Email Security Appliance)} – סינון \enLR{spam, phishing} ווירוסים במייל; \textbf{\enLR{WSA}} \enLR{(Web Security Appliance)} – \enLR{proxy} שמסנן אתרים זדוניים, \enLR{URL filtering}, בדיקת הורדות. סיסקו רכשה את \enLR{IronPort} ב-\enLR{2007.}
+\item \textbf{\enLR{CSA}} \enLR{(Cisco Security Agent)} – \enLR{HIPS} על התחנה (פרק \enLR{5).}
+\item היום התחום נקרא \textbf{\enLR{Secure Email / Secure Web / SWG / CASB}}, ולרוב בענן \enLR{(Cisco Umbrella).}
+\end{itemize}
+
+\sectionheading{\enLR{6.12} אבטחת \enLR{VoIP} ו-\enLR{SAN}}
+
+\subheading{\enLR{VoIP} (טלפוניה על \enLR{IP)}}
+
+איומים: האזנה לשיחות \enLR{(sniffing)}, \textbf{\enLR{toll fraud}} (שימוש לא מורשה בקווים לחיוב יקר), התחזות \enLR{(caller-ID spoofing), DoS} על ה-\enLR{PBX, SPIT (spam} קולי). הגנות: \textbf{\enLR{Voice VLAN} נפרד} (הפרדה מתעבורת הנתונים), הצפנה (\textbf{\enLR{SRTP}} למדיה, \textbf{\enLR{TLS/SIP-TLS}} לאיתות), אימות מכשירי טלפון, \enLR{ACL} בין \enLR{voice} ל-\enLR{data.}\par
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+S1(config-if)\# switchport access vlan 10        \textcolor{ccom}{\texthebrew{! נתונים}}\\
+S1(config-if)\# \textcolor{cbold}{\textbf{switchport voice vlan 20}}       \textcolor{ccom}{\texthebrew{! קול – מתויג בנפרד}}
+\end{english}\end{codebox}
+
+\subheading{\enLR{SAN} (רשת אחסון)}
+
+\enLR{SAN} מחברת שרתים לאחסון בלוקים \enLR{(Fibre Channel / iSCSI).} איומים: גישה לא מורשית ל-\enLR{LUN, WWN spoofing.} הגנות: \textbf{\enLR{Zoning}} (מי מדבר עם מי ב-\enLR{fabric} – מקביל ל-\enLR{VLAN)}, \textbf{\enLR{LUN masking}} (איזה שרת רואה איזה נפח), \textbf{\enLR{VSAN}} (בידוד לוגי), אימות \enLR{(FC-SP / CHAP} ל-\enLR{iSCSI)}, והצפנת נתונים במנוחה. חשיבות: כל הנתונים הקריטיים של הארגון נמצאים שם.\par
+
+\sectionheading{\enLR{6.13 Wi-Fi} ו-\enLR{Evil Twin}}
+
+\textbf{\enLR{Evil Twin}:} התוקף מקים \enLR{Access Point} עם \textbf{אותו \enLR{SSID}} כמו הרשת החוקית, בעוצמה חזקה יותר. מכשירים מתחברים אליו אוטומטית (הם זוכרים את השם), והתוקף מבצע \enLR{MITM} – רואה הכול, מציג דף התחברות מזויף \enLR{(captive portal)} לגניבת סיסמה. הגנות: \enLR{WPA2/WPA3-Enterprise (802.1X} – המכשיר מאמת את השרת, לא רק להיפך), \enLR{WIPS (Wireless IPS} שמזהה \enLR{AP} מתחזים), אימות הדדי.\par
+
+\begin{exambox}\boxtitle{בבגרות (שאלה \enLR{6}ה)}\par  "מהם מתכנני התקפת \enLR{Evil Twin}?" – \textbf{לשתול נקודת גישה זדונית, בעלת \enLR{SSID} זהה לנקודת גישה חוקית, לצורך גניבת מידע.}\end{exambox}
+
+\sectionheading{\enLR{6.14} מדריך פקודות מרוכז – פרק \enLR{6}}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{הגנה מפני} & \textbf{פקודה} \\
+\hline
+\endhead
+\enLR{MAC overflow} & \code{switchport port-security} + \code{maximum} + \code{violation} + \code{mac-address sticky} \\
+\hline
+\enLR{VLAN hopping (DTP)} & \code{switchport mode access} + \code{switchport nonegotiate} \\
+\hline
+\enLR{double tagging} & \code{switchport trunk native vlan 999} \\
+\hline
+\enLR{STP manipulation} & \code{spanning-tree portfast} + \code{bpduguard enable} / \code{… default} \\
+\hline
+קיבוע \enLR{root} & \code{spanning-tree vlan N root primary} / \code{priority} \\
+\hline
+\enLR{DHCP spoofing/starvation} & \code{ip dhcp snooping} + \code{trust} + \code{limit rate} \\
+\hline
+\enLR{ARP poisoning} & \code{ip arp inspection vlan} + \code{trust} \\
+\hline
+\enLR{broadcast storm} & \code{storm-control broadcast level} \\
+\hline
+\enLR{SPAN} ל-\enLR{IDS} & \code{monitor session} \\
+\hline
+הפרדת \enLR{VoIP} & \code{switchport voice vlan} \\
+\hline
+וריפיקציה & \code{show port-security}, \code{show spanning-tree}, \code{show ip dhcp snooping binding} \\
+\hline
+\end{xltabular}
+
+\sectionheading{\enLR{6.15} תרגילים לתלמידים}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{1} – התאמת התקפה להגנה}\par  חברו: \enLR{(1) MAC flooding (2) rogue DHCP (3) ARP poisoning (4)} מחשב שמתחזה למתג ומקבל את כל ה-\enLR{VLAN}ים \enLR{(5)} מתג מזויף שמנסה להיות \enLR{root.} הגנות: \enLR{DAI / port security / BPDU Guard+Root Guard / switchport nonegotiate / DHCP snooping.} \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{1}→\enLR{port security} · \enLR{2}→\enLR{DHCP snooping} · \enLR{3}→\enLR{DAI} · \enLR{4}→\enLR{switchport nonegotiate (access)} · \enLR{5}→\enLR{BPDU Guard/Root Guard}\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{2} – מי ה-\enLR{root}?}\par  \enLR{4} מתגים, \enLR{priority: SW1=32768, SW2=32768, SW3}=\textbf{\enLR{4096}}, \enLR{SW4=32768. MAC}ים עולים בסדר \enLR{SW1}\par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{SW3} – ה-\enLR{priority} נבדק ראשון והוא הנמוך \enLR{(4096).} ה-\enLR{MAC} נבדק רק בתיקו. לו כולם היו \enLR{32768} – \enLR{SW1 (MAC} נמוך).\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{3} – ניתוח קונפיג}\par  פורט \enLR{f0/5} הוגדר: \code{switchport port-security}, \code{maximum 1}, \code{violation shutdown}. עובד חיבר אליו מתג קטן \enLR{(switch)} עם \enLR{3} מחשבים. מה יקרה, ומה ההודעה בלוג? \par\vskip2pt\hrule\vskip3pt\textbf{}המתג הקטן יעביר מסגרות מ-\enLR{3 MAC}ים ⇒ בהפרה הראשונה \enLR{(MAC} שני) הפורט עובר ל-\enLR{err-disabled} ונכבה. בלוג: \code{\%PM-4-ERR\_DISABLE: psecure-violation ... Fa0/5}. שחזור: \enLR{shut/no shut.}\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{4} – תכנון הקשחת מתג גישה}\par  כתבו \enLR{8} פקודות הקשחה שתחילו על מתג גישה של קומה בבניין \enLR{(24} פורטים למשתמשים, \enLR{uplink} אחד). \par\vskip2pt\hrule\vskip3pt\textbf{}דוגמה: על פורטי הקצה: \enLR{mode access, access vlan 10, nonegotiate, port-security max 2 sticky violation restrict, portfast, bpduguard enable, ip dhcp snooping (untrusted, limit rate), no cdp enable.} על ה-\enLR{uplink: mode trunk, nonegotiate, native vlan 999, allowed vlan list, dhcp snooping trust, arp inspection trust.} גלובלי: \enLR{ip dhcp snooping + vlan, ip arp inspection vlan, portfast bpduguard default.} כיבוי פורטים לא בשימוש ל-\enLR{vlan 999 + shutdown.}\end{exbox}
+
+\sectionheading{\enLR{6.16} שאלות בסגנון בגרות}
+
+\begin{exambox}\boxtitle{שאלה \enLR{1}}\par  מה הדרך למנוע מתקפת \enLR{MAC Table overflow} במתג? \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{Port security} על כל הפורטים שאינם \enLR{trunk}, עם הגבלת מספר כתובות \enLR{MAC.}\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{2}}\par  איזו התקפת שכבה \enLR{2} אפשר לסכל על ידי השבתת פרוטוקול \enLR{DTP}? \enLR{1. DHCP spoofing 2. ARP spoofing 3. VLAN hopping 4. ARP poisoning} \par\vskip2pt\hrule\vskip3pt\textbf{}\textbf{\enLR{3. VLAN hopping}} \enLR{(switch spoofing).}\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{3}}\par  באיזו פקודה מפעילים \enLR{BPDU Guard} על כל פורטי ה-\enLR{PortFast} במתג? \par\vskip2pt\hrule\vskip3pt\textbf{}\code{spanning-tree portfast bpduguard default} (במצב \enLR{config} גלובלי).\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{4}}\par  \enLR{STP} פועל בשכבה \_\_\_ של \enLR{OSI} ומונע \_\_\_ על ידי \_\_\_. \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{2 (Data Link)} · לולאות \enLR{(broadcast storm)} · חסימת פורטים \enLR{(port blocking).}\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{5}}\par  מהי מתקפת \enLR{Evil Twin} ואיזו טכנולוגיית \enLR{Wi-Fi} מסייעת למנוע אותה? \par\vskip2pt\hrule\vskip3pt\textbf{}נקודת גישה זדונית עם \enLR{SSID} זהה לחוקית לצורך \enLR{MITM}/גניבת מידע. מניעה: \enLR{WPA2/WPA3-Enterprise} עם \enLR{802.1X} (אימות הדדי – המכשיר מוודא את זהות השרת) ו-\enLR{WIPS.}\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{6}}\par  מהו תפקיד \enLR{DHCP Snooping} ואיזה מנגנון אבטחה נוסף מסתמך על הטבלה שהוא בונה? \par\vskip2pt\hrule\vskip3pt\textbf{}חוסם הודעות שרת \enLR{DHCP} מפורטים לא-מהימנים \enLR{(rogue server)} ומגביל קצב \enLR{(starvation). Dynamic ARP Inspection} (ו-\enLR{IP Source Guard)} מסתמכים על טבלת ה-\enLR{binding} שלו.\end{exambox}
+
+\sectionheading{\enLR{6.17} מעבדה \enLR{(2} שעות) – הקשחת מתג ב-\enLR{Packet Tracer}}
+
+\begin{enumerate}
+\item \enLR{Port security: 2} מחשבים על פורט אחד (דרך \enLR{hub}/מתג קטן), \enLR{maximum 1, violation shutdown.} הוסיפו מחשב שני ⇒ \enLR{err-disabled.} שחזרו עם \enLR{shut/no shut} והעלו ל-\enLR{maximum 2.}
+\item \enLR{BPDU Guard}: הגדירו \enLR{portfast+bpduguard} על פורט קצה; חברו אליו מתג נוסף ⇒ \enLR{err-disabled.}
+\item \enLR{Root bridge: 3} מתגים בטבעת; הגדירו את המרכזי כ-\code{root primary}; \code{show spanning-tree} – ודאו מי \enLR{root} ואיזה פורט \enLR{blocking.}
+\item \enLR{DTP}: הגדירו \enLR{trunk} מפורש + \enLR{nonegotiate} בין המתגים; פורטי קצה \enLR{access + nonegotiate.}
+\item \enLR{DHCP snooping}: הפעילו, סמנו את פורט השרת \enLR{trusted}; הוסיפו "שרת \enLR{DHCP"} תוקף על פורט \enLR{untrusted} וראו שההצעות שלו נחסמות.
+\end{enumerate}
+
+\sectionheading{בנק שאלות שתלמידים שואלים – ותשובות מוכנות}
+
+שאלות נפוצות בפרק אבטחת הרשת המקומית, עם תשובות מוכנות.\par
+
+\textbf{ש: "אם יש חומת אש בכניסה לרשת, למה בכלל צריך להגן על המתגים בפנים?"}\newline ת: כי חומת האש מגנה מפני האינטרנט (מבחוץ), אבל אם תוקף כבר \underline{בפנים} (חיבר מחשב לשקע, פרץ ל-\enLR{Wi-Fi}, השתלט על מחשב עובד) – הוא פועל בשכבה \enLR{2}, מתחת לחומת האש. שם צריך \enLR{port security, DHCP snooping} וכו'.\par
+
+\textbf{ש: "הפורט עבר ל-\enLR{err-disabled} ונכבה. איך מחזירים אותו?"}\newline ת: ידנית: \code{shutdown} ואז \code{no shutdown} על הממשק. אוטומטית אחרי זמן: \code{errdisable recovery cause psecure-violation}. בודקים סיבה עם \code{show interfaces status err-disabled}.\par
+
+\textbf{ש: "למה לולאה בין מתגים כל כך מסוכנת?"}\newline ת: כי למסגרת בשכבה \enLR{2} \underline{אין \enLR{TTL}} (בניגוד ל-\enLR{IP).} אם יש לולאה פיזית, הודעת \enLR{broadcast} מסתובבת לנצח ומשוכפלת בכל סיבוב – "סופת \enLR{broadcast"} שמשתקת את הרשת תוך שניות. \enLR{STP} מונע זאת על ידי חסימת פורט.\par
+
+\textbf{ש: "איך בוחרים את ה-\enLR{root bridge} ב-\enLR{STP}?"}\newline ת: לפי ה-\enLR{Bridge ID} הנמוך ביותר = \enLR{Priority} (ברירת מחדל \enLR{32768)} ואז כתובת \enLR{MAC.} אם ה-\enLR{priority} זהה אצל כולם – מנצח ה-\underline{\enLR{MAC} הנמוך}. שימו לב: ב-\enLR{STP} נמוך מנצח, ב-\enLR{OSPF} (פרק רשתות) גבוה מנצח – הפוך!\par
+
+\textbf{ש: "מה זה \enLR{VLAN hopping} ואיך \enLR{DTP} קשור?"}\newline ת: \enLR{DTP} הוא פרוטוקול שמנהל אוטומטית אם קישור יהיה \enLR{trunk.} תוקף יכול להתחזות למתג, "לשכנע" את הפורט להפוך ל-\enLR{trunk}, ואז לקבל גישה לכל ה-\enLR{VLAN}ים. הפתרון: לכבות \enLR{DTP} (\code{switchport nonegotiate}) ולהגדיר פורטי קצה כ-\enLR{access} מפורש.\par
+
+\textbf{ש: "מה זה \enLR{rogue DHCP} ולמה זה מסוכן?"}\newline ת: תוקף מקים שרת \enLR{DHCP} משלו שעונה מהר יותר מהאמיתי, ומחלק לקורבנות \enLR{default gateway} ו-\enLR{DNS} \underline{שלו} – וכך כל התעבורה שלהם עוברת דרכו \enLR{(MITM).} ההגנה: \enLR{DHCP snooping}, שמסמן פורטים "מהימנים" וחוסם הצעות משרתים לא מורשים.\par
+
+\textbf{ש: "מה זה \enLR{Evil Twin} ואיך מתגוננים?"}\newline ת: נקודת גישה זדונית עם \underline{אותו שם רשת \enLR{(SSID)}} כמו החוקית, בעוצמה חזקה יותר – מכשירים מתחברים אליה אוטומטית והתוקף מבצע \enLR{MITM.} הגנה: \enLR{WPA2/WPA3-Enterprise} עם \enLR{802.1X} (אימות הדדי – המכשיר מוודא שהשרת אמיתי) ו-\enLR{WIPS.}\par
+
+\textbf{ש: "מה ההבדל בין \enLR{port security} ל-\enLR{802.1X}?"}\newline ת: \textbf{\enLR{port security}} מגביל \underline{כמה/אילו כתובות \enLR{MAC}} מותרות בפורט (הגנה מפני \enLR{MAC flooding).} \textbf{\enLR{802.1X}} דורש \underline{אימות משתמש/מכשיר} מלא מול שרת \enLR{RADIUS} לפני שנותנים גישה. \enLR{802.1X} חזק בהרבה אך דורש תשתית שרת.\par
+
+\sectionheading{מילון מונחים – הגדרות}
+
+הגדרות תמציתיות של המונחים המרכזיים בפרק. שימושי גם כדף עזר לבחינה.\par
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{הגדרה} & \textbf{מונח} \\
+\hline
+\endhead
+שכבת הקישור; עובדת בכתובות \enLR{MAC}, מתגים ומסגרות \enLR{(frames).} & \textbf{שכבה \enLR{2 (Data Link)}} \\
+\hline
+מכשיר שמחבר מכשירים ברשת מקומית ולומד כתובות \enLR{MAC} לכל פורט. & \textbf{מתג \enLR{(Switch)}} \\
+\hline
+טבלה במתג הממפה כתובת \enLR{MAC} לפורט; מוגבלת בגודלה. & \textbf{טבלת \enLR{MAC (CAM)}} \\
+\hline
+הצפת המתג בכתובות \enLR{MAC} מזויפות עד שהוא משדר לכולם (כמו \enLR{hub).} & \textbf{\enLR{MAC flooding / overflow}} \\
+\hline
+הגבלת מספר/זהות כתובות \enLR{MAC} בפורט; הגנה מפני \enLR{MAC flooding.} & \textbf{\enLR{Port Security}} \\
+\hline
+תגובת \enLR{port security} להפרה: התעלמות, התראה, או כיבוי הפורט \enLR{(err-disabled).} & \textbf{\enLR{violation (protect/restrict/shutdown)}} \\
+\hline
+רשת לוגית מבודדת בתוך מתג פיזי; מעבר בין \enLR{VLAN}ים דורש ניתוב. & \textbf{\enLR{VLAN}} \\
+\hline
+קישור הנושא כמה \enLR{VLAN}ים בין מתגים, עם תיוג של מספר ה-\enLR{VLAN.} & \textbf{\enLR{Trunk (802.1Q)}} \\
+\hline
+פרוטוקול שמנהל אוטומטית \enLR{trunk}; יש לכבותו כדי למנוע \enLR{VLAN hopping.} & \textbf{\enLR{DTP}} \\
+\hline
+קבלת גישה ל-\enLR{VLAN}ים אחרים בניצול \enLR{DTP} או תיוג כפול. & \textbf{\enLR{VLAN hopping}} \\
+\hline
+פרוטוקול שמונע לולאות בשכבה \enLR{2} על ידי חסימת פורטים. & \textbf{\enLR{STP (Spanning Tree)}} \\
+\hline
+המתג המרכזי ב-\enLR{STP}; נבחר לפי \enLR{Bridge ID} הנמוך \enLR{(priority}, ואז \enLR{MAC).} & \textbf{\enLR{Root Bridge}} \\
+\hline
+מכבה פורט קצה שמקבל \enLR{BPDU} (חובר אליו מתג/תוקף). & \textbf{\enLR{BPDU Guard}} \\
+\hline
+דלדול כתובות ה-\enLR{DHCP}, או הקמת שרת \enLR{DHCP} מזויף ל-\enLR{MITM.} & \textbf{\enLR{DHCP starvation / spoofing}} \\
+\hline
+סימון פורטים מהימנים וחסימת הצעות \enLR{DHCP} מפורטים לא מורשים. & \textbf{\enLR{DHCP Snooping}} \\
+\hline
+זיוף הודעות \enLR{ARP} כדי להפנות תעבורה לתוקף \enLR{(MITM).} & \textbf{\enLR{ARP spoofing / poisoning}} \\
+\hline
+בדיקת הודעות \enLR{ARP} מול טבלת ה-\enLR{DHCP snooping}; חוסם זיופים. & \textbf{\enLR{DAI (Dynamic ARP Inspection)}} \\
+\hline
+הגבלת אחוז תעבורת \enLR{broadcast/multicast} בפורט; מונע סופות. & \textbf{\enLR{Storm Control}} \\
+\hline
+בקרת גישה שבודקת 'בריאות' מכשיר לפני מתן גישה (מבוסס \enLR{802.1X).} & \textbf{\enLR{NAC}} \\
+\hline
+נקודת גישה זדונית עם \enLR{SSID} זהה לחוקית, ל-\enLR{MITM} ברשת אלחוטית. & \textbf{\enLR{Evil Twin}} \\
+\hline
+\end{xltabular}
+\end{document}

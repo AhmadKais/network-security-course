@@ -1,0 +1,430 @@
+\documentclass[11pt]{article}
+\usepackage{fontspec}
+\directlua{luaotfload.add_fallback("hebfb",{"DejaVu Sans:mode=harf"})}
+\usepackage{polyglossia}
+\setdefaultlanguage{hebrew}
+\setotherlanguage{english}
+\setmainfont{Noto Sans Hebrew}[Script=Hebrew,RawFeature={fallback=hebfb}]
+\newfontfamily\codefont{DejaVu Sans Mono}[RawFeature={fallback=hebfb}]
+\usepackage[a4paper,margin=18mm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{mdframed}
+\usepackage{tabularx}
+\usepackage{xltabular}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\setlist{leftmargin=1.6em,itemsep=1pt,topsep=2pt}
+% colors
+\definecolor{h1}{HTML}{1E3A8A}\definecolor{h2}{HTML}{1E40AF}\definecolor{h3}{HTML}{0F172A}
+\definecolor{subgray}{HTML}{64748B}\definecolor{hdrbg}{HTML}{E0E7FF}
+\definecolor{cfg}{HTML}{E2E8F0}\definecolor{cbg}{HTML}{0F172A}\definecolor{cbold}{HTML}{7DD3FC}\definecolor{ccom}{HTML}{94A3B8}
+\definecolor{metabg}{HTML}{F1F5F9}
+\newcommand{\enLR}[1]{\textenglish{#1}}
+\newcommand{\code}[1]{\textenglish{\codefont #1}}
+\newcommand{\chapterheading}[1]{\vspace{2pt}{\LARGE\bfseries\color{h1}#1\par}\vskip2pt{\color{h1}\hrule height 2pt}\vskip6pt}
+\newcommand{\sectionheading}[1]{\vskip10pt\penalty-200{\large\bfseries\color{h2}#1\par}\vskip3pt}
+\newcommand{\subheading}[1]{\vskip6pt{\bfseries\color{h3}#1\par}\vskip2pt}
+\newcommand{\boxtitle}[1]{{\bfseries\color{boxti}#1}}
+% box environments (right border, tinted bg)
+\newmdenv[topline=false,bottomline=false,leftline=false,rightline=true,linewidth=2pt,innermargin=0pt,skipabove=6pt,skipbelow=6pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt]{genericbox}
+\definecolor{faqbg}{HTML}{ECFDF5}\definecolor{faqfr}{HTML}{10B981}\definecolor{faqti}{HTML}{065F46}
+\definecolor{misbg}{HTML}{FEF2F2}\definecolor{misfr}{HTML}{EF4444}\definecolor{misti}{HTML}{991B1B}
+\definecolor{tipbg}{HTML}{FFFBEB}\definecolor{tipfr}{HTML}{F59E0B}\definecolor{tipti}{HTML}{92400E}
+\definecolor{exabg}{HTML}{EFF6FF}\definecolor{exafr}{HTML}{3B82F6}\definecolor{exati}{HTML}{1E3A8A}
+\definecolor{defbg}{HTML}{F5F3FF}\definecolor{deffr}{HTML}{8B5CF6}\definecolor{defti}{HTML}{5B21B6}
+\definecolor{stobg}{HTML}{FDF4FF}\definecolor{stofr}{HTML}{D946EF}\definecolor{stoti}{HTML}{86198F}
+\definecolor{exbg}{HTML}{F0FDFA}\definecolor{exfr}{HTML}{14B8A6}\definecolor{exti}{HTML}{115E59}
+\newenvironment{faqbox}{\colorlet{boxti}{faqti}\begin{mdframed}[backgroundcolor=faqbg,linecolor=faqfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{mistakebox}{\colorlet{boxti}{misti}\begin{mdframed}[backgroundcolor=misbg,linecolor=misfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{tipbox}{\colorlet{boxti}{tipti}\begin{mdframed}[backgroundcolor=tipbg,linecolor=tipfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{exambox}{\colorlet{boxti}{exati}\begin{mdframed}[backgroundcolor=exabg,linecolor=exafr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{defbox}{\colorlet{boxti}{defti}\begin{mdframed}[backgroundcolor=defbg,linecolor=deffr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{storybox}{\colorlet{boxti}{stoti}\begin{mdframed}[backgroundcolor=stobg,linecolor=stofr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{exbox}{\colorlet{boxti}{exti}\begin{mdframed}[backgroundcolor=exbg,linecolor=exfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{metabox}{\begin{mdframed}[backgroundcolor=metabg,linewidth=0pt,innertopmargin=5pt,innerbottommargin=5pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=4pt,skipbelow=8pt]}{\end{mdframed}}
+\newmdenv[backgroundcolor=cbg,linewidth=0pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=8pt]{codebox}
+\setlength{\parindent}{0pt}\setlength{\parskip}{4pt}
+\renewcommand{\thepage}{\enLR{\arabic{page}}}
+\pagestyle{fancy}\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}
+\begin{document}
+\sloppy
+\chapterheading{פרק \enLR{5} – מניעת חדירה לרשת המקומית והרחבה \enLR{(IDS / IPS)}}{\small\color{subgray}\enLR{11} שעות עיוני + \enLR{3} מעשי · שבועות \enLR{13}–\enLR{16}\par}\vskip4pt
+
+\begin{metabox}\textbf{מטרות:} מערכות זיהוי פלישה \enLR{(IDS)} · מערכות מניעת פלישה \enLR{(IPS)} · הגדרה ב-\enLR{CLI} · ניטור ופתרון תקלות\\ \textbf{בבגרות:} ההבדל \enLR{IDS/IPS} (ניטור+התראה מול ניטור+חסימה אוטומטית)\end{metabox}
+
+\begin{defbox}\boxtitle{לפני שמתחילים – במה זה שונה מחומת אש? (למי שאין רקע)}\par   \textbf{חומת אש} (פרק \enLR{4)} בודקת \underline{כתובות ופורטים} – "מי מדבר עם מי ובאיזו דלת". היא לא מסתכלת מה \emph{בתוך} החבילה. \textbf{\enLR{IDS/IPS}} מסתכלות על \underline{התוכן} של החבילה ועל \underline{ההתנהגות} – ומחפשות סימנים של התקפה, גם אם הפורט מותר.  \textbf{אנלוגיה:} חומת אש = שומר שבודק תעודת זהות בכניסה. \enLR{IDS/IPS} = מצלמות אבטחה + מאבטח בתוך הבניין שמזהים התנהגות חשודה גם של מי שנכנס חוקית.  \textbf{\enLR{IDS}} \enLR{(Detection)} = מצלמה ש\underline{מתריעה} אם רואה משהו חשוד (אבל לא עוצרת). \textbf{\enLR{IPS}} \enLR{(Prevention)} = מאבטח ש\underline{גם עוצר} את החשוד במקום. \textbf{חתימה \enLR{(Signature)}} = "תמונת מבוקש" – תבנית ידועה של התקפה שהמערכת מחפשת. \end{defbox}
+
+\sectionheading{\enLR{5.1} למה חומת אש לא מספיקה}
+
+חומת אש (פרק \enLR{4)} מחליטה לפי \emph{כתובות ופורטים}. אבל התקפה יכולה להגיע בדיוק בפורט שפתחנו: \enLR{SQL injection} בתוך בקשת \enLR{HTTP} לפורט \enLR{80}, ניצול חולשה בשרת המייל בפורט \enLR{25}, או תולעת שמתפשטת דרך \enLR{SMB} שאנחנו מאפשרים בין סניפים. חומת האש רואה "\enLR{TCP 80} ל-\enLR{web server} – מותר" ולא מסתכלת מה \emph{בתוך} החבילה. כאן נכנסות מערכות \enLR{IDS/IPS}: הן מסתכלות על \textbf{התוכן} וההתנהגות ומחפשות סימנים של התקפה.\par
+
+\begin{storybox}\boxtitle{סיפור מהחיים: \enLR{10} דקות של \enLR{Slammer (2003)}}\par  תולעת \enLR{SQL Slammer} הייתה חבילת \enLR{UDP} \emph{אחת} בגודל \enLR{376} בתים לפורט \enLR{1434 (Microsoft SQL).} כל שרת נגוע שלח אותה לכתובות אקראיות בקצב מרבי. תוך \enLR{10} דקות נדבקו \enLR{75,000} שרתים; כספומטים של \enLR{Bank of America} הפסיקו לעבוד, חלק מטיסות \enLR{Continental} בוטלו, ו-\enLR{911} בסיאטל נפל. מי שהיה עם \enLR{IPS} מעודכן – חתימה אחת ("\enLR{UDP 1434}, גודל \enLR{376}, המחרוזת הזו") חסמה את זה מיד. מי שהיה רק עם חומת אש שאיפשרה \enLR{SQL} בין הסניפים – נדבק. ומה שמדהים: מיקרוסופט פרסמה תיקון \enLR{6} חודשים קודם.\end{storybox}
+
+\sectionheading{\enLR{5.2 IDS} מול \enLR{IPS} – ההבדל המהותי}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{\enLR{IPS} – \enLR{Intrusion Prevention System}} & \textbf{\enLR{IDS} – \enLR{Intrusion Detection System}} & \textbf{} \\
+\hline
+\endhead
+מערכת ניטור שמאפשרת זיהוי \textbf{וחסימה אוטומטית} של ניסיונות חדירה & מערכת ניטור שנועדה \textbf{לספק התראות} בעת ניסיונות חדירה & \textbf{הגדרה (כמו בבגרות)} \\
+\hline
+\textbf{בתוך הנתיב} \enLR{(inline)}: התעבורה \emph{עוברת דרכה}, חבילה אחר חבילה & \textbf{מחוץ לנתיב} \enLR{(out-of-band, promiscuous)}: מקבלת \emph{עותק} של התעבורה דרך \enLR{SPAN/TAP} & \textbf{מיקום} \\
+\hline
+מפילה את החבילה הזדונית עוד לפני שהגיעה ליעד; חוסמת את החיבור/התוקף & התראה \enLR{(syslog}, מייל), רישום; יכולה לבקש מחומת אש/נתב לחסום \emph{אחרי} שהחבילה הראשונה כבר עברה, או לשלוח \enLR{TCP reset} & \textbf{תגובה} \\
+\hline
+מוסיפה השהיה \enLR{(latency)}; אם ה-\enLR{IPS} נופל – או שהרשת נופלת \enLR{(fail-closed)} או שעוברים ללא הגנה \enLR{(fail-open)} & אפס השהיה; אם ה-\enLR{IDS} נופל – הרשת ממשיכה & \textbf{השפעה על הרשת} \\
+\hline
+תעבורה לגיטימית נחסמת – פוגע בעסק. לכן \enLR{IPS} דורש כוונון קפדני & התראה מיותרת – מטריד & \textbf{מחיר של טעות \enLR{(false positive)}} \\
+\hline
+רואה הכול, כולל חבילות שהיא עצמה מפילה & יכולה לפספס חבילות בעומס (עותק) & \textbf{מה היא רואה} \\
+\hline
+הגנה בזמן אמת בקצה ובין אזורים & ניטור, \enLR{forensics}, סביבה שלא סובלת חסימה בטעות & \textbf{מקרי שימוש} \\
+\hline
+\end{xltabular}
+
+\begin{faqbox}\boxtitle{שאלת תלמיד: "אז למה שמישהו יבחר \enLR{IDS}, אם \enLR{IPS} גם מזהה וגם חוסם?"}\par  שלוש סיבות: \enLR{(1)} \textbf{סיכון של \enLR{false positive}} – בבית חולים או בבורסה, לחסום תעבורה לגיטימית בטעות גרוע יותר מלהחמיץ התקפה; מתחילים ב-\enLR{IDS}, מכווננים, ורק אז עוברים ל-\enLR{IPS. (2)} \textbf{ביצועים} – \enLR{IPS inline} על קו \enLR{100Gbps} הוא ציוד יקר מאוד; \enLR{IDS} על עותק יכול לדגום. \enLR{(3)} \textbf{נראות} – \enLR{IDS} פנימי (על \enLR{SPAN} של המתג המרכזי) רואה תנועה רוחבית בין מחשבים שלא עוברת דרך שום חומת אש. בפועל ארגונים מפעילים את שניהם. ורוב מוצרי ה-\enLR{IPS} ניתנים להגדרה במצב \enLR{IDS (monitor-only).}\end{faqbox}
+
+\sectionheading{\enLR{5.3} מבוסס-מארח \enLR{(HIPS)} מול מבוסס-רשת \enLR{(NIPS)}}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{\enLR{NIPS} – \enLR{Network-based}} & \textbf{\enLR{HIPS} – \enLR{Host-based}} & \textbf{} \\
+\hline
+\endhead
+מכשיר/מודול בנתיב הרשת \enLR{(ASA} עם מודול \enLR{IPS, Firepower, IOS IPS, Snort/Suricata)} & תוכנה על השרת/המחשב עצמו \enLR{(agent)} & איפה \\
+\hline
+תעבורת רשת בלבד; לא רואה לתוך \enLR{TLS} בלי \enLR{SSL inspection} & הכול במחשב: קריאות מערכת, קבצים, \enLR{registry}, זיכרון, \textbf{ותעבורה מוצפנת אחרי הפענוח} & מה רואה \\
+\hline
+מכשיר אחד מגן על מאות מחשבים; לא צואך מערכת ההפעלה; רואה סריקות ו-\enLR{DoS} & מגן גם כשהמחשב מחוץ לרשת (לפטופ בבית); מבין את ההקשר (איזו אפליקציה) & יתרון \\
+\hline
+עיוור למה שקורה בתוך המארח ולתעבורה מוצפנת & התקנה ותחזוקה בכל מחשב; צורך משאבים; תלוי במערכת ההפעלה & חיסרון \\
+\hline
+\enLR{Cisco Firepower NGIPS, Snort} (קוד פתוח, שנרכש על ידי סיסקו), \enLR{Suricata, Palo Alto Threat Prevention} & \textbf{\enLR{Cisco Security Agent (CSA)}} – מוזכר בתכנית; הופסק ב-\enLR{2010.} היום: \enLR{Cisco Secure Endpoint (AMP), CrowdStrike, Microsoft Defender} – התחום נקרא \textbf{\enLR{EDR}} & דוגמה \\
+\hline
+\end{xltabular}
+
+\textbf{\enLR{CSA}} עבד לפי גישה התנהגותית ולא לפי חתימות: הוא יירט קריאות מערכת \enLR{(system calls)} ועצר התנהגות חשודה – "תוכנה שהגיעה במייל מנסה לשנות את ה-\enLR{registry} ולפתוח פורט" – גם בלי להכיר את הנוזקה. זה הרעיון של \enLR{HIPS} מודרני.\par
+
+\sectionheading{\enLR{5.4} שיטות זיהוי}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{חיסרון} & \textbf{יתרון} & \textbf{איך} & \textbf{שיטה} \\
+\hline
+\endhead
+לא מזהה התקפה חדשה \enLR{(zero-day)}; דורשת עדכונים & מדויקת, מעט \enLR{false positive}, קלה להבנה & השוואה לתבניות ידועות של התקפות (מחרוזת, רצף חבילות) & \textbf{מבוססת חתימות} \enLR{(Signature / pattern)} \\
+\hline
+הרבה \enLR{false positive}; אם ה-\enLR{baseline} נלמד בזמן התקפה – היא "נורמלית" & מזהה התקפות לא מוכרות & לומדת "מה נורמלי" \enLR{(baseline)} ומתריעה על חריגה – פתאום \enLR{500} חיבורי \enLR{SSH} בדקה & \textbf{מבוססת אנומליה} \enLR{(Anomaly / profile)} \\
+\hline
+מוגבל למה שחשבו עליו & פשוט, מדויק לארגון & המנהל מגדיר כללים: "אסור \enLR{Telnet} מרשת \enLR{X"} & \textbf{מבוססת מדיניות} \enLR{(Policy)} \\
+\hline
+לא מגן ישירות; דורש תחזוקה & אפס \enLR{false positive}; לומדים על התוקף & מערכת "מזמינה" שאין לה שימוש לגיטימי – כל גישה אליה חשודה & \textbf{מבוססת פיתיון} \enLR{(Honeypot)} \\
+\hline
+תוקף חדש לא ברשימה & מהיר & רשימות של \enLR{IP}/דומיינים זדוניים ידועים \enLR{(Cisco Talos)} & \textbf{מוניטין} \enLR{(Reputation)} \\
+\hline
+\end{xltabular}
+
+\sectionheading{\enLR{5.5} חתימות \enLR{(Signatures)}}
+
+\textbf{חתימה} היא תיאור של תבנית התקפה שה-\enLR{IPS} מחפש. חתימות מקובצות ב\textbf{קובץ חתימות} \enLR{(Signature package / SDF)} שסיסקו מעדכנת; לכל חתימה מזהה \enLR{(ID)} ותת-מזהה \enLR{(subsig)}, ולכל אחת \textbf{מנוע} \enLR{(micro-engine)} שמתאים לסוג – \enLR{atomic-ip, service-http, string-tcp, multi-string} ועוד.\par
+
+\subheading{אטומית מול מורכבת – נשאל בתכנית}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{חתימה מורכבת \enLR{(Composite / Stateful)}} & \textbf{חתימה אטומית \enLR{(Atomic)}} & \textbf{} \\
+\hline
+\endhead
+\textbf{רצף} של חבילות/אירועים לאורך זמן – למשל: "יותר מ-\enLR{100 SYN} לפורטים שונים באותו מארח תוך \enLR{5} שניות" \enLR{(port scan)}, או מחרוזת שמפוצלת בין כמה חבילות & \textbf{חבילה אחת} ובודדת – למשל: "\enLR{ICMP echo} עם גודל > \enLR{1000"} או "\enLR{TCP} עם דגלי \enLR{SYN+FIN} יחד" (לא חוקי) & מה בודקת \\
+\hline
+חייבת לזכור \enLR{(state)}, עד "חלון אירועים" \enLR{(event horizon)} & לא צריך לשמור מצב – מהיר וזול & זיכרון/מצב \\
+\hline
+\enLR{SYN flood}, סריקת פורטים, \enLR{brute force} & \enLR{Ping of Death, LAND attack} (מקור = יעד) & דוגמה \\
+\hline
+\end{xltabular}
+
+\subheading{תכונות של חתימה}
+
+\begin{itemize}
+\item \textbf{\enLR{Enabled / Disabled}} – פעילה או לא (מושבתת = טעונה בזיכרון אך לא בודקת).
+\item \textbf{\enLR{Retired / Unretired}} – בפנסיה = לא טעונה לזיכרון כלל (חוסך משאבים). כדי להשתמש בחתימה היא צריכה להיות \enLR{unretired} \emph{וגם} \enLR{enabled.}
+\item \textbf{\enLR{Severity}} – \enLR{informational / low / medium / high.}
+\item \textbf{\enLR{Fidelity rating (SFR)}} – עד כמה החתימה מדויקת \enLR{(0}–\enLR{100).}
+\item \textbf{\enLR{Action}} – מה לעשות כשיש התאמה (ראו \enLR{5.6).}
+\item \textbf{קטגוריות} – ב-\enLR{IOS IPS}: \code{ios\_ips basic} (חתימות בסיסיות, לנתב עם זיכרון מועט) ו-\code{ios\_ips advanced}.
+\end{itemize}
+
+\sectionheading{\enLR{5.6} פעולות \enLR{(Actions)} ואזעקות \enLR{(Alarms)}}
+
+\subheading{מה \enLR{IPS} יכול לעשות כשחתימה תואמת}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{משמעות} & \textbf{פעולה} \\
+\hline
+\endhead
+שלח התראה \enLR{(syslog / SDEE).} ברירת מחדל ברוב החתימות. & \textbf{\enLR{produce-alert}} \\
+\hline
+התראה + עותק של החבילה (לניתוח). & \textbf{\enLR{produce-verbose-alert}} \\
+\hline
+הפל את החבילה הזו. & \textbf{\enLR{deny-packet-inline}} \\
+\hline
+הפל את כל החבילות של החיבור \enLR{(TCP flow)} הזה. & \textbf{\enLR{deny-connection-inline}} \\
+\hline
+הפל כל תעבורה מכתובת התוקף לזמן מוגדר – החזק ביותר, והמסוכן ביותר ב-\enLR{false positive.} & \textbf{\enLR{deny-attacker-inline}} \\
+\hline
+שלח \enLR{TCP RST} לשני הצדדים – היחידה שגם \enLR{IDS} (מחוץ לנתיב) יכולה לבצע. & \textbf{\enLR{reset-tcp-connection}} \\
+\hline
+\end{xltabular}
+
+\subheading{ארבעה סוגי תוצאות – חובה להבין}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{לא הייתה התקפה} & \textbf{הייתה התקפה} & \textbf{} \\
+\hline
+\endhead
+\textbf{\enLR{False Positive}} – אזעקת שווא; מטריד, וב-\enLR{IPS} חוסם משהו לגיטימי & \textbf{\enLR{True Positive}} – מצוין & \textbf{המערכת התריעה} \\
+\hline
+\textbf{\enLR{True Negative}} – מצוין & \textbf{\enLR{False Negative}} – הכי גרוע: התקפה עברה בשקט & \textbf{המערכת שתקה} \\
+\hline
+\end{xltabular}
+
+\begin{faqbox}\boxtitle{שאלת תלמיד: "מה יותר גרוע – \enLR{false positive} או \enLR{false negative}?"}\par  תלוי במערכת. ב-\textbf{\enLR{IDS}} \enLR{false positive} זה רק רעש; \enLR{false negative} זה פריצה שלא ראינו – גרוע. ב-\textbf{\enLR{IPS}} \enLR{false positive} חוסם עסק (הזמנות לא נכנסות, טלפוניה נופלת) – זה מה שמפחיד מנהלים ולכן הם מעדיפים לפעמים לכבות חתימות; ואז מגיע ה-\enLR{false negative.} האיזון נקרא \textbf{כוונון \enLR{(tuning)}} – מכבים חתימות לא רלוונטיות (חתימות ל-\enLR{IIS} ברשת של \enLR{Linux)}, מעלים סף, ומחריגים כתובות מהימנות. אין תשובה אחת; זה מה שעושים אנשי \enLR{SOC} כל היום.\end{faqbox}
+
+\sectionheading{\enLR{5.7} ניטור \enLR{IPS}}
+
+\begin{itemize}
+\item \textbf{\enLR{Syslog}} – ההתראות נשלחות כהודעות (\code{\%IPS-4-SIGNATURE: Sig:2004 Subsig:0 Sev:25 ICMP Echo Request [10.1.1.5:0 -> 10.2.2.2:0]}).
+\item \textbf{\enLR{SDEE}} \enLR{(Security Device Event Exchange)} – פרוטוקול מבוסס \enLR{HTTPS/XML} שסיסקו יצרה כדי שתחנת ניהול תשלוף אירועים מה-\enLR{IPS (pull)} בצורה מאובטחת. דורש \code{ip http secure-server}.
+\item \textbf{תחנות ניהול:} בעבר \enLR{IEV / IME / MARS} (מוזכרים בחומרים ישנים); היום \enLR{Firepower Management Center (FMC)}, או \enLR{SIEM} כללי \enLR{(Splunk, QRadar, ELK)} שמקבל \enLR{syslog} מכל המערכות ומבצע \textbf{קורלציה} – "אותו \enLR{IP} הופיע ב-\enLR{IPS}, בחומת האש וב-\enLR{AD} תוך דקה".
+\end{itemize}
+
+\sectionheading{\enLR{5.8} הגדרת \enLR{IOS IPS} ב-\enLR{CLI}}
+
+נתב סיסקו יכול לתפקד כ-\enLR{IPS} (מוגבל) בעצמו. התהליך המלא בציוד אמיתי:\par
+
+\begin{enumerate}
+\item הורדת חבילת חתימות (\code{IOS-Sxxx-CLI.pkg}) ומפתח ציבורי (\code{realm-cisco.pub.key.txt}) מ-\enLR{Cisco.com.}
+\item יצירת תיקייה ב-\enLR{flash} לחתימות.
+\item הגדרת המפתח הציבורי (כדי שהנתב יוודא שהחבילה חתומה על ידי סיסקו).
+\item הגדרת \enLR{IPS}: שם, מיקום, התראות, קטגוריות.
+\item החלה על ממשק וטעינת החבילה.
+\end{enumerate}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+\textcolor{ccom}{\texthebrew{! שלב \enLR{2} – תיקייה}}\\
+R1\# \textcolor{cbold}{\textbf{mkdir ipsdir}}\\
+\textcolor{ccom}{\texthebrew{! שלב \enLR{3} – מפתח ציבורי של סיסקו (מעתיקים מהקובץ; קטע מקוצר)}}\\
+R1(config)\# crypto key pubkey-chain rsa\\
+R1(config-pubkey-chain)\# \textcolor{cbold}{\textbf{named-key realm-cisco.pub signature}}\\
+R1(config-pubkey-key)\# key-string\\
+R1(config-pubkey)\# 30820122 300D0609 2A864886 ...\\
+R1(config-pubkey)\# quit\\
+\textcolor{ccom}{\texthebrew{! שלב \enLR{4} – הגדרת ה-\enLR{IPS}}}\\
+R1(config)\# \textcolor{cbold}{\textbf{ip ips config location flash:ipsdir}}\\
+R1(config)\# \textcolor{cbold}{\textbf{ip ips name MYIPS}}            \textcolor{ccom}{\texthebrew{! אפשר: \enLR{ip ips name MYIPS list 101} – רק תעבורה שתואמת ל-\enLR{ACL}}}\\
+R1(config)\# \textcolor{cbold}{\textbf{ip ips notify log}}            \textcolor{ccom}{\texthebrew{! התראות ל-\enLR{syslog}}}\\
+R1(config)\# ip http secure-server\\
+R1(config)\# \textcolor{cbold}{\textbf{ip ips notify sdee}}           \textcolor{ccom}{\texthebrew{! ולתחנת ניהול}}\\
+R1(config)\# \textcolor{cbold}{\textbf{ip ips signature-category}}\\
+R1(config-ips-category)\# \textcolor{cbold}{\textbf{category all}}\\
+R1(config-ips-category-action)\# \textcolor{cbold}{\textbf{retired true}}          \textcolor{ccom}{\texthebrew{! קודם – הכול בפנסיה}}\\
+R1(config-ips-category-action)\# exit\\
+R1(config-ips-category)\# \textcolor{cbold}{\textbf{category ios\_ips basic}}\\
+R1(config-ips-category-action)\# \textcolor{cbold}{\textbf{retired false}}         \textcolor{ccom}{\texthebrew{! ואז – רק הבסיסיות פעילות}}\\
+R1(config-ips-category-action)\# exit\\
+R1(config-ips-category)\# exit\\
+\textcolor{ccom}{\texthebrew{! שלב \enLR{5} – החלה על ממשק (בכיוון שממנו מגיעה התעבורה החשודה)}}\\
+R1(config)\# interface g0/0\\
+R1(config-if)\# \textcolor{cbold}{\textbf{ip ips MYIPS in}}\\
+\textcolor{ccom}{\texthebrew{! טעינת חבילת החתימות (מ-\enLR{TFTP/USB)} – ב-\enLR{Packet Tracer} שלב זה לא קיים}}\\
+R1\# \textcolor{cbold}{\textbf{copy tftp://10.0.0.5/IOS-S416-CLI.pkg idconf}}
+\end{english}\end{codebox}
+
+\subheading{שינוי חתימה בודדת – הדוגמה הקלאסית: התראה + חסימה על \enLR{ping}}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+R1(config)\# \textcolor{cbold}{\textbf{ip ips signature-definition}}\\
+R1(config-sigdef)\# \textcolor{cbold}{\textbf{signature 2004 0}}           \textcolor{ccom}{\texthebrew{! \enLR{2004/0 = ICMP Echo Request}}}\\
+R1(config-sigdef-sig)\# \textcolor{cbold}{\textbf{status}}\\
+R1(config-sigdef-sig-status)\# \textcolor{cbold}{\textbf{retired false}}\\
+R1(config-sigdef-sig-status)\# \textcolor{cbold}{\textbf{enabled true}}\\
+R1(config-sigdef-sig-status)\# exit\\
+R1(config-sigdef-sig)\# \textcolor{cbold}{\textbf{engine}}\\
+R1(config-sigdef-sig-engine)\# \textcolor{cbold}{\textbf{event-action produce-alert}}\\
+R1(config-sigdef-sig-engine)\# \textcolor{cbold}{\textbf{event-action deny-packet-inline}}\\
+R1(config-sigdef-sig-engine)\# exit\\
+R1(config-sigdef-sig)\# exit\\
+R1(config-sigdef)\# exit\\
+Do you want to accept these changes? [confirm]
+\end{english}\end{codebox}
+
+\begin{tipbox}\boxtitle{טיפ: מה עובד ב-\enLR{Packet Tracer}}\par  \enLR{Packet Tracer} תומך בתת-קבוצה: \code{ip ips config location}, \code{ip ips name}, \code{ip ips notify log}, \code{signature-category} \enLR{(all retired / ios\_ips basic)}, \code{ip ips NAME in|out}, ושינוי חתימה \enLR{2004 0 (ICMP echo)} עם \enLR{produce-alert} ו-\enLR{deny-packet-inline.} אין טעינת חבילה ואין \enLR{SDEE.} תרגיל ה-\enLR{ping} הוא התרגיל שעובד – ורואים בשרת ה-\enLR{syslog} את ההתראה ואת ה-\enLR{ping} נכשל. זה מספיק להמחשה.\end{tipbox}
+
+\sectionheading{\enLR{5.9} וריפיקציה ופתרון תקלות}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+R1\# \textcolor{cbold}{\textbf{show ip ips all}}                   \textcolor{ccom}{\texthebrew{! סיכום: שם, ממשקים, קטגוריות, מספר חתימות טעונות}}\\
+R1\# \textcolor{cbold}{\textbf{show ip ips configuration}}\\
+R1\# \textcolor{cbold}{\textbf{show ip ips interfaces}}\\
+R1\# \textcolor{cbold}{\textbf{show ip ips signatures}} [count]      \textcolor{ccom}{\texthebrew{! אילו חתימות פעילות}}\\
+R1\# \textcolor{cbold}{\textbf{show ip ips statistics}}            \textcolor{ccom}{\texthebrew{! כמה חבילות נבדקו, כמה התראות}}\\
+R1\# \textcolor{cbold}{\textbf{clear ip ips statistics}}\\
+R1\# show ip ips sessions\\
+R1\# debug ip ips
+\end{english}\end{codebox}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{סיבה נפוצה ופתרון} & \textbf{תסמין} \\
+\hline
+\endhead
+ה-\enLR{IPS} לא מוחל על הממשק / בכיוון הלא נכון. תעבורה נכנסת מהאינטרנט ⇒ \code{in} על הממשק החיצוני. בדקו \code{show ip ips interfaces}. & אין התראות בכלל \\
+\hline
+קטגוריה \enLR{all retired} ולא \enLR{unretired} כלום; או חבילת חתימות לא נטענה (\code{copy … idconf}); או מפתח ציבורי חסר/שגוי – הנתב דוחה חבילה לא חתומה. & "\enLR{0 signatures loaded"} \\
+\hline
+יותר מדי חתימות \enLR{(advanced} על נתב קטן). השאירו \enLR{ios\_ips basic}, השתמשו ב-\code{list ACL} כדי לבדוק רק תעבורה רלוונטית. & הנתב איטי / \enLR{CPU 100\%} \\
+\hline
+ה-\enLR{action} הוא \enLR{produce-alert} בלבד; הוסיפו \enLR{deny-packet-inline.} או שהחתימה \enLR{enabled} אך \enLR{retired.} & יש התראה אך החבילה עוברת \\
+\hline
+\enLR{false positive.} זהו את החתימה ב-\enLR{syslog} ובטלו/כווננו אותה; או השתמשו ב-\code{ip ips name X list ACL} להחריג. & תעבורה לגיטימית נחסמת \\
+\hline
+\end{xltabular}
+
+\sectionheading{\enLR{5.10} מדריך פקודות מרוכז – פרק \enLR{5}}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{תפקיד} & \textbf{פקודה} \\
+\hline
+\endhead
+תיקייה לחתימות & \code{mkdir ipsdir} \\
+\hline
+מפתח לאימות חבילה & \code{crypto key pubkey-chain rsa} → \code{named-key realm-cisco.pub signature} \\
+\hline
+מיקום & \code{ip ips config location flash:ipsdir} \\
+\hline
+כלל \enLR{IPS} & \code{ip ips name NAME [list ACL]} \\
+\hline
+יעד התראות & \code{ip ips notify log | sdee} \\
+\hline
+כיבוי כל החתימות & \code{ip ips signature-category} → \code{category all} → \code{retired true} \\
+\hline
+הפעלת הבסיסיות & \code{category ios\_ips basic} → \code{retired false} \\
+\hline
+החלה & \code{ip ips NAME in|out} (ממשק) \\
+\hline
+טעינת חתימות & \code{copy tftp://…pkg idconf} \\
+\hline
+עריכת חתימה & \code{ip ips signature-definition} → \code{signature ID SUB} → \code{status}/\code{engine} \\
+\hline
+וריפיקציה & \code{show ip ips all | configuration | signatures | statistics} \\
+\hline
+\end{xltabular}
+
+\sectionheading{\enLR{5.11} תרגילים לתלמידים}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{1} – \enLR{True/False Positive/Negative}}\par  סווגו: א. ה-\enLR{IPS} חסם עדכון \enLR{Windows} לגיטימי כי הוא "נראה כמו הורדת קובץ הרצה חשוד". ב. תולעת עברה דרך ה-\enLR{IDS} בלי התראה כי החתימה לא עודכנה. ג. ה-\enLR{IDS} התריע על סריקת \enLR{Nmap} שאכן בוצעה. ד. תעבורת \enLR{Zoom} עברה כרגיל ללא התראה. \par\vskip2pt\hrule\vskip3pt\textbf{}א. \enLR{False Positive} ב. \enLR{False Negative} ג. \enLR{True Positive} ד. \enLR{True Negative}\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{2} – אטומית או מורכבת?}\par  א. חבילת \enLR{TCP} עם כל \enLR{6} הדגלים דלוקים ("\enLR{Xmas scan").} ב. \enLR{50} ניסיונות כניסה כושלים ל-\enLR{SSH} מאותו \enLR{IP} תוך דקה. ג. חבילת \enLR{IP} שבה כתובת המקור שווה לכתובת היעד. ד. מחרוזת \code{/etc/passwd} שמפוצלת בין שתי חבילות \enLR{HTTP.} \par\vskip2pt\hrule\vskip3pt\textbf{}א. אטומית ב. מורכבת ג. אטומית \enLR{(LAND)} ד. מורכבת (דורשת הרכבת זרם)\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{3} – בחירת פעולה}\par  לכל מצב בחרו את ה-\enLR{action} המתאים ביותר ונמקו: א. חתימה עם \enLR{fidelity 30} (לא מדויקת) לפעילות חשודה קלה. ב. חתימה ל-\enLR{SQL injection} ודאית \enLR{(fidelity 95)} לשרת ה-\enLR{web.} ג. תוקף ששולח \enLR{10,000 SYN} בשנייה. ד. \enLR{IDS} מחוץ לנתיב שזיהה \enLR{session} זדוני. \par\vskip2pt\hrule\vskip3pt\textbf{}א. \enLR{produce-alert} בלבד – סיכון \enLR{false positive} גבוה. ב. \enLR{deny-connection-inline} (או \enLR{deny-packet) + alert.} ג. \enLR{deny-attacker-inline} – לחסום את המקור לזמן. ד. \enLR{reset-tcp-connection} – היחיד שזמין ל-\enLR{IDS} מחוץ לנתיב.\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{4} – תכנון פריסה}\par  ציירו רשת: אינטרנט – נתב קצה – חומת אש – מתג מרכזי – (שרתים, משתמשים). סמנו היכן תמקמו \enLR{IPS} והיכן \enLR{IDS}, ונמקו. היכן תתקינו \enLR{HIPS}? \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{IPS inline} בין חומת האש למתג המרכזי (או כמודול בחומת האש) – מגן על הכול מהאינטרנט. \enLR{IDS} על \enLR{SPAN} של המתג המרכזי – רואה תנועה רוחבית פנימית. \enLR{HIPS/EDR} על השרתים (בעיקר \enLR{web, DB, DC)} ועל מחשבי המשתמשים (ניידים).\end{exbox}
+
+\sectionheading{\enLR{5.12} שאלות בסגנון בגרות}
+
+\begin{exambox}\boxtitle{שאלה \enLR{1}}\par  התאימו: מערכת \_\_\_\_ היא מערכת ניטור שמאפשרת זיהוי וחסימה אוטומטית של ניסיונות חדירה. מערכת \_\_\_\_ היא מערכת ניטור שנועדה לספק התראות בעת ניסיונות חדירה. \enLR{(IDS / IPS / DNS / RADIUS / TACACS)} \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{IPS} · \enLR{IDS}\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{2}}\par  מהו ההבדל במיקום ברשת בין \enLR{IDS} ל-\enLR{IPS}, ומה המשמעות לגבי השהיה? \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{IDS} – מחוץ לנתיב \enLR{(promiscuous)}, מקבל עותק ⇒ אין השהיה. \enLR{IPS} – בתוך הנתיב \enLR{(inline)}, התעבורה עוברת דרכו ⇒ מוסיף השהיה.\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{3}}\par  מה ההבדל בין חתימה אטומית לחתימה מורכבת? \par\vskip2pt\hrule\vskip3pt\textbf{}אטומית – בודקת חבילה בודדת, ללא שמירת מצב. מורכבת – בודקת רצף חבילות לאורך זמן, שומרת מצב.\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{4}}\par  מנהל הגדיר \enLR{IOS IPS} ו-\code{category all retired true} בלבד. אילו חתימות פעילות? \par\vskip2pt\hrule\vskip3pt\textbf{}אף אחת – חייבים לבצע \enLR{unretire} (\code{retired false}) לקטגוריה כלשהי, למשל \enLR{ios\_ips basic.}\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{5}}\par  איזו מהפעולות הבאות אינה זמינה ל-\enLR{IDS} שנמצא מחוץ לנתיב התעבורה? \enLR{1. produce-alert 2. deny-packet-inline 3. reset-tcp-connection 4. produce-verbose-alert} \par\vskip2pt\hrule\vskip3pt\textbf{}\textbf{\enLR{2}} – אי אפשר להפיל חבילה שכבר עברה; ה-\enLR{IDS} רואה רק עותק.\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{6}}\par  מהו \enLR{HIPS} ומה יתרונו המרכזי על פני \enLR{IPS} רשתי? \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{Host-based IPS} – תוכנה על המארח עצמו. יתרון: רואה תעבורה מוצפנת אחרי הפענוח ואת ההתנהגות בתוך המחשב (קבצים, זיכרון), ומגן גם כשהמחשב מחוץ לרשת הארגון.\end{exambox}
+
+\sectionheading{\enLR{5.13} מעבדה \enLR{(3} שעות) – \enLR{IOS IPS} ב-\enLR{Packet Tracer}}
+
+\begin{enumerate}
+\item טופולוגיה: \enLR{PC-A (10.1.1.10)} — \enLR{R1} — \enLR{PC-B (10.2.2.10)}; שרת \enLR{Syslog} ברשת של \enLR{PC-B.} הגדירו \enLR{logging} לשרת.
+\item ב-\enLR{R1}: \code{mkdir ipsdir}, \code{ip ips config location flash:ipsdir}, \code{ip ips name IOSIPS}, \code{ip ips notify log}, קטגוריות: \enLR{all retired, ios\_ips basic unretired.}
+\item שנו חתימה \enLR{2004 0: retired false, enabled true, event-action produce-alert + deny-packet-inline.}
+\item החילו \code{ip ips IOSIPS out} על הממשק לכיוון \enLR{PC-B} (או \enLR{in} על הממשק מ-\enLR{PC-A).}
+\item מ-\enLR{PC-A: ping} ל-\enLR{PC-B} ⇒ נכשל. בשרת ה-\enLR{syslog}: הודעת \code{\%IPS-4-SIGNATURE: Sig:2004}. מ-\enLR{PC-B ping} ל-\enLR{PC-A} ⇒ מצליח (הכיוון!). הסבירו.
+\item הסירו את \enLR{deny-packet-inline} והשאירו \enLR{produce-alert. ping} עובר אך יש התראה – זו התנהגות \enLR{IDS.} דונו בהבדל.
+\item \code{show ip ips all}, \code{show ip ips statistics} – כמה חבילות נבדקו?
+\end{enumerate}
+
+\sectionheading{בנק שאלות שתלמידים שואלים – ותשובות מוכנות}
+
+שאלות נפוצות בפרק \enLR{IDS/IPS}, עם תשובות מוכנות.\par
+
+\textbf{ש: "אם \enLR{IPS} גם מזהה וגם חוסם, למה שמישהו יבחר \enLR{IDS}?"}\newline ת: שלוש סיבות: \enLR{(1)} סיכון של \textbf{\enLR{false positive}} – בבית חולים או בבורסה, לחסום תעבורה לגיטימית בטעות גרוע מלהחמיץ התקפה. \enLR{(2)} ביצועים – \enLR{IPS inline} על קו מהיר יקר מאוד. \enLR{(3) IDS} פנימי (על \enLR{SPAN)} רואה תנועה רוחבית בין מחשבים שלא עוברת בשום חומת אש. בפועל מפעילים את שניהם.\par
+
+\textbf{ש: "מה ההבדל בין \enLR{IDS/IPS} לאנטי-וירוס?"}\newline ת: אנטי-וירוס מגן על \underline{קבצים במחשב אחד}. \enLR{IPS} מגן על \underline{תעבורת הרשת} בין מחשבים. \enLR{HIPS (host-based)} מטשטש את הגבול – הוא \enLR{IPS} שרץ על המחשב עצמו.\par
+
+\textbf{ש: "מה יותר גרוע – \enLR{false positive} או \enLR{false negative}?"}\newline ת: תלוי במערכת. ב-\enLR{IDS, false positive} הוא רק רעש; \enLR{false negative} (התקפה שעברה בשקט) גרוע יותר. ב-\enLR{IPS, false positive} \underline{חוסם עסק} (הזמנות לא נכנסות) – ולכן מנהלים לפעמים מכבים חתימות, וזה מוביל ל-\enLR{false negatives.} האיזון הזה נקרא "כוונון" \enLR{(tuning)} וזו עבודת ה-\enLR{SOC.}\par
+
+\textbf{ש: "מה ההבדל בין חתימה אטומית למורכבת?"}\newline ת: אטומית בודקת \underline{חבילה אחת} (למשל \enLR{Ping of Death} – חבילה גדולה מדי) – מהירה, בלי זיכרון. מורכבת בודקת \underline{רצף} של חבילות לאורך זמן (למשל סריקת פורטים או \enLR{SYN flood)} – חייבת לזכור מצב.\par
+
+\textbf{ש: "אם \enLR{IPS} מבוסס חתימות, איך הוא תופס התקפה חדשה שאין לה חתימה?"}\newline ת: הוא לא, אם הוא רק מבוסס-חתימות – זו החולשה. לכן קיימות שיטות נוספות: זיהוי \textbf{אנומליה} (חריגה מ"נורמלי") ו\textbf{מוניטין} (רשימות \enLR{IP} זדוניים). מערכות מודרניות משלבות כמה שיטות.\par
+
+\textbf{ש: "מה זה \enLR{SPAN} ולמה \enLR{IDS} צריך אותו?"}\newline ת: \enLR{SPAN} הוא "שיקוף פורט" – המתג מעתיק את כל התעבורה לפורט שאליו מחובר ה-\enLR{IDS.} כך ה-\enLR{IDS} מקבל \underline{עותק} של הכול בלי לשבת בנתיב עצמו – ולכן אם ה-\enLR{IDS} נופל, הרשת ממשיכה לעבוד.\par
+
+\textbf{ש: "אילו פעולות \enLR{IPS} יכול לבצע כשהוא מזהה התקפה?"}\newline ת: מ-\enLR{alert} בלבד \enLR{(produce-alert)}, דרך הפלת החבילה \enLR{(deny-packet-inline)}, הפלת כל החיבור \enLR{(deny-connection-inline)}, חסימת התוקף לזמן \enLR{(deny-attacker-inline)}, ועד שליחת \enLR{TCP reset} – הפעולה היחידה שגם \enLR{IDS} מחוץ לנתיב יכול לבצע.\par
+
+\textbf{ש: "מה זה \enLR{CSA} שמופיע בתכנית?"}\newline ת: \enLR{Cisco Security Agent} – תוכנת \enLR{HIPS} ישנה שהותקנה על תחנות קצה וזיהתה התנהגות חשודה (לא רק חתימות). היא הופסקה ב-\enLR{2010}; היום התחום נקרא \enLR{EDR} (כמו \enLR{Microsoft Defender, CrowdStrike).}\par
+
+\sectionheading{מילון מונחים – הגדרות}
+
+הגדרות תמציתיות של המונחים המרכזיים בפרק. שימושי גם כדף עזר לבחינה.\par
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{הגדרה} & \textbf{מונח} \\
+\hline
+\endhead
+מערכת שמנטרת ומתריעה על ניסיונות חדירה, אך אינה חוסמת. & \textbf{\enLR{IDS (Intrusion Detection System)}} \\
+\hline
+מערכת שמזהה וגם חוסמת אוטומטית ניסיונות חדירה. & \textbf{\enLR{IPS (Intrusion Prevention System)}} \\
+\hline
+\enLR{IPS} יושב בנתיב התעבורה \enLR{(inline); IDS} מקבל עותק מחוץ לנתיב \enLR{(out-of-band).} & \textbf{\enLR{inline / out-of-band}} \\
+\hline
+\enLR{IPS} מבוסס-מארח – תוכנה על המחשב/שרת עצמו; רואה גם תעבורה מוצפנת. & \textbf{\enLR{HIPS}} \\
+\hline
+\enLR{IPS} מבוסס-רשת – מכשיר בנתיב שמגן על מארחים רבים. & \textbf{\enLR{NIPS}} \\
+\hline
+תוכנת \enLR{HIPS} ישנה של סיסקו; היום התחום נקרא \enLR{EDR.} & \textbf{\enLR{CSA (Cisco Security Agent)}} \\
+\hline
+תבנית ידועה של התקפה שהמערכת מחפשת בתעבורה. & \textbf{חתימה \enLR{(Signature)}} \\
+\hline
+בודקת חבילה בודדת, ללא שמירת מצב (למשל \enLR{Ping of Death).} & \textbf{חתימה אטומית} \\
+\hline
+בודקת רצף חבילות לאורך זמן, שומרת מצב (למשל סריקת פורטים). & \textbf{חתימה מורכבת} \\
+\hline
+זיהוי חריגה מ'התנהגות נורמלית' שנלמדה \enLR{(baseline).} & \textbf{זיהוי מבוסס-אנומליה} \\
+\hline
+מערכת פיתיון שאין לה שימוש לגיטימי; כל גישה אליה חשודה. & \textbf{\enLR{Honeypot}} \\
+\hline
+אזעקת שווא – התראה על תעבורה לגיטימית. & \textbf{\enLR{False Positive}} \\
+\hline
+החמצה – התקפה אמיתית שלא זוהתה (המצב הגרוע ביותר). & \textbf{\enLR{False Negative}} \\
+\hline
+זיהוי נכון של התקפה \enLR{(positive)} או של תעבורה תקינה \enLR{(negative).} & \textbf{\enLR{True Positive / Negative}} \\
+\hline
+התאמת חתימות והחרגות כדי לצמצם \enLR{false positives}; עבודת ה-\enLR{SOC.} & \textbf{\enLR{Tuning} (כוונון)} \\
+\hline
+מה שה-\enLR{IPS} עושה בהתאמה: \enLR{alert, deny-packet/connection/attacker, TCP reset.} & \textbf{\enLR{Action} (פעולה)} \\
+\hline
+פרוטוקול מאובטח \enLR{(HTTPS/XML)} שדרכו תחנת ניהול שולפת אירועי \enLR{IPS.} & \textbf{\enLR{SDEE}} \\
+\hline
+שיקוף פורט – העתקת תעבורה לפורט שאליו מחובר \enLR{IDS}/מנתח. & \textbf{\enLR{SPAN}} \\
+\hline
+\end{xltabular}
+\end{document}

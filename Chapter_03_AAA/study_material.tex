@@ -1,0 +1,420 @@
+\documentclass[11pt]{article}
+\usepackage{fontspec}
+\directlua{luaotfload.add_fallback("hebfb",{"DejaVu Sans:mode=harf"})}
+\usepackage{polyglossia}
+\setdefaultlanguage{hebrew}
+\setotherlanguage{english}
+\setmainfont{Noto Sans Hebrew}[Script=Hebrew,RawFeature={fallback=hebfb}]
+\newfontfamily\codefont{DejaVu Sans Mono}[RawFeature={fallback=hebfb}]
+\usepackage[a4paper,margin=18mm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{mdframed}
+\usepackage{tabularx}
+\usepackage{xltabular}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\setlist{leftmargin=1.6em,itemsep=1pt,topsep=2pt}
+% colors
+\definecolor{h1}{HTML}{1E3A8A}\definecolor{h2}{HTML}{1E40AF}\definecolor{h3}{HTML}{0F172A}
+\definecolor{subgray}{HTML}{64748B}\definecolor{hdrbg}{HTML}{E0E7FF}
+\definecolor{cfg}{HTML}{E2E8F0}\definecolor{cbg}{HTML}{0F172A}\definecolor{cbold}{HTML}{7DD3FC}\definecolor{ccom}{HTML}{94A3B8}
+\definecolor{metabg}{HTML}{F1F5F9}
+\newcommand{\enLR}[1]{\textenglish{#1}}
+\newcommand{\code}[1]{\textenglish{\codefont #1}}
+\newcommand{\chapterheading}[1]{\vspace{2pt}{\LARGE\bfseries\color{h1}#1\par}\vskip2pt{\color{h1}\hrule height 2pt}\vskip6pt}
+\newcommand{\sectionheading}[1]{\vskip10pt\penalty-200{\large\bfseries\color{h2}#1\par}\vskip3pt}
+\newcommand{\subheading}[1]{\vskip6pt{\bfseries\color{h3}#1\par}\vskip2pt}
+\newcommand{\boxtitle}[1]{{\bfseries\color{boxti}#1}}
+% box environments (right border, tinted bg)
+\newmdenv[topline=false,bottomline=false,leftline=false,rightline=true,linewidth=2pt,innermargin=0pt,skipabove=6pt,skipbelow=6pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt]{genericbox}
+\definecolor{faqbg}{HTML}{ECFDF5}\definecolor{faqfr}{HTML}{10B981}\definecolor{faqti}{HTML}{065F46}
+\definecolor{misbg}{HTML}{FEF2F2}\definecolor{misfr}{HTML}{EF4444}\definecolor{misti}{HTML}{991B1B}
+\definecolor{tipbg}{HTML}{FFFBEB}\definecolor{tipfr}{HTML}{F59E0B}\definecolor{tipti}{HTML}{92400E}
+\definecolor{exabg}{HTML}{EFF6FF}\definecolor{exafr}{HTML}{3B82F6}\definecolor{exati}{HTML}{1E3A8A}
+\definecolor{defbg}{HTML}{F5F3FF}\definecolor{deffr}{HTML}{8B5CF6}\definecolor{defti}{HTML}{5B21B6}
+\definecolor{stobg}{HTML}{FDF4FF}\definecolor{stofr}{HTML}{D946EF}\definecolor{stoti}{HTML}{86198F}
+\definecolor{exbg}{HTML}{F0FDFA}\definecolor{exfr}{HTML}{14B8A6}\definecolor{exti}{HTML}{115E59}
+\newenvironment{faqbox}{\colorlet{boxti}{faqti}\begin{mdframed}[backgroundcolor=faqbg,linecolor=faqfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{mistakebox}{\colorlet{boxti}{misti}\begin{mdframed}[backgroundcolor=misbg,linecolor=misfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{tipbox}{\colorlet{boxti}{tipti}\begin{mdframed}[backgroundcolor=tipbg,linecolor=tipfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{exambox}{\colorlet{boxti}{exati}\begin{mdframed}[backgroundcolor=exabg,linecolor=exafr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{defbox}{\colorlet{boxti}{defti}\begin{mdframed}[backgroundcolor=defbg,linecolor=deffr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{storybox}{\colorlet{boxti}{stoti}\begin{mdframed}[backgroundcolor=stobg,linecolor=stofr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{exbox}{\colorlet{boxti}{exti}\begin{mdframed}[backgroundcolor=exbg,linecolor=exfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{metabox}{\begin{mdframed}[backgroundcolor=metabg,linewidth=0pt,innertopmargin=5pt,innerbottommargin=5pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=4pt,skipbelow=8pt]}{\end{mdframed}}
+\newmdenv[backgroundcolor=cbg,linewidth=0pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=8pt]{codebox}
+\setlength{\parindent}{0pt}\setlength{\parskip}{4pt}
+\renewcommand{\thepage}{\enLR{\arabic{page}}}
+\pagestyle{fancy}\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}
+\begin{document}
+\sloppy
+\chapterheading{פרק \enLR{3} – מודל ה-\enLR{AAA}}{\small\color{subgray}\enLR{11} שעות עיוני + \enLR{3} מעשי · שבועות \enLR{7}–\enLR{9}\par}\vskip4pt
+
+\begin{metabox}\textbf{מטרות:} מודל \enLR{AAA} · שרתי \enLR{AAA (ACS/ISE)} · \enLR{TACACS}+ ו-\enLR{RADIUS} עם מפתחות מוצפנים\\ \textbf{בבגרות:} הגדרת שלושת השירותים, \code{aaa new-model}, \enLR{RADIUS} מול \enLR{TACACS}+\end{metabox}
+
+\begin{defbox}\boxtitle{לפני שמתחילים – מה זו בכלל "הזדהות"? (למי שאין רקע)}\par  כשאתם נכנסים לחשבון (מייל, בנק, נתב) קורים שלושה דברים שאנשים נוטים לבלבל – וזה בדיוק מה שמודל \enLR{AAA} מסדר:  \textbf{הזדהות \enLR{(Authentication)}} – להוכיח \underline{מי אתה} (שם משתמש + סיסמה). כמו להראות תעודת זהות. \textbf{הרשאה \enLR{(Authorization)}} – לקבוע \underline{מה מותר לך} אחרי שנכנסת (לצפות בלבד? לשנות הכול?). כמו דרגת גישה בעבודה. \textbf{רישום \enLR{(Accounting)}} – לתעד \underline{מה עשית} (מתי נכנסת, אילו פקודות הקלדת). כמו יומן מעקב.  \textbf{למה מרכזי?} בלי מערכת מרכזית, כל נתב מחזיק רשימת משתמשים משלו. אם יש \enLR{50} נתבים ועובד עוזב – צריך למחוק אותו מ-\enLR{50} מקומות. מודל \enLR{AAA} מאפשר "מקום אחד" שכל הנתבים שואלים אותו (שרת). זה כל הרעיון. \newline \textbf{מושג שיחזור:} \textbf{שרת} = מחשב מרכזי שנותן שירות (כאן: שירות "מי מורשה"). \textbf{לקוח} של השרת הזה = הנתב עצמו, ששואל את השרת "האם להכניס את המשתמש הזה?".\end{defbox}
+
+\begin{tipbox}\boxtitle{הערה על תכנית הלימודים}\par  רשימת הנושאים של פרק \enLR{3} בתכנית הרשמית הועתקה בטעות מפרק \enLR{2.} הפרק כאן בנוי לפי \emph{המטרות} של פרק \enLR{3} – שהן גם בדיוק מה שהבגרות שואלת.\end{tipbox}
+
+\sectionheading{\enLR{3.1} שלוש ה-\enLR{A}}
+
+עד עכשיו כל האימות היה \textbf{מקומי}: שם משתמש וסיסמה בקונפיג של כל נתב. זה לא מתרחב: \enLR{50} נתבים × \enLR{10} מנהלים = \enLR{500} חשבונות לתחזק, ועובד שעוזב צריך להימחק מ-\enLR{50} מקומות. \textbf{\enLR{AAA}} הוא המסגרת שפותרת את זה – בין אם המשתמשים מקומיים ובין אם בשרת מרכזי.\par
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{דוגמה} & \textbf{הגדרה (כפי שנדרש בבגרות)} & \textbf{השאלה שהוא עונה עליה} & \textbf{שירות} \\
+\hline
+\endhead
+שם משתמש + סיסמה, כרטיס חכם, טביעת אצבע & \textbf{זיהוי ואימות משתמשים} & מי אתה? & \textbf{\enLR{Authentication}} (אימות) \\
+\hline
+רמה \enLR{15} או רק \enLR{show}; גישה ל-\enLR{VLAN 10} בלבד; מותר \enLR{reload}? & \textbf{ניהול הרשאות} & מה מותר לך לעשות? & \textbf{\enLR{Authorization}} (הרשאה) \\
+\hline
+נכנס ב-\enLR{08:12}, הקליד \code{reload} ב-\enLR{08:14}, ניתק ב-\enLR{08:15; 2GB} תעבורה & \textbf{רישום למעקב של פעולות המשתמש} & מה עשית, מתי וכמה? & \textbf{\enLR{Accounting}} (רישום/חיוב) \\
+\hline
+\end{xltabular}
+
+\begin{faqbox}\boxtitle{שאלת תלמיד: "מה ההבדל בין \enLR{Authentication} ל-\enLR{Authorization}? זה נשמע אותו דבר"}\par  המשל שעובד: שדה תעופה. \textbf{אימות} = בדיקת הדרכון בכניסה – מוודאים שאתה מי שאתה טוען. \textbf{הרשאה} = כרטיס הטיסה – גם אחרי שידוע מי אתה, מותר לך לעלות רק לטיסה שלך ולא לכל מטוס. \textbf{\enLR{Accounting}} = רישום הנוסעים – מי עלה, מתי, עם כמה מזוודות. אי אפשר לעשות הרשאה בלי אימות קודם, אבל אימות לבד לא אומר שמותר לך הכול.\end{faqbox}
+
+\subheading{גורמי אימות \enLR{(Authentication factors)}}
+
+\begin{itemize}
+\item \textbf{משהו שאתה יודע} – סיסמה, \enLR{PIN.}
+\item \textbf{משהו שיש לך} – טלפון \enLR{(OTP/SMS)}, טוקן, כרטיס חכם.
+\item \textbf{משהו שאתה} – ביומטריה: טביעת אצבע, פנים.
+\end{itemize}
+
+\textbf{\enLR{MFA / 2FA}} – שילוב של שני גורמים \emph{מסוגים שונים}. שתי סיסמאות אינן \enLR{MFA.}\par
+
+\begin{storybox}\boxtitle{סיפור מהחיים: מנהל הרשת שפוטר ביום שלישי}\par  בחברת שירותי אינטרנט בינונית פיטרו מנהל רשת. המנכ"ל ביקש מה-\enLR{IT "}לבטל לו את הגישה". ה-\enLR{IT} מחק את חשבון ה-\enLR{Windows} שלו. אבל ב-\enLR{40} הנתבים והמתגים היו חשבונות \emph{מקומיים} (\code{username} בקונפיג) – שהוא עצמו יצר. שלושה ימים אחר כך, ב-\enLR{2} בלילה, כל הנתבים "אבדו" את הקונפיג. אף אחד לא ידע מי עשה את זה – כי לא היה \enLR{Accounting}, ובלוג היה רק "\enLR{admin".} עם \enLR{AAA} מבוסס שרת: לחיצה אחת ב-\enLR{ISE} הייתה מנתקת אותו מכל הציוד, וה-\enLR{accounting} היה מראה שם מלא, שעה ופקודה. זה בדיוק "למה \enLR{AAA".}\end{storybox}
+
+\sectionheading{\enLR{3.2} שני מצבי \enLR{AAA}: מקומי ומבוסס-שרת}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{\enLR{AAA} מבוסס שרת \enLR{(Server-based)}} & \textbf{\enLR{AAA} מקומי \enLR{(Local / Self-contained)}} & \textbf{} \\
+\hline
+\endhead
+בשרת מרכזי \enLR{(Cisco ISE / ACS, FreeRADIUS, Windows NPS)} & בקונפיג של הנתב (\code{username}) & איפה המשתמשים \\
+\hline
+\enLR{RADIUS} או \enLR{TACACS}+ בין הנתב לשרת & – & פרוטוקול \\
+\hline
+ארגונים: ניהול מרכזי, מדיניות אחידה, לוג מרכזי & רשתות קטנות, גיבוי \enLR{(fallback)} כשהשרת לא זמין & מתאים ל \\
+\hline
+\end{xltabular}
+
+בטרמינולוגיה: הנתב/מתג/\enLR{ASA} שפונה לשרת נקרא \textbf{\enLR{NAS}} \enLR{(Network Access Server)} או \textbf{\enLR{AAA client}}. השרת מחזיק את מסד המשתמשים – או פונה בעצמו ל-\enLR{Active Directory / LDAP.}\par
+
+\sectionheading{\enLR{3.3 AAA} מקומי – הפקודות}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+\textcolor{ccom}{\texthebrew{! \enLR{1.} הפעלת המודל – מרגע זה כל ה-\enLR{lines} משתמשות ב-\enLR{AAA} (ולא ב-\enLR{login / login local)}}}\\
+R1(config)\# \textcolor{cbold}{\textbf{aaa new-model}}\\
+\textcolor{ccom}{\texthebrew{! \enLR{2.} משתמש מקומי}}\\
+R1(config)\# username admin privilege 15 secret Adm1n-P@ss\\
+\textcolor{ccom}{\texthebrew{! \enLR{3.} רשימת שיטות אימות ברירת מחדל: \enLR{local}}}\\
+R1(config)\# \textcolor{cbold}{\textbf{aaa authentication login default local}}\\
+\textcolor{ccom}{\texthebrew{! \enLR{4.} רשימה בשם – למשל לקונסול: ללא אימות (זהירות!) או \enLR{enable password}}}\\
+R1(config)\# \textcolor{cbold}{\textbf{aaa authentication login CONSOLE-LIST local-case}}\\
+R1(config)\# line console 0\\
+R1(config-line)\# \textcolor{cbold}{\textbf{login authentication CONSOLE-LIST}}
+\end{english}\end{codebox}
+
+\begin{mistakebox}\boxtitle{הטעות המסוכנת ביותר בפרק}\par  \code{aaa new-model} משנה מיד את התנהגות כל הקווים. אם הקלדתם אותה בלי משתמש מקומי ובלי \code{aaa authentication login default} ואז התנתקתם – \textbf{ננעלתם בחוץ} (ברירת המחדל אחרי \enLR{aaa new-model} היא \enLR{local}, ואם אין \enLR{username} – אין כניסה). כלל ברזל: \textbf{קודם \code{username}, אחר כך \code{aaa new-model}, ותמיד להשאיר חלון \enLR{SSH} אחד פתוח עד שבודקים בחלון שני.}\end{mistakebox}
+
+\textbf{שיטות אימות \enLR{(methods)} אפשריות ברשימה:} \code{local}, \code{local-case} (תלוי רישיות), \code{enable} (סיסמת \enLR{enable)}, \code{group radius}, \code{group tacacs+}, \code{group שם}, \code{none} (ללא אימות – רק לקונסול בבדיקות). ניתן לשרשר: הנתב מנסה את הראשונה; \textbf{רק אם היא לא זמינה} (שרת לא עונה) הוא עובר לבאה. תשובת "סיסמה שגויה" מהשרת \underline{לא} גורמת למעבר לשיטה הבאה.\par
+
+\sectionheading{\enLR{3.4 RADIUS} מול \enLR{TACACS}+ – הטבלה שחייבים לדעת}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{\enLR{TACACS}+} & \textbf{\enLR{RADIUS}} & \textbf{} \\
+\hline
+\endhead
+\enLR{Cisco} (קנייני, אך מפורסם) & תקן פתוח \enLR{(IETF, RFC 2865)} & \textbf{מי פיתח / תקן} \\
+\hline
+\textbf{\enLR{TCP}} – פורט \enLR{49} & \textbf{\enLR{UDP}} – פורטים \enLR{1812} (אימות) ו-\enLR{1813 (accounting)}; ישן: \enLR{1645/1646} & \textbf{שכבת תעבורה} \\
+\hline
+\textbf{כל גוף החבילה} מוצפן (רק הכותרת גלויה) & \textbf{רק שדה הסיסמה} מוצפן בבקשת הגישה \enLR{(Access-Request)}; שם המשתמש ושאר המידע גלויים & \textbf{הצפנה} \\
+\hline
+שלושת השירותים \textbf{נפרדים} – ניתן לבצע אימות מול \enLR{AD} והרשאה מול \enLR{TACACS}+ & אימות והרשאה \textbf{משולבים} בתגובה אחת \enLR{(Access-Accept} מכיל גם את ההרשאות). לא ניתן לבצע הרשאה ללא אימות & \textbf{הפרדת השירותים} \\
+\hline
+נתמך – כל פקודה ש-המנהל מקליד נשלחת לאישור בשרת & לא נתמך & \textbf{הרשאה לכל פקודה} \\
+\hline
+קיים, לרוב לרישום פקודות & מפורט וחזק – פותח לחיוב \enLR{(ISP)} & \textbf{\enLR{Accounting}} \\
+\hline
+תומך גם ב-\enLR{AppleTalk, NetBIOS} וכו' (היסטורי) & \enLR{IP} בלבד (בעיקר) & \textbf{ריבוי פרוטוקולים} \\
+\hline
+\textbf{ניהול ציוד} \enLR{(device administration)}: מנהלי רשת שמתחברים לנתבים ולמתגים & \textbf{גישת משתמשים לרשת}: \enLR{Wi-Fi/802.1X, VPN} מרחוק, דיאל-אפ & \textbf{שימוש אופייני} \\
+\hline
+\end{xltabular}
+
+\begin{exambox}\boxtitle{בבגרות (שאלה \enLR{4}ה) – נכון/לא נכון}\par  \enLR{1. RADIUS} מצפין רק את הסיסמה כשהוא שולח "בקשת גישה" – \textbf{נכון}.\newline  \enLR{2. RADIUS} מבצע אימות משתמשים ולא מתייחס לניהול הרשאות – \textbf{נכון} (במובן שאין הפרדה/הרשאה עצמאית; ההרשאות מגיעות רק כחלק מתשובת האימות).\newline  \enLR{3. TACACS}+ משתמש רק ב-\enLR{UDP} – \textbf{לא נכון} \enLR{(TCP 49).}\newline  \enLR{4. TACACS}+ מספק שירות \enLR{AAA} – \textbf{נכון}.\end{exambox}
+
+\begin{faqbox}\boxtitle{שאלת תלמיד: "למה \enLR{RADIUS} על \enLR{UDP} אם \enLR{TCP} אמין יותר?"}\par  \enLR{RADIUS} תוכנן ב-\enLR{1991} לשרתי דיאל-אפ עם אלפי חיבורים; \enLR{UDP} קל, ללא לחיצת יד, והלקוח פשוט שולח שוב אם לא קיבל תשובה. \enLR{TACACS}+ בחר \enLR{TCP} כי הוא מנהל \emph{שיחה} רב-שלבית (שאלה–תשובה–שאלה) ורוצה לדעת מיד אם השרת נפל. שניהם עובדים היום; ההבדל המעשי החשוב הוא ההצפנה והפרדת השירותים.\end{faqbox}
+
+\subheading{שיחה אופיינית – \enLR{RADIUS}}
+
+\begin{defbox}\boxtitle{משתמש → \enLR{NAS} (נתב) → שרת \enLR{RADIUS}}\par  \enLR{1.} המשתמש מקליד שם וסיסמה. \enLR{2.} הנתב שולח \textbf{\enLR{Access-Request}} (הסיסמה מוצפנת עם ה-\enLR{shared secret + MD5). 3.} השרת עונה \textbf{\enLR{Access-Accept}} (עם \enLR{attributes} – \enLR{VLAN}, רמת הרשאה) / \textbf{\enLR{Access-Reject}} / \textbf{\enLR{Access-Challenge}} (נדרש גורם נוסף). \enLR{4.} הנתב שולח \textbf{\enLR{Accounting-Request (start)}}, ובסוף \enLR{(stop).}\end{defbox}
+
+\subheading{שיחה אופיינית – \enLR{TACACS}+}
+
+\begin{defbox}\boxtitle{שלוש שיחות נפרדות}\par  \enLR{Authentication: START} → \enLR{REPLY (GETUSER)} → \enLR{CONTINUE} (שם) → \enLR{REPLY (GETPASS)} → \enLR{CONTINUE} (סיסמה) → \enLR{REPLY (PASS/FAIL). Authorization: REQUEST} (הפקודה שהוקלדה) → \enLR{RESPONSE (PASS\_ADD/FAIL). Accounting: REQUEST (start/stop/watchdog)} → \enLR{REPLY.}\end{defbox}
+
+\begin{storybox}\boxtitle{סיפור מהחיים: למה ה-\enLR{Wi-Fi} באוניברסיטה שואל שם משתמש – ובבית קפה סיסמה}\par  ברשת \enLR{eduroam} (שפועלת גם באוניברסיטאות בישראל) סטודנט מחיפה מתחבר ל-\enLR{Wi-Fi} באוניברסיטה בברלין עם החשבון של הטכניון. איך? המחשב שולח שם משתמש ל-\enLR{Access Point (802.1X)}, ה-\enLR{AP} הוא רק \enLR{Authenticator} ומעביר את הבקשה לשרת \enLR{RADIUS} בברלין, שרואה "@\enLR{technion.ac.il"} ומעביר לשרת \enLR{RADIUS} בטכניון, שמאמת ומחזיר \enLR{Access-Accept.} שרת \enLR{RADIUS} אחד לא צריך להכיר את כל המשתמשים בעולם – רק לדעת למי להעביר. זו הסיבה ש-\enLR{RADIUS} הוא "פרוטוקול גישת המשתמשים לרשת", ו-\enLR{TACACS}+ נשאר לניהול הציוד.\end{storybox}
+
+\sectionheading{\enLR{3.5 Cisco ACS} ו-\enLR{ISE}}
+
+\textbf{\enLR{ACS}} \enLR{(Access Control Server)} – שרת ה-\enLR{AAA} ההיסטורי של סיסקו (התכנית מזכירה אותו). תמך ב-\enLR{RADIUS} וב-\enLR{TACACS}+, עם \enLR{GUI} לניהול משתמשים, קבוצות ומדיניות. הוחלף ב-\textbf{\enLR{ISE}} \enLR{(Identity Services Engine)} – שרת מדיניות שעושה \enLR{AAA, 802.1X, NAC}, פרופיילינג של מכשירים ו-\enLR{BYOD.} חלופות חינמיות: \textbf{\enLR{FreeRADIUS}}, \textbf{\enLR{TACACS+ daemon}}, ו-\textbf{\enLR{Windows NPS}} \enLR{(RADIUS} על \enLR{Windows Server).} ב-\enLR{Packet Tracer} יש שרת \enLR{AAA} מובנה שתומך בשניהם.\par
+
+\sectionheading{\enLR{3.6} הגדרת \enLR{AAA} מבוסס-שרת ב-\enLR{CLI}}
+
+\subheading{\enLR{TACACS}+}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+R1(config)\# aaa new-model\\
+\textcolor{ccom}{\texthebrew{! תחביר חדש \enLR{(IOS 15+)}:}}\\
+R1(config)\# \textcolor{cbold}{\textbf{tacacs server ISE1}}\\
+R1(config-server-tacacs)\# \textcolor{cbold}{\textbf{address ipv4 10.0.0.5}}\\
+R1(config-server-tacacs)\# \textcolor{cbold}{\textbf{key T@cacsK3y}}            \textcolor{ccom}{\texthebrew{! \enLR{shared secret} – חייב להיות זהה בשרת}}\\
+R1(config-server-tacacs)\# single-connection          \textcolor{ccom}{\texthebrew{! חיבור \enLR{TCP} אחד לכל השיחות}}\\
+R1(config-server-tacacs)\# exit\\
+\textcolor{ccom}{\texthebrew{! תחביר ישן (וב-\enLR{Packet Tracer)}:}}\\
+R1(config)\# \textcolor{cbold}{\textbf{tacacs-server host 10.0.0.5 key T@cacsK3y}}\\
+\textcolor{ccom}{\texthebrew{! אימות: קודם \enLR{TACACS}+, ואם השרת לא זמין – מקומי}}\\
+R1(config)\# \textcolor{cbold}{\textbf{aaa authentication login default group tacacs+ local}}
+\end{english}\end{codebox}
+
+\subheading{\enLR{RADIUS}}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+R1(config)\# \textcolor{cbold}{\textbf{radius server NPS1}}\\
+R1(config-radius-server)\# \textcolor{cbold}{\textbf{address ipv4 10.0.0.6 auth-port 1812 acct-port 1813}}\\
+R1(config-radius-server)\# \textcolor{cbold}{\textbf{key R@diusK3y}}\\
+R1(config-radius-server)\# exit\\
+\textcolor{ccom}{\texthebrew{! תחביר ישן (וב-\enLR{Packet Tracer)}:}}\\
+R1(config)\# \textcolor{cbold}{\textbf{radius-server host 10.0.0.6 key R@diusK3y}}\\
+R1(config)\# aaa authentication login default group radius local
+\end{english}\end{codebox}
+
+\subheading{קבוצת שרתים \enLR{(server group)} – כמה שרתים, ולפי סדר}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+R1(config)\# \textcolor{cbold}{\textbf{aaa group server tacacs+ MY-TACACS}}\\
+R1(config-sg-tacacs+)\# server name ISE1\\
+R1(config-sg-tacacs+)\# server name ISE2\\
+R1(config)\# aaa authentication login default \textcolor{cbold}{\textbf{group MY-TACACS}} local
+\end{english}\end{codebox}
+
+\begin{faqbox}\boxtitle{שאלת תלמיד: "מה זה ה-\enLR{key}? זה הסיסמה של המשתמש?"}\par  לא. ה-\textbf{\enLR{key (shared secret)}} הוא סוד משותף בין \emph{הנתב} ל\emph{שרת}, שמשמש להצפנת התקשורת ביניהם ולאימות שהנתב הוא באמת לקוח מורשה של השרת. סיסמאות המשתמשים נמצאות בשרת. שני מפתחות שונים לגמרי: המפתח בין הציוד לשרת, והסיסמה של האדם. "מפתחות מוצפנים" בתכנית הלימודים = ה-\enLR{key} הזה.\end{faqbox}
+
+\sectionheading{\enLR{3.7 Authorization} – הרשאות}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+\textcolor{ccom}{\texthebrew{! מי רשאי לקבל \enLR{shell (EXEC)} ובאיזו רמה}}\\
+R1(config)\# \textcolor{cbold}{\textbf{aaa authorization exec default group tacacs+ local}}\\
+\textcolor{ccom}{\texthebrew{! אישור כל פקודה ברמה \enLR{15} מול השרת \enLR{(TACACS}+ בלבד)}}\\
+R1(config)\# \textcolor{cbold}{\textbf{aaa authorization commands 15 default group tacacs+ local}}\\
+\textcolor{ccom}{\texthebrew{! הרשאות לשירותי רשת \enLR{(PPP, VPN)} – בדרך כלל \enLR{RADIUS}}}\\
+R1(config)\# \textcolor{cbold}{\textbf{aaa authorization network default group radius}}\\
+\textcolor{ccom}{\texthebrew{! שהפקודות בקונפיג עצמו \enLR{(config mode)} גם יאושרו}}\\
+R1(config)\# aaa authorization config-commands
+\end{english}\end{codebox}
+
+שימו לב: אחרי \code{aaa authorization exec}, אם השרת מחזיר \enLR{privilege 15} – המשתמש נכנס ישירות ל-\code{R1\#} בלי \enLR{enable.} זה נוח ומאובטח (אין סיסמת \enLR{enable} משותפת).\par
+
+\sectionheading{\enLR{3.8 Accounting} – רישום}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+\textcolor{ccom}{\texthebrew{! רישום התחלה וסיום של כל \enLR{session}}}\\
+R1(config)\# \textcolor{cbold}{\textbf{aaa accounting exec default start-stop group tacacs+}}\\
+\textcolor{ccom}{\texthebrew{! רישום כל פקודה ברמה \enLR{15} – "מי הקליד \enLR{reload}?"}}\\
+R1(config)\# \textcolor{cbold}{\textbf{aaa accounting commands 15 default start-stop group tacacs+}}\\
+\textcolor{ccom}{\texthebrew{! חיבורי רשת \enLR{(VPN/PPP)} – חיוב לפי זמן/נפח}}\\
+R1(config)\# \textcolor{cbold}{\textbf{aaa accounting network default start-stop group radius}}
+\end{english}\end{codebox}
+
+אפשרויות: \code{start-stop} (רשומה בהתחלה ובסוף), \code{stop-only} (רק בסיום, עם סיכום), \code{none}.\par
+
+\sectionheading{\enLR{3.9 802.1X} – \enLR{AAA} לפורט של מתג (הצצה לפרק \enLR{6)}}
+
+\enLR{RADIUS} משמש גם לאימות \emph{מכשירים} לפני שמקבלים גישה לרשת: תקן \textbf{\enLR{IEEE 802.1X}}. שלושה תפקידים: \textbf{\enLR{Supplicant}} (המחשב/הטלפון), \textbf{\enLR{Authenticator}} (המתג או ה-\enLR{Access Point} – חוסם את הפורט עד לאימות), \textbf{\enLR{Authentication Server}} \enLR{(RADIUS).} הפרוטוקול בין ה-\enLR{supplicant} למתג: \enLR{EAP over LAN (EAPOL)}; בין המתג לשרת: \enLR{RADIUS.} זה הבסיס ל-\enLR{NAC} (פרק \enLR{6)} ול-\enLR{WPA2-Enterprise.}\par
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+S1(config)\# aaa new-model\\
+S1(config)\# radius-server host 10.0.0.6 key R@diusK3y\\
+S1(config)\# \textcolor{cbold}{\textbf{aaa authentication dot1x default group radius}}\\
+S1(config)\# \textcolor{cbold}{\textbf{dot1x system-auth-control}}\\
+S1(config)\# interface f0/1\\
+S1(config-if)\# switchport mode access\\
+S1(config-if)\# \textcolor{cbold}{\textbf{authentication port-control auto}}\\
+S1(config-if)\# \textcolor{cbold}{\textbf{dot1x pae authenticator}}
+\end{english}\end{codebox}
+
+\sectionheading{\enLR{3.10} בדיקה ופתרון תקלות}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+R1\# \textcolor{cbold}{\textbf{show aaa sessions}}\\
+R1\# \textcolor{cbold}{\textbf{show aaa user all}}\\
+R1\# \textcolor{cbold}{\textbf{show tacacs}}\\
+R1\# \textcolor{cbold}{\textbf{show radius statistics}}\\
+R1\# \textcolor{cbold}{\textbf{test aaa group tacacs+ admin Adm1n-P@ss legacy}}   \textcolor{ccom}{\texthebrew{! בודק אימות מול השרת בלי להתחבר}}\\
+R1\# \textcolor{cbold}{\textbf{debug aaa authentication}}\\
+R1\# \textcolor{cbold}{\textbf{debug tacacs}}\\
+R1\# \textcolor{cbold}{\textbf{debug radius}}
+\end{english}\end{codebox}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{סיבה נפוצה} & \textbf{תסמין} \\
+\hline
+\endhead
+השרת לא נגיש \enLR{(IP/ACL}/שירות כבוי) – ה-\enLR{fallback} ל-\enLR{local} עבד. בדקו \enLR{ping} לשרת ו-\code{debug tacacs}. & הנתב "נתקע" \enLR{10}–\enLR{20} שניות ואז מקבל את המשתמש המקומי \\
+\hline
+ה-\enLR{key} לא תואם בין הנתב לשרת; או שהשרת לא מכיר את ה-\enLR{IP} של הנתב כלקוח \enLR{(AAA client).} ב-\enLR{Packet Tracer}: בדקו ב-\enLR{Server} → \enLR{AAA} → \enLR{Client Name/IP/Secret.} & "\enLR{Authentication failed"} מיד, גם עם סיסמה נכונה \\
+\hline
+חסר \code{aaa authorization exec}, או שהשרת לא מחזיר את ה-\enLR{attribute (shell:priv-lvl=15} ב-\enLR{TACACS+; Service-Type / cisco-avpair} ב-\enLR{RADIUS).} & המשתמש נכנס אבל לא מקבל רמה \enLR{15} \\
+\hline
+שכחו רשימה נפרדת לקונסול. תמיד: \code{aaa authentication login CONSOLE local} + \code{login authentication CONSOLE} על \enLR{line con 0.} & הקונסול דורש אימות שרת ואין שרת \\
+\hline
+\end{xltabular}
+
+\sectionheading{\enLR{3.11} מדריך פקודות מרוכז – פרק \enLR{3}}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{תפקיד} & \textbf{פקודה} \\
+\hline
+\endhead
+הפעלת \enLR{AAA} (בבגרות: "הפקודה שתגרום לנתב לעבוד עם מודל \enLR{AAA")} & \code{aaa new-model} \\
+\hline
+רשימת אימות: שרת ואז מקומי & \code{aaa authentication login default group tacacs+ local} \\
+\hline
+רשימה בשם לקו ספציפי & \code{aaa authentication login NAME …} + \code{login authentication NAME} (ב-\enLR{line)} \\
+\hline
+הגדרת שרת \enLR{TACACS}+ & \code{tacacs-server host IP key K} / \code{tacacs server NAME} \\
+\hline
+הגדרת שרת \enLR{RADIUS} & \code{radius-server host IP key K} / \code{radius server NAME} \\
+\hline
+קבוצת שרתים & \code{aaa group server tacacs+ G} \\
+\hline
+הרשאת \enLR{shell} & \code{aaa authorization exec default …} \\
+\hline
+הרשאה לכל פקודה & \code{aaa authorization commands 15 default …} \\
+\hline
+רישום & \code{aaa accounting exec/commands/network default start-stop …} \\
+\hline
+בדיקה & \code{show aaa sessions}, \code{debug aaa authentication}, \code{test aaa} \\
+\hline
+\end{xltabular}
+
+\sectionheading{\enLR{3.12} תרגילים לתלמידים}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{1} – איזה \enLR{A}?}\par  לכל משפט – \enLR{Authentication, Authorization} או \enLR{Accounting}:\newline  א. "המשתמש \enLR{dana} ניסתה להקליד \code{configure terminal} ונדחתה." ב. "החשבון של \enLR{yossi} נעול אחרי \enLR{3} ניסיונות." ג. "בדוח החודשי: \enLR{4,200} חיבורי \enLR{VPN}, ממוצע \enLR{38} דקות." ד. "המשתמש הזדהה עם טביעת אצבע." ה. "המורה יכולה לראות ציונים אבל לא לשנות." \par\vskip2pt\hrule\vskip3pt\textbf{}א. \enLR{Authorization} ב. \enLR{Authentication} ג. \enLR{Accounting} ד. \enLR{Authentication} ה. \enLR{Authorization}\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{2} – מה יקרה?}\par  נתב עם: \code{aaa authentication login default group tacacs+ group radius local none}. תארו את סדר הפעולות כאשר: (א) שרת ה-\enLR{TACACS}+ עונה "\enLR{FAIL".} (ב) שרת ה-\enLR{TACACS}+ לא עונה, ושרת ה-\enLR{RADIUS} עונה \enLR{Accept.} (ג) שני השרתים לא עונים ואין \enLR{username} בקונפיג. \par\vskip2pt\hrule\vskip3pt\textbf{}(א) המשתמש נדחה – לא עוברים לשיטה הבאה אחרי דחייה. (ב) אחרי \enLR{timeout} של \enLR{TACACS}+ הנתב פונה ל-\enLR{RADIUS} ומקבל את המשתמש. (ג) \enLR{TACACS+ timeout} → \enLR{RADIUS timeout} → \enLR{local} (אין משתמשים ⇒ השיטה "לא זמינה", לא "דחייה") → \enLR{none} ⇒ המשתמש נכנס בלי אימות! לכן \code{none} מסוכן.\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{3} – בחירת פרוטוקול}\par  לכל תרחיש בחרו \enLR{RADIUS} או \enLR{TACACS}+ ונמקו במשפט:\newline  א. אימות \enLR{2,000} תלמידים ל-\enLR{Wi-Fi} של בית הספר. ב. \enLR{5} מנהלי רשת שמנהלים \enLR{60} מתגים, ורוצים שמתמחה יוכל להקליד רק \enLR{show.} ג. ספק אינטרנט שמחייב לקוחות לפי נפח. ד. חברה שהרגולטור דורש ממנה תיעוד של כל פקודת קונפיגורציה. \par\vskip2pt\hrule\vskip3pt\textbf{}א. \enLR{RADIUS} (גישת משתמשים, \enLR{802.1X).} ב. \enLR{TACACS}+ (הרשאה לכל פקודה). ג. \enLR{RADIUS (accounting} מפורט לנפח). ד. \enLR{TACACS+ (command accounting).}\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{4} – תקלה}\par  מנהל הקליד \code{aaa new-model} ואז \code{aaa authentication login default group tacacs+} (בלי \enLR{local).} השרת נפל. המנהל מתנתק. מה קרה, ואיך מתקנים? \par\vskip2pt\hrule\vskip3pt\textbf{}ננעל בחוץ – אין שיטת גיבוי. תיקון: גישה פיזית לקונסול (אם לקונסול לא הוגדרה רשימה אחרת – גם הוא נעול!) ⇒ \enLR{password recovery} דרך \enLR{ROMMON (register 0x2142)}, ואז להוסיף \code{local} לרשימה ומשתמש מקומי. לקח: תמיד \code{… local} בסוף, ורשימה נפרדת לקונסול.\end{exbox}
+
+\sectionheading{\enLR{3.13} שאלות בסגנון בגרות}
+
+\begin{exambox}\boxtitle{שאלה \enLR{1}}\par  התאימו: \enLR{(1)} רישום הפקודות שהקליד המנהל \enLR{(2)} בדיקה אם מותר למשתמש להקליד \enLR{reload (3)} בדיקת שם משתמש וסיסמה. אפשרויות: \enLR{Authentication / Authorization / Accounting.} \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{(1) Accounting (2) Authorization (3) Authentication}\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{2}}\par  מנהל הגדיר: \code{aaa authentication login default group radius local}. שרת ה-\enLR{RADIUS} זמין ומשיב "סיסמה שגויה". מה יקרה? \par\vskip2pt\hrule\vskip3pt\textbf{}המשתמש יידחה. המעבר ל-\enLR{local} קורה רק כששרת ה-\enLR{RADIUS} \emph{לא זמין} \enLR{(timeout)}, לא כשהוא דוחה.\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{3}}\par  איזה פרוטוקול מתאים יותר לניהול ציוד רשת \enLR{(device administration)} עם אישור לכל פקודה, ומדוע? \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{TACACS}+ – מפריד בין אימות להרשאה ותומך בהרשאה לכל פקודה \enLR{(per-command authorization); RADIUS} משלב אימות והרשאה ואינו תומך בכך.\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{4}}\par  השלימו: פרוטוקול \_\_\_\_\_\_ משתמש ב-\enLR{TCP} פורט \_\_\_\_\_\_ ומצפין את \_\_\_\_\_\_ החבילה; פרוטוקול \_\_\_\_\_\_ משתמש ב-\enLR{UDP} פורטים \_\_\_\_\_\_ ומצפין רק את \_\_\_\_\_\_. \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{TACACS}+ · \enLR{49} · כל גוף · \enLR{RADIUS} · \enLR{1812/1813} · הסיסמה\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{5}}\par  כתבו את הפקודות שמגדירות שרת \enLR{TACACS}+ בכתובת \enLR{192.168.1.10} עם מפתח \code{Key123}, ואימות ברירת מחדל מולו עם גיבוי מקומי. \par\vskip2pt\hrule\vskip3pt\textbf{}\code{aaa new-model} · \code{tacacs-server host 192.168.1.10 key Key123} · \code{aaa authentication login default group tacacs+ local}\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{6}}\par  ב-\enLR{802.1X} – מה תפקיד המתג? \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{Authenticator} – חוסם את הפורט עד שה-\enLR{supplicant} מאומת מול שרת ה-\enLR{RADIUS}, ומתווך בין \enLR{EAPOL} ל-\enLR{RADIUS.}\end{exambox}
+
+\sectionheading{\enLR{3.14} מעבדה \enLR{(3} שעות) – \enLR{AAA} ב-\enLR{Packet Tracer}}
+
+\begin{enumerate}
+\item טופולוגיה: \enLR{PC-Admin} — \enLR{SW} — \enLR{R1} — \enLR{Server (AAA).} בשרת: \enLR{Services} → \enLR{AAA} → \enLR{On; Client Name: R1, Client IP}: כתובת \enLR{R1, Secret}: \code{Key123}, \enLR{ServerType: Tacacs} (ואחר כך \enLR{Radius).} הוסיפו \enLR{User: admin / cisco123.}
+\item ב-\enLR{R1}: משתמש מקומי גיבוי, \code{aaa new-model}, \code{tacacs-server host … key Key123}, \code{aaa authentication login default group tacacs+ local}, \enLR{SSH} לפי פרק \enLR{2.}
+\item התחברו ב-\enLR{SSH} מה-\enLR{PC} עם \enLR{admin/cisco123} – הצליח? כבו את שירות ה-\enLR{AAA} בשרת ונסו שוב – ה-\enLR{fallback} למשתמש המקומי אמור לעבוד אחרי השהיה.
+\item שנו את ה-\enLR{secret} בשרת בלבד – ראו את הכישלון; הריצו \code{debug aaa authentication} וקראו את הפלט.
+\item חזרו על התרגיל עם \enLR{RADIUS.} השוו ב-\enLR{Simulation mode} את החבילות: ב-\enLR{RADIUS} רואים \enLR{UDP}; ב-\enLR{TACACS}+ רואים \enLR{TCP.}
+\item הוסיפו רשימה בשם לקונסול עם \code{local} בלבד, וודאו שהקונסול לא פונה לשרת.
+\end{enumerate}
+
+\sectionheading{בנק שאלות שתלמידים שואלים – ותשובות מוכנות}
+
+שאלות נפוצות בפרק ה-\enLR{AAA}, עם תשובות מוכנות.\par
+
+\subheading{מושגי יסוד}
+
+\textbf{ש: "אימות והרשאה נשמעים אותו דבר – מה ההבדל?"}\newline ת: משל שדה התעופה: \textbf{אימות} = בדיקת הדרכון (מי אתה). \textbf{הרשאה} = כרטיס הטיסה (לאיזה מטוס מותר לך לעלות). קודם מוודאים מי אתה, ורק אז קובעים מה מותר לך. אי אפשר הרשאה בלי אימות.\par
+
+\textbf{ש: "ה-\enLR{key} בין הנתב לשרת – זו הסיסמה של המשתמש?"}\newline ת: לא! ה-\enLR{key} הוא סוד משותף בין ה\underline{נתב} ל\underline{שרת} (מצפין ומאמת את הקשר ביניהם). סיסמאות המשתמשים נמצאות בשרת. שני דברים שונים לגמרי.\par
+
+\textbf{ש: "\enLR{MFA} ו-\enLR{2FA} זה אותו דבר?"}\newline ת: \enLR{2FA} (שני גורמים) הוא מקרה פרטי של \enLR{MFA} (רב-גורמי). העיקרון: שילוב גורמים מ\underline{סוגים שונים} – משהו שאתה יודע (סיסמה) + משהו שיש לך (טלפון) + משהו שאתה (טביעת אצבע). שתי סיסמאות אינן \enLR{MFA.}\par
+
+\subheading{מקומי מול שרת, ותקלות}
+
+\textbf{ש: "אם שרת ה-\enLR{AAA} נופל, ננעלנו החוצה מכל הנתבים?"}\newline ת: לא, אם הגדרתם נכון: רשימת השיטות מסתיימת ב-\code{local} (למשל \code{... group tacacs+ local}). כשהשרת לא זמין, הנתב עובר אוטומטית לאימות מול משתמש מקומי. לכן \underline{תמיד} משאירים גיבוי מקומי.\par
+
+\textbf{ש: "מה קורה אם הקלדתי \code{aaa new-model} בטעות בלי משתמש מקומי?"}\newline ת: אתם עלולים להינעל החוצה – כי מרגע הפקודה כל הקווים עוברים ל-\enLR{AAA}, ואם אין משתמש ואין רשימת ברירת מחדל, אין כניסה. כלל ברזל: קודם \code{username}, אחר כך \code{aaa new-model}, ולהשאיר חלון פתוח עד שבודקים בחלון שני.\par
+
+\textbf{ש: "אם השרת עונה 'סיסמה שגויה', הנתב עובר לאימות מקומי?"}\newline ת: לא! מעבר לשיטה הבאה קורה רק כשהשרת \underline{לא זמין} \enLR{(timeout).} דחייה מפורשת מהשרת = המשתמש נדחה, בלי מעבר. זו נקודה שנשאלת בבגרות.\par
+
+\subheading{\enLR{RADIUS} מול \enLR{TACACS}+}
+
+\textbf{ש: "אז איזה מהם 'יותר טוב', \enLR{RADIUS} או \enLR{TACACS}+?"}\newline ת: תלוי במשימה. ל\underline{ניהול ציוד} (מנהלים שמתחברים לנתבים, עם אישור לכל פקודה) – \enLR{TACACS}+ עדיף. ל\underline{גישת משתמשים לרשת} \enLR{(Wi-Fi/802.1X, VPN)} – \enLR{RADIUS.} בפועל ארגונים משתמשים בשניהם, כל אחד לתפקידו.\par
+
+\textbf{ש: "למה \enLR{RADIUS} על \enLR{UDP} אם \enLR{TCP} אמין יותר?"}\newline ת: \enLR{RADIUS} תוכנן ב-\enLR{1991} לשרתי דיאל-אפ עם אלפי חיבורים; \enLR{UDP} קל ומהיר, והלקוח פשוט שולח שוב אם אין תשובה. \enLR{TACACS}+ בחר \enLR{TCP} כי הוא מנהל שיחה רב-שלבית ורוצה לדעת מיד אם השרת נפל. שניהם עובדים היום.\par
+
+\textbf{ש: "אומרים ש-\enLR{RADIUS '}לא עושה הרשאה' – אבל הוא כן מחזיר הרשאות, לא?"}\newline ת: נכון, זו נקודה עדינה. \enLR{RADIUS} כן נושא \enLR{attributes} של הרשאה \enLR{(VLAN}, רמה) בתוך תשובת ה-\enLR{Accept}, אבל הוא \underline{משלב} אימות והרשאה בצעד אחד ואינו תומך באישור \underline{נפרד לכל פקודה} כמו \enLR{TACACS+.} בבגרות "אינו מתייחס לניהול הרשאות" מתקבל כנכון במובן הזה.\par
+
+\textbf{ש: "מה זה \enLR{802.1X} במשפט אחד?"}\newline ת: תקן שבו המתג/נקודת הגישה \underline{חוסמים את הפורט} עד שהמכשיר מאמת את עצמו מול שרת \enLR{RADIUS.} זה מה שמונע ממישהו לחבר מחשב לשקע ולקבל גישה, וזה הבסיס ל-\enLR{Wi-Fi} ארגוני \enLR{(WPA2-Enterprise).}\par
+
+\textbf{ש: "אפשר לחבר \enLR{AAA} ל-\enLR{Active Directory} של בית הספר?"}\newline ת: כן – זה בדיוק מה שעושים בארגונים. שרת ה-\enLR{AAA (ISE/NPS/FreeRADIUS)} מקבל את הבקשה מהנתב ומאמת מול ה-\enLR{AD/LDAP.} כך המורים משתמשים באותם שם וסיסמה בכל מקום.\par
+
+\sectionheading{מילון מונחים – הגדרות}
+
+הגדרות תמציתיות של המונחים המרכזיים בפרק. שימושי גם כדף עזר לבחינה (מותר מילון מונחים).\par
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{הגדרה} & \textbf{מונח} \\
+\hline
+\endhead
+מסגרת של שלושה שירותים: \enLR{Authentication, Authorization, Accounting.} & \textbf{\enLR{AAA}} \\
+\hline
+קביעת זהות המשתמש – מי אתה. & \textbf{\enLR{Authentication} (אימות)} \\
+\hline
+קביעת מה מותר למשתמש לעשות אחרי שאומת. & \textbf{\enLR{Authorization} (הרשאה)} \\
+\hline
+תיעוד פעולות המשתמש: מתי נכנס, אילו פקודות הקליד. & \textbf{\enLR{Accounting} (רישום)} \\
+\hline
+אימות מול מסד משתמשים בקונפיג של הנתב עצמו. & \textbf{\enLR{AAA} מקומי} \\
+\hline
+אימות מול שרת מרכזי \enLR{(ISE/ACS)} בפרוטוקול \enLR{RADIUS} או \enLR{TACACS+.} & \textbf{\enLR{AAA} מבוסס-שרת} \\
+\hline
+ההתקן (נתב/מתג) שפונה לשרת ה-\enLR{AAA} בשם המשתמש. & \textbf{\enLR{NAS / AAA client}} \\
+\hline
+פרוטוקול \enLR{AAA} פתוח, \enLR{UDP (1812/1813)}; מצפין רק את הסיסמה; לגישת משתמשים. & \textbf{\enLR{RADIUS}} \\
+\hline
+פרוטוקול \enLR{AAA} של סיסקו, \enLR{TCP 49}; מצפין את כל החבילה; מפריד שירותים; לניהול ציוד. & \textbf{\enLR{TACACS}+} \\
+\hline
+סוד משותף בין הנתב לשרת המצפין ומאמת את הקשר ביניהם (לא סיסמת המשתמש). & \textbf{\enLR{key / shared secret}} \\
+\hline
+שרתי ה-\enLR{AAA} של סיסקו \enLR{(ACS} ישן, \enLR{ISE} מודרני). & \textbf{\enLR{ACS / ISE}} \\
+\hline
+הפקודה שמפעילה את מסגרת ה-\enLR{AAA} בנתב. & \textbf{\enLR{aaa new-model}} \\
+\hline
+רשימת שיטות אימות מסודרת; עוברים לשיטה הבאה רק אם הקודמת לא זמינה. & \textbf{\enLR{method list}} \\
+\hline
+תקן שבו המתג/\enLR{AP} חוסם פורט עד לאימות מול שרת \enLR{RADIUS.} & \textbf{\enLR{802.1X}} \\
+\hline
+ב-\enLR{802.1X}: המכשיר המבקש גישה \enLR{(supplicant)} והמתג שחוסם \enLR{(authenticator).} & \textbf{\enLR{Supplicant / Authenticator}} \\
+\hline
+אימות רב-שלבי – שילוב גורמים מסוגים שונים (יודע/יש/הוא). & \textbf{\enLR{MFA / 2FA}} \\
+\hline
+\end{xltabular}
+\end{document}

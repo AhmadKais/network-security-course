@@ -1,0 +1,79 @@
+<section class="slide title"><h1>פרק 8<br>מערכות VPN</h1><div class="sub">GRE · IPsec · IKE · site-to-site · SSL VPN</div><div class="course">אבטחת מידע · מגמת תקשוב</div>
+<div class="notes">פרק 7 בפעולה. VPN = כל ההצפנה שלמדנו, ארוזה כשירות רשת. פתחו Packet Tracer.</div></section>
+
+<section class="slide"><h2>מהו VPN</h2>
+<ul><li class="fragment">מנהרה מוצפנת דרך רשת ציבורית (אינטרנט)</li>
+<li class="fragment">במקום קו פרטי יקר – אינטרנט זול + הצפנה</li>
+<li class="fragment">נותן CIA: סודיות + שלמות + אימות</li></ul>
+<div class="box warn fragment"><span class="t">בית הקפה</span>בלי VPN – Evil Twin רואה הכול. עם VPN – רק ג'יבריש מוצפן</div>
+<div class="notes">קשרו לפרק 6 (Evil Twin) ולפרק 7 (AES+HMAC+DH). VPN הוא היישום.</div></section>
+
+<section class="slide"><h2>סוגי VPN</h2>
+<table><tr><th>סוג</th><th>מי למי</th></tr>
+<tr><td>Site-to-Site</td><td>שער↔שער (סניף↔סניף)</td></tr>
+<tr><td>Remote Access</td><td>משתמש↔שער (עובד מהבית)</td></tr></table>
+<p class="fragment sub">ספק: MPLS · ארגוני: IPsec / SSL</p>
+<div class="notes">site-to-site שקוף למשתמש; remote access דורש לקוח (AnyConnect). שניהם ייבחנו.</div></section>
+
+<section class="slide"><h2>GRE – מנהור בלי הצפנה</h2>
+<ul><li class="fragment">עוטף חבילה בחבילת IP חדשה</li>
+<li class="fragment">יתרון: נושא multicast/broadcast (OSPF עובר!)</li>
+<li class="fragment"><b>חיסרון: לא מצפין כלום</b></li></ul>
+<div class="box tip fragment"><span class="t">הפתרון</span>GRE over IPsec – GRE לגמישות, IPsec להצפנה</div>
+<div class="notes">GRE לבד = מעטפה שקופה. משלבים עם IPsec. הדגמה: OSPF לא עובר ב-IPsec לבד.</div></section>
+
+<section class="slide"><h2>IPsec – מסגרת אבטחה בשכבה 3</h2>
+<div class="box ok fragment"><span class="t">בבגרות</span>IPsec מאבטח את חבילת <b>TCP/IP</b> (שכבה 3) ⇒ כל התעבורה מעליו בשקיפות</div>
+<table class="fragment"><tr><th></th><th>AH</th><th>ESP</th></tr>
+<tr><td>שלמות+אימות</td><td>כן</td><td>כן</td></tr>
+<tr><td>הצפנה</td><td><b>לא</b></td><td><b>כן</b></td></tr>
+<tr><td>NAT</td><td>לא</td><td>כן</td></tr></table>
+<div class="notes">נשאל בבגרות (6א): IPsec=TCP/IP. בפועל תמיד ESP – רק הוא מצפין ועובד עם NAT.</div></section>
+
+<section class="slide"><h2>4 מרכיבי IPsec = פרק 7</h2>
+<table><tr><th>תפקיד</th><th>אפשרויות</th><th>פרק 7</th></tr>
+<tr><td>סודיות</td><td>AES/3DES</td><td>סימטרי</td></tr>
+<tr><td>שלמות</td><td>SHA (HMAC)</td><td>גיבוב</td></tr>
+<tr><td>אימות</td><td>PSK / תעודות</td><td>PKI</td></tr>
+<tr><td>מפתחות</td><td>DH</td><td>Diffie-Hellman</td></tr></table>
+<p class="fragment big">IPsec = פרק 7 בפעולה</p>
+<div class="notes">זה החיבור המרכזי. כל מה שלמדו בפרק 7 חוזר כאן קונקרטית.</div></section>
+
+<section class="slide"><h2>IKE – שני שלבים</h2>
+<div class="box fragment"><span class="t">Phase 1</span>בונה ערוץ ניהול מאובטח (ISAKMP SA): DH, אימות, מדיניות</div>
+<div class="box fragment"><span class="t">Phase 2</span>בונה בתוכו את מנהרת הנתונים (IPsec SA) שדרכה עוברת התעבורה</div>
+<div class="notes">IKE = "מפתחות אינטרנט משתנים" בתכנית. Phase 1 = הכנה מאובטחת; Phase 2 = המנהרה בפועל.</div></section>
+
+<section class="slide"><h2>Site-to-Site – 5 שלבים</h2>
+<pre>1. ACL "מעניין"  – איזו תעבורה להצפין
+2. crypto isakmp policy  – Phase 1 (aes/sha/dh/psk)
+3. crypto ipsec transform-set  – Phase 2
+4. crypto map  – מקשר peer+transform+ACL
+5. interface → crypto map  – החלה</pre>
+<div class="box warn fragment"><span class="t">חייב להתאים בין הצדדים</span>מדיניות זהה, PSK זהה, ACL <b>הפוך</b></div>
+<div class="notes">הריצו בעצמכם קודם. הטעות #1: ACL לא הפוך בין R1 ל-R2. #2: שוכחים crypto map על הממשק.</div></section>
+
+<section class="slide q"><h2>שאלה: איך יודעים שהמנהרה עובדת?</h2>
+<p>ה-ping בין הרשתות עובר. איך מוודאים שהוא באמת <b>במנהרה</b>?</p>
+<div class="answer fragment"><code>show crypto ipsec sa</code> – המונים <span class="en">#pkts encrypt/decrypt</span> עולים. אם 0 – התעבורה עוברת מחוץ למנהרה (בעיה ב-ACL/NAT).</div>
+<div class="notes">כלי הדיבוג המרכזי. show crypto isakmp sa = QM_IDLE ⇒ Phase 1 הצליח.</div></section>
+
+<section class="slide"><h2>SSL VPN מול IPsec</h2>
+<table><tr><th></th><th>IPsec</th><th>SSL</th></tr>
+<tr><td>שכבה</td><td>3</td><td>מעל 443</td></tr>
+<tr><td>לקוח</td><td>תוכנה מותקנת</td><td>דפדפן (clientless)</td></tr>
+<tr><td>מעבר NAT/FW</td><td>לעיתים חסום</td><td>עובר תמיד (443)</td></tr></table>
+<div class="notes">SSL "פשוט עובד" מכל מקום כי 443 כמעט תמיד פתוח. IPsec – לחיבורים קבועים.</div></section>
+
+<section class="slide"><h2>ציוד</h2>
+<ul><li class="fragment"><b>Cisco ASA</b> – חומת אש + VPN + IPS (יורש: Firepower)</li>
+<li class="fragment"><b>PIX 500 / VPN 3000</b> – היסטוריים (בתכנית)</li>
+<li class="fragment"><b>AnyConnect</b> – לקוח VPN מודרני</li></ul>
+<div class="notes">ASA הוא המכשיר המרכזי. PIX/VPN3000 מוזכרים בתכנית אך יצאו משימוש.</div></section>
+
+<section class="slide"><h2>סיכום פרק 8</h2><ul>
+<li class="fragment">VPN = מנהרה מוצפנת דרך האינטרנט</li>
+<li class="fragment"><b>GRE</b> עוטף (לא מצפין) · <b>IPsec</b> מצפין (שכבה 3)</li>
+<li class="fragment"><b>ESP</b> = הצפנה · IKE Phase 1 (ניהול) + Phase 2 (נתונים)</li>
+<li class="fragment">IPsec = פרק 7 בפעולה (AES+SHA+DH+PKI)</li>
+</ul><div class="notes">חזרה. מעבדה: site-to-site IPsec ב-Packet Tracer + לכידת ESP ב-Simulation.</div></section>

@@ -1,0 +1,393 @@
+\documentclass[11pt]{article}
+\usepackage{fontspec}
+\directlua{luaotfload.add_fallback("hebfb",{"DejaVu Sans:mode=harf"})}
+\usepackage{polyglossia}
+\setdefaultlanguage{hebrew}
+\setotherlanguage{english}
+\setmainfont{Noto Sans Hebrew}[Script=Hebrew,RawFeature={fallback=hebfb}]
+\newfontfamily\codefont{DejaVu Sans Mono}[RawFeature={fallback=hebfb}]
+\usepackage[a4paper,margin=18mm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{mdframed}
+\usepackage{tabularx}
+\usepackage{xltabular}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\setlist{leftmargin=1.6em,itemsep=1pt,topsep=2pt}
+% colors
+\definecolor{h1}{HTML}{1E3A8A}\definecolor{h2}{HTML}{1E40AF}\definecolor{h3}{HTML}{0F172A}
+\definecolor{subgray}{HTML}{64748B}\definecolor{hdrbg}{HTML}{E0E7FF}
+\definecolor{cfg}{HTML}{E2E8F0}\definecolor{cbg}{HTML}{0F172A}\definecolor{cbold}{HTML}{7DD3FC}\definecolor{ccom}{HTML}{94A3B8}
+\definecolor{metabg}{HTML}{F1F5F9}
+\newcommand{\enLR}[1]{\textenglish{#1}}
+\newcommand{\code}[1]{\textenglish{\codefont #1}}
+\newcommand{\chapterheading}[1]{\vspace{2pt}{\LARGE\bfseries\color{h1}#1\par}\vskip2pt{\color{h1}\hrule height 2pt}\vskip6pt}
+\newcommand{\sectionheading}[1]{\vskip10pt\penalty-200{\large\bfseries\color{h2}#1\par}\vskip3pt}
+\newcommand{\subheading}[1]{\vskip6pt{\bfseries\color{h3}#1\par}\vskip2pt}
+\newcommand{\boxtitle}[1]{{\bfseries\color{boxti}#1}}
+% box environments (right border, tinted bg)
+\newmdenv[topline=false,bottomline=false,leftline=false,rightline=true,linewidth=2pt,innermargin=0pt,skipabove=6pt,skipbelow=6pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt]{genericbox}
+\definecolor{faqbg}{HTML}{ECFDF5}\definecolor{faqfr}{HTML}{10B981}\definecolor{faqti}{HTML}{065F46}
+\definecolor{misbg}{HTML}{FEF2F2}\definecolor{misfr}{HTML}{EF4444}\definecolor{misti}{HTML}{991B1B}
+\definecolor{tipbg}{HTML}{FFFBEB}\definecolor{tipfr}{HTML}{F59E0B}\definecolor{tipti}{HTML}{92400E}
+\definecolor{exabg}{HTML}{EFF6FF}\definecolor{exafr}{HTML}{3B82F6}\definecolor{exati}{HTML}{1E3A8A}
+\definecolor{defbg}{HTML}{F5F3FF}\definecolor{deffr}{HTML}{8B5CF6}\definecolor{defti}{HTML}{5B21B6}
+\definecolor{stobg}{HTML}{FDF4FF}\definecolor{stofr}{HTML}{D946EF}\definecolor{stoti}{HTML}{86198F}
+\definecolor{exbg}{HTML}{F0FDFA}\definecolor{exfr}{HTML}{14B8A6}\definecolor{exti}{HTML}{115E59}
+\newenvironment{faqbox}{\colorlet{boxti}{faqti}\begin{mdframed}[backgroundcolor=faqbg,linecolor=faqfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{mistakebox}{\colorlet{boxti}{misti}\begin{mdframed}[backgroundcolor=misbg,linecolor=misfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{tipbox}{\colorlet{boxti}{tipti}\begin{mdframed}[backgroundcolor=tipbg,linecolor=tipfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{exambox}{\colorlet{boxti}{exati}\begin{mdframed}[backgroundcolor=exabg,linecolor=exafr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{defbox}{\colorlet{boxti}{defti}\begin{mdframed}[backgroundcolor=defbg,linecolor=deffr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{storybox}{\colorlet{boxti}{stoti}\begin{mdframed}[backgroundcolor=stobg,linecolor=stofr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{exbox}{\colorlet{boxti}{exti}\begin{mdframed}[backgroundcolor=exbg,linecolor=exfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{metabox}{\begin{mdframed}[backgroundcolor=metabg,linewidth=0pt,innertopmargin=5pt,innerbottommargin=5pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=4pt,skipbelow=8pt]}{\end{mdframed}}
+\newmdenv[backgroundcolor=cbg,linewidth=0pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=8pt]{codebox}
+\setlength{\parindent}{0pt}\setlength{\parskip}{4pt}
+\renewcommand{\thepage}{\enLR{\arabic{page}}}
+\pagestyle{fancy}\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}
+\begin{document}
+\sloppy
+\chapterheading{פרק \enLR{7} – מערכות הצפנה וקריפטולוגיה}{\small\color{subgray}\enLR{11} שעות עיוני + \enLR{3} מעשי · שבועות \enLR{20}–\enLR{23}\par}\vskip4pt
+
+\begin{metabox}\textbf{מטרות:} קריפטולוגיה · הצפנה, קידוד, \enLR{hashing} · סימטרי מול א-סימטרי · חתימה דיגיטלית · \enLR{PKI}\\ \textbf{בבגרות:} \enLR{Diffie-Hellman}, צופן קיסר ו-\enLR{mod 26}, מפתח ציבורי/פרטי, \enLR{AES} מול \enLR{hash} (סודיות)\end{metabox}
+
+\begin{defbox}\boxtitle{לפני שמתחילים – שלושה מושגים שמבלבלים (למי שאין רקע)}\par  כל הפרק בנוי על הבחנה בין שלושה דברים שנראים דומים אבל שונים לגמרי:  \textbf{קידוד \enLR{(Encoding)}} – שינוי \underline{צורת הכתיבה} של מידע לנוחות, \underline{בלי סוד}. כל אחד יכול להחזיר. דוגמה: מורס, \enLR{Base64.} \textbf{זו אינה אבטחה.} \textbf{הצפנה \enLR{(Encryption)}} – ערבוב המידע בעזרת \underline{מפתח סודי}, כך שרק מי שיש לו המפתח יכול לפענח. הפיך \underline{עם המפתח}. מטרה: \textbf{סודיות}. \textbf{גיבוב \enLR{(Hashing)}} – "טביעת אצבע" של המידע: פונקציה \underline{חד-כיוונית} שאי אפשר להפוך. מטרה: לבדוק ש\textbf{המידע לא שונה (שלמות)}.  \textbf{אנלוגיה:} קידוד = לכתוב מילה הפוך (כל אחד קורא). הצפנה = כספת עם מפתח (רק בעל המפתח פותח). גיבוב = לטחון פרי לשייק (אי אפשר להחזיר את הפרי, אבל אותו פרי תמיד נותן אותו שייק). \newline \textbf{מושג מפתח:} "מפתח" \enLR{(Key)} בהצפנה = מספר/מחרוזת סודית שקובעת איך המידע יעורבב. בלי המפתח הנכון, המידע המוצפן נראה כג'יבריש.\end{defbox}
+
+\sectionheading{\enLR{7.1} מושגי יסוד – ולמה קידוד אינו הצפנה}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+מדע כתיבת ההצפנות (יצירת צפנים) & \textbf{קריפטוגרפיה} \\
+\hline
+מדע שבירת ההצפנות & \textbf{קריפטואנליזה} \\
+\hline
+שם כולל לשתיהן & \textbf{קריפטולוגיה} \\
+\hline
+הטקסט הגלוי, לפני הצפנה & \textbf{\enLR{Plaintext}} \\
+\hline
+הטקסט המוצפן & \textbf{\enLR{Ciphertext}} \\
+\hline
+שיטת ההצפנה (קיסר, \enLR{AES)} & \textbf{\enLR{Cipher} / אלגוריתם} \\
+\hline
+הסוד שמשנה את פעולת האלגוריתם & \textbf{\enLR{Key} (מפתח)} \\
+\hline
+\end{xltabular}
+
+\begin{defbox}\boxtitle{שלושה מושגים שמבלבלים – חשוב מאוד להבחין}\par  \textbf{קידוד \enLR{(Encoding)}} – המרת ייצוג לנוחות/תאימות, \underline{ללא סוד}. \enLR{Base64, ASCII, Morse.} כל אחד יכול לפענח – זו לא אבטחה!\newline  \textbf{הצפנה \enLR{(Encryption)}} – המרה \underline{הפיכה} בעזרת מפתח סודי; רק מי שיש לו המפתח מפענח. מטרה: \textbf{סודיות}.\newline  \textbf{גיבוב \enLR{(Hashing)}} – פונקציה \underline{חד-כיוונית}, ללא מפתח, פלט קבוע-אורך. אי אפשר להפוך. מטרה: \textbf{שלמות}.\end{defbox}
+
+\begin{mistakebox}\boxtitle{טעות נפוצה מסוכנת}\par  תלמידים (ומתכנתים!) חושבים ש-\enLR{Base64} היא "הצפנה". \code{btoa("password")} אינו מאבטח דבר. אם רואים "==" בסוף מחרוזת – זה כמעט תמיד \enLR{Base64} (קידוד), ופענוח לוקח שנייה. השאלה המבחינה: "האם צריך סוד כדי לחזור?" קידוד – לא. הצפנה – כן.\end{mistakebox}
+
+\subheading{עקרון קרקהופס \enLR{(Kerckhoffs)}}
+
+"מערכת צריכה להיות מאובטחת גם אם \textbf{הכול ידוע חוץ מהמפתח}." המשמעות: לא סומכים על סודיות האלגוריתם ("\enLR{security through obscurity"} זה רע), אלא על סודיות המפתח בלבד. לכן \enLR{AES} פורסם לכל העולם – וזו דווקא הסיבה שסומכים עליו: מיליוני מומחים ניסו לשבור ולא הצליחו.\par
+
+\sectionheading{\enLR{7.2} היסטוריה – מקיסר עד אניגמה}
+
+\subheading{צופן קיסר \enLR{(Caesar)} – נשאל בבגרות}
+
+הזזת כל אות במספר קבוע. יוליוס קיסר השתמש בהזזה של \enLR{3: A}→\enLR{D, B}→\enLR{E}… הנוסחה (עבור אנגלית, \enLR{26} אותיות, \enLR{A=0)}:\par
+
+\begin{defbox}\boxtitle{הצפנה: \enLR{C = (P + K) mod 26} · פענוח: \enLR{P = (C} − \enLR{K) mod 26}}\par  דוגמה עם \enLR{K=10}: האות \enLR{H (=7)} ⇒ \enLR{C = (7+10) mod 26 = 17 = R.} האות \enLR{Z (=25)} ⇒ \enLR{C = (25+10) mod 26 = 35 mod 26 = 9 = J.} ה-\enLR{mod "}מגלגל" חזרה להתחלה.\end{defbox}
+
+\begin{exambox}\boxtitle{בבגרות (שאלה \enLR{5}ג)}\par  "בצופן קיסר \enLR{C=P+10 (mod 26).} מה תפקידו של \enLR{mod 26}?" – \textbf{מספר האותיות (האפשרויות) בשפה האנגלית}; ה-\enLR{mod} מבטיח שהתוצאה תישאר בטווח \enLR{0}–\enLR{25} ו"תתגלגל" מ-\enLR{Z} חזרה ל-\enLR{A.} \emph{לא} מספר הפעולות ולא גרסת האלגוריתם.\end{exambox}
+
+\subheading{צפנים היסטוריים נוספים}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{חולשה} & \textbf{רעיון} & \textbf{סוג} & \textbf{צופן} \\
+\hline
+\endhead
+\enLR{26} מפתחות בלבד; ניתוח תדירות & הזזה קבועה & החלפה \enLR{(substitution)}, חד-אלפביתי & \enLR{Caesar / ROT13} \\
+\hline
+ניתוח תדירות אותיות \enLR{(E} הכי נפוצה) & כל אות ↔ אות אחרת \enLR{(26}! מפתחות) & החלפה & \enLR{Monoalphabetic} \\
+\hline
+נשבר \enLR{(Kasiski)} אך חזק בהרבה & קיסר עם מפתח מתחלף לפי מילה & החלפה רב-אלפביתית & \enLR{Vigen}è\enLR{re} \\
+\hline
+סדר בלבד – ניתן לניתוח & שינוי סדר האותיות & שחלוף & \enLR{Transposition (Rail Fence)} \\
+\hline
+נשברה ע"י טיורינג בבלצ'לי פארק & מכונת רוטורים גרמנית \enLR{(WWII)} & רוטורי & \enLR{Enigma} \\
+\hline
+לא מעשי – מפתח באורך ההודעה, פעם אחת & המפתח היחיד שהוכח מתמטית כבלתי שביר & \enLR{XOR} עם מפתח אקראי באורך ההודעה & \enLR{One-Time Pad} \\
+\hline
+\end{xltabular}
+
+\begin{storybox}\boxtitle{סיפור מהחיים: אלן טיורינג ואניגמה}\par  בזמן מלחמת העולם השנייה הצי הגרמני הצפין הודעות במכונת \enLR{Enigma} – \enLR{158} מיליון מיליון מיליון הגדרות אפשריות. אלן טיורינג וצוותו בבלצ'לי פארק בנו מכונה חשמלית ("\enLR{The Bombe")} שניצלה חולשה: אות לעולם לא מוצפנת לעצמה, ומילים צפויות ("\enLR{Wetter"}=מזג אוויר) הופיעו כל בוקר. ההערכה: שבירת \enLR{Enigma} קיצרה את המלחמה בכשנתיים. הלקח לכיתה: אלגוריתם עם מרחב מפתחות ענק עדיין נשבר אם יש בו חולשה מבנית או שימוש לא נכון – בדיוק העיקרון של קרקהופס.\end{storybox}
+
+\sectionheading{\enLR{7.3} מטרות האבטחה ואיזה כלי קריפטוגרפי נותן מה}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{הכלי הקריפטוגרפי} & \textbf{מטרה} \\
+\hline
+\endhead
+הצפנה – סימטרית \enLR{(AES)} או א-סימטרית \enLR{(RSA)} & \textbf{סודיות} \enLR{(Confidentiality)} \\
+\hline
+\enLR{Hash (SHA-256)} & \textbf{שלמות} \enLR{(Integrity)} \\
+\hline
+\enLR{HMAC} & \textbf{אימות} \enLR{(Authentication)} + שלמות עם מפתח משותף \\
+\hline
+חתימה דיגיטלית \enLR{(hash} מוצפן במפתח פרטי) & \textbf{אימות + אי-הכחשה} \enLR{(Non-repudiation)} \\
+\hline
+\end{xltabular}
+
+\begin{exambox}\boxtitle{בבגרות (שאלה \enLR{5}ה)}\par  "איזה אלגוריתם מבטיח סודיות של מידע מוצפן?" \enLR{1. MD5 2. WPA-2 3. AES 4. HASH} – התשובה \textbf{\enLR{3. AES}}. \enLR{MD5} ו-\enLR{HASH} נותנים שלמות (לא סודיות); \enLR{WPA-2} הוא פרוטוקול אבטחת \enLR{Wi-Fi}, לא אלגוריתם הצפנה.\end{exambox}
+
+\sectionheading{\enLR{7.4} גיבוב \enLR{(Hashing)}}
+
+פונקציית גיבוב מקבלת קלט בכל אורך ומחזירה פלט קבוע \enLR{(digest).} תכונות נדרשות: \textbf{חד-כיווניות} (אי אפשר לשחזר קלט), \textbf{דטרמיניסטיות} (אותו קלט → אותו פלט), \textbf{אפקט מפולת} (שינוי ביט אחד → פלט שונה לגמרי), \textbf{עמידות להתנגשויות} (קשה למצוא שני קלטים עם אותו \enLR{hash).}\par
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{מצב} & \textbf{אורך פלט} & \textbf{אלגוריתם} \\
+\hline
+\endhead
+\textbf{שבור} – התנגשויות ידועות. לא לאבטחה. (מוזכר בתכנית) & \enLR{128} ביט & \textbf{\enLR{MD5}} \\
+\hline
+\textbf{שבור} \enLR{(2017, "SHATTERED").} לא לשימוש. (מוזכר בתכנית) & \enLR{160} ביט & \textbf{\enLR{SHA-1}} \\
+\hline
+הסטנדרט הנוכחי & \enLR{256/512} ביט & \textbf{\enLR{SHA-2}} \enLR{(SHA-256/512)} \\
+\hline
+חלופה מודרנית & משתנה & \textbf{\enLR{SHA-3}} \\
+\hline
+\end{xltabular}
+
+\subheading{שימושים}
+
+\begin{itemize}
+\item \textbf{שלמות קבצים} – מורידים \enLR{ISO} ומשווים \enLR{SHA-256} לזה שבאתר; אם שונה – הקובץ שונה/פגום.
+\item \textbf{אחסון סיסמאות} – שומרים \enLR{hash}, לא את הסיסמה. בכניסה מגבבים ומשווים. חובה \textbf{\enLR{salt}} (מלח – ערך אקראי לכל סיסמה) נגד \enLR{rainbow tables}, ופונקציה איטית \enLR{(bcrypt/Argon2/PBKDF2)} נגד \enLR{brute force.}
+\item בסיס ל-\enLR{HMAC} ולחתימה דיגיטלית.
+\end{itemize}
+
+\begin{faqbox}\boxtitle{שאלת תלמיד: "אם \enLR{hash} חד-כיווני, איך אתרים 'שוברים' \enLR{MD5}?"}\par  הם לא "הופכים" אותו – הם מנחשים. מחשבים מראש \enLR{hash} של מיליארדי סיסמאות נפוצות \enLR{(rainbow table)} ומחפשים התאמה. לכן: \enLR{(1) salt} – הופך כל טבלה מוכנה ללא רלוונטית; \enLR{(2)} פונקציה איטית – אם כל ניחוש לוקח \enLR{0.5} שנייה, מיליארד ניחושים = \enLR{15} שנה. \enLR{MD5} מהיר מדי בדיוק בגלל זה.\end{faqbox}
+
+\sectionheading{\enLR{7.5} הצפנה סימטרית}
+
+\textbf{מפתח אחד} משמש גם להצפנה וגם לפענוח, ומשותף לשני הצדדים.\par
+
+\begin{center}\fbox{\enLR{Plaintext}} \;→ 🔑 →\; \fbox{\enLR{Ciphertext}} \;→ 🔑(אותו) →\; \fbox{\enLR{Plaintext}}\end{center}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{הערכה} & \textbf{אורך מפתח} & \textbf{אלגוריתם} \\
+\hline
+\endhead
+שבור (מפתח קצר מדי, נפרץ ב-\enLR{1998} ביום) & \enLR{56} ביט & \textbf{\enLR{DES}} \\
+\hline
+מיושן אך נסבל; \enLR{DES} שלוש פעמים & \enLR{112/168} ביט & \textbf{\enLR{3DES}} \\
+\hline
+\textbf{הסטנדרט העולמי} \enLR{(Rijndael, 2001).} מהיר, מאובטח, בחומרה & \enLR{128/192/256} & \textbf{\enLR{AES}} \\
+\hline
+שבור – היה ב-\enLR{WEP/SSL} & משתנה (זרם) & \enLR{RC4} \\
+\hline
+מוזכרים בתכנית; פחות בשימוש היום &  & \enLR{SEAL, Blowfish} \\
+\hline
+\end{xltabular}
+
+שני סוגים: \textbf{\enLR{block cipher}} \enLR{(AES} – מצפין בלוקים של \enLR{128} ביט; מצבי פעולה \enLR{CBC, GCM)} ו-\textbf{\enLR{stream cipher}} \enLR{(RC4} – ביט אחר ביט).\par
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{חסרונות סימטרי} & \textbf{יתרונות סימטרי} \\
+\hline
+\endhead
+\textbf{בעיית חלוקת המפתח} – איך מעבירים את המפתח בבטחה? \textbf{בעיית מדרגיות} – ל-\enLR{N} משתמשים צריך \enLR{N(N}−\enLR{1)/2} מפתחות \enLR{(100} איש = \enLR{4,950} מפתחות) & מהיר מאוד (פי \enLR{1000} מא-סימטרי); מתאים לכמויות מידע גדולות; מפתחות קצרים יחסית \\
+\hline
+\end{xltabular}
+
+\sectionheading{\enLR{7.6} הצפנה א-סימטרית (מפתח ציבורי)}
+
+לכל צד \textbf{זוג מפתחות} מתמטית קשורים: \textbf{ציבורי} (מפרסמים לכולם) ו\textbf{פרטי} (סוד מוחלט). מה שאחד מצפין – רק השני מפענח. זה פותר את בעיית חלוקת המפתח.\par
+
+\begin{defbox}\boxtitle{שני שימושים הפוכים – חובה להבין}\par  \textbf{לסודיות:} מצפינים ב\underline{ציבורי של הנמען} ⇒ רק הנמען (בעל הפרטי) יפענח. (בבגרות \enLR{4}ו + \enLR{5}ד)\newline  \textbf{לחתימה/אימות:} מצפינים ב\underline{פרטי של השולח} ⇒ כל אחד מפענח בציבורי שלו, ובכך מוכיח שהשולח אכן שלח (רק לו יש את הפרטי).\end{defbox}
+
+\begin{exambox}\boxtitle{בבגרות (שאלה \enLR{5}ד)}\par  "האלגוריתם הא-סימטרי משתמש במפתח הציבורי להצפנה – איזה מפתח לפענוח?" – \textbf{\enLR{1.} מפתח פרטי}.\end{exambox}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{שימוש} & \textbf{אלגוריתם} \\
+\hline
+\endhead
+הצפנה + חתימה; הנפוץ ביותר. בנתב סיסקו: מפתחות \enLR{RSA} ל-\enLR{SSH} (פרק \enLR{2}!) & \textbf{\enLR{RSA}} \\
+\hline
+\textbf{החלפת מפתחות} – מסכימים על מפתח סודי משותף בערוץ ציבורי, בלי לשלוח אותו & \textbf{\enLR{Diffie-Hellman (DH)}} \\
+\hline
+חתימה דיגיטלית בלבד (מוזכר בתכנית) & \textbf{\enLR{DSA}} \\
+\hline
+עקומים אליפטיים – אבטחה זהה במפתח קצר בהרבה (מודרני) & \textbf{\enLR{ECC}} \\
+\hline
+\end{xltabular}
+
+\begin{defbox}\boxtitle{\enLR{Diffie-Hellman} במשל הצבעים (הכי טוב לכיתה)}\par  אליס ובוב רוצים סוד משותף מול מאזין. \enLR{1.} מסכימים בפומבי על צבע בסיס (צהוב). \enLR{2.} כל אחד בוחר צבע סודי ומערבב עם הצהוב. \enLR{3.} מחליפים את התערובות \textbf{בפומבי} (המאזין רואה אותן). \enLR{4.} כל אחד מוסיף את הסוד \emph{שלו} לתערובת שקיבל. שניהם מגיעים לאותו צבע סופי – \textbf{אבל המאזין לא יכול}, כי הפרדת צבעים היא "בלתי הפיכה" (כמו לוגריתם דיסקרטי במתמטיקה). זה בדיוק \enLR{DH.}\end{defbox}
+
+\begin{exambox}\boxtitle{בבגרות (שאלה \enLR{4}ו)}\par  "איזה אלגוריתם מאפשר לצדדים להסכים על מפתח פרטי על גבי ערוץ ציבורי?" – \textbf{\enLR{2. Diffie-Hellman}}. \enLR{(NOBLE, Dijkstra, Caesar} – מסיחים; \enLR{Dijkstra} הוא אלגוריתם מסלולים, לא הצפנה.)\end{exambox}
+
+\sectionheading{\enLR{7.7} הצפנה היברידית – איך זה באמת עובד \enLR{(TLS/HTTPS)}}
+
+המערכות האמיתיות משלבות: א-סימטרי לפתיחה, סימטרי לתעבורה – "טוב משני העולמות".\par
+
+\begin{defbox}\boxtitle{\enLR{HTTPS} – מה קורה כשנכנסים לאתר בנק}\par  \enLR{1.} הדפדפן והשרת מבצעים \textbf{\enLR{DH}} (או שהדפדפן מצפין מפתח ב-\enLR{RSA} הציבורי של השרת) כדי להסכים על \textbf{מפתח סימטרי \enLR{(session key)}}. \enLR{2.} השרת מציג \textbf{תעודה} חתומה על ידי \enLR{CA} שמוכיחה שהוא באמת הבנק \enLR{(7.9). 3.} מכאן כל התעבורה מוצפנת ב-\textbf{\enLR{AES}} (מהיר) עם ה-\enLR{session key.} הא-סימטרי שימש רק לשנייה הראשונה. זו הסיבה שרואים 🔒.\end{defbox}
+
+\sectionheading{\enLR{7.8 HMAC} וחתימה דיגיטלית}
+
+\subheading{\enLR{HMAC (Hash-based Message Authentication Code)}}
+
+\enLR{hash} לבדו נותן שלמות, אבל תוקף \enLR{MITM} יכול לשנות גם את ההודעה וגם את ה-\enLR{hash.} \textbf{\enLR{HMAC}} = \enLR{hash} של (ההודעה + מפתח סודי משותף). עכשיו רק מי שיש לו המפתח יכול לחשב \enLR{HMAC} תקין ⇒ \textbf{שלמות + אימות מקור}. משמש ב-\enLR{IPsec} (פרק \enLR{8)}, ב-\enLR{API}, ו-\enLR{JWT.}\par
+
+\subheading{חתימה דיגיטלית}
+
+\begin{defbox}\boxtitle{התהליך}\par  \textbf{חתימה (השולח):} \enLR{1.} מחשב \enLR{hash} של המסמך. \enLR{2.} מצפין את ה-\enLR{hash} ב\underline{מפתח הפרטי שלו} = החתימה. שולח מסמך + חתימה.\newline  \textbf{אימות (המקבל):} \enLR{1.} מפענח את החתימה ב\underline{מפתח הציבורי של השולח} ⇒ מקבל את ה-\enLR{hash} המקורי. \enLR{2.} מחשב \enLR{hash} של המסמך שקיבל. \enLR{3.} משווה. תואם ⇒ המסמך לא שונה (שלמות) \textbf{וגם} נשלח באמת על ידו (אימות + אי-הכחשה – רק לו יש את הפרטי).\end{defbox}
+
+למה מצפינים את ה-\enLR{hash} ולא את כל המסמך? כי א-סימטרי איטי; ה-\enLR{hash} קטן וקבוע.\par
+
+\sectionheading{\enLR{7.9 PKI} ותעודות דיגיטליות}
+
+בעיית \enLR{DH} ו-\enLR{RSA}: איך אני יודע שהמפתח הציבורי "של הבנק" באמת שייך לבנק ולא לתוקף \enLR{MITM}? הפתרון: \textbf{\enLR{PKI}} \enLR{(Public Key Infrastructure)} – מערכת של גורמים מהימנים שמאשרים "מפתח ציבורי \enLR{X} שייך לישות \enLR{Y".}\par
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+מסמך שקושר זהות למפתח ציבורי, \textbf{חתום דיגיטלית על ידי \enLR{CA}}. תקן: \enLR{X.509.} & \textbf{תעודה דיגיטלית \enLR{(Certificate)}} \\
+\hline
+הגורם המהימן שמנפיק וחותם תעודות \enLR{(DigiCert, Let's Encrypt).} & \textbf{\enLR{CA (Certificate Authority)}} \\
+\hline
+מאמת את זהות המבקש לפני הנפקה. & \textbf{\enLR{RA (Registration Authority)}} \\
+\hline
+רשימת/בדיקת תעודות שבוטלו (למשל אם מפתח פרטי נגנב). & \textbf{\enLR{CRL / OCSP}} \\
+\hline
+ה-\enLR{CA} העליון; התעודה שלו מובנית במערכת ההפעלה/דפדפן ("\enLR{trust anchor").} & \textbf{\enLR{Root CA}} \\
+\hline
+\end{xltabular}
+
+\begin{defbox}\boxtitle{שרשרת אמון \enLR{(Chain of Trust)} – היררכיה}\par  \enLR{Root CA} (סומכים עליו מראש) → חותם על → \enLR{Intermediate CA} → חותם על → תעודת השרת \enLR{(bank.com).} הדפדפן בודק את השרשרת עד ל-\enLR{root} שהוא מכיר. אם חוליה חסרה או פגה – אזהרה. זו ה"היררכיית סטנדרטים ואישורי סטנדרטים" שבתכנית.\end{defbox}
+
+\begin{storybox}\boxtitle{סיפור מהחיים: \enLR{DigiNotar} – כש-\enLR{CA} נפרץ \enLR{(2011)}}\par  תוקף פרץ ל-\enLR{CA} ההולנדי \enLR{DigiNotar} והנפיק לעצמו תעודה מזויפת ל-*.\enLR{google.com.} עם התעודה הזו, המודיעין האיראני (ככל הנראה) ביצע \enLR{MITM} על \enLR{Gmail} של \enLR{300,000} אזרחים איראנים – הדפדפן שלהם הציג 🔒 ירוק ולא חשד בכלום, כי התעודה הייתה "חתומה כדין". כשהתגלה, הדפדפנים הסירו את \enLR{DigiNotar} מרשימת ה-\enLR{root} המהימנים, והחברה פשטה רגל תוך חודש. הלקח: כל מודל האמון של האינטרנט נשען על כך שה-\enLR{CA}-ים ישרים ומאובטחים – חוליה אחת שבורה מפילה הכול.\end{storybox}
+
+\sectionheading{\enLR{7.10} חוזק מפתחות ומדיניות \enLR{NSA/NIST}}
+
+\begin{itemize}
+\item \textbf{מפתח ארוך = מרחב חיפוש גדול יותר}. סימטרי \enLR{128} ביט = \enLR{2}\textsuperscript{\enLR{128}} אפשרויות – מעבר להישג יד גם למחשבי-על. אבל אורך מפתח א-סימטרי אינו בר-השוואה ישירה: \enLR{RSA 2048} ≈ \enLR{AES 112} בערך.
+\item המלצות \enLR{(NIST SP 800): AES-128} ומעלה, \enLR{RSA-2048} ומעלה (רצוי \enLR{3072), SHA-256} ומעלה, \enLR{ECC-256.}
+\item \textbf{\enLR{Suite B}} של ה-\enLR{NSA} (מוזכר "חוקי \enLR{NSA"): AES, ECDH, ECDSA, SHA-2} – לתקשורת ממשלתית.
+\item \textbf{ניהול מפתחות} (הנושא "ניהול מפתחות ע"י שינוי אחסון וריפיקציה"): יצירה, אחסון מאובטח \enLR{(HSM)}, החלפה תקופתית \enLR{(rotation)}, ביטול, גיבוי. מפתח שנחשף = כל מה שהוצפן בו חשוף.
+\item איום עתידי: \textbf{מחשוב קוונטי} יאיים על \enLR{RSA/DH} ⇒ קריפטוגרפיה פוסט-קוונטית \enLR{(NIST} בחר אלגוריתמים ב-\enLR{2024).}
+\end{itemize}
+
+\sectionheading{\enLR{7.11} תרגילים לתלמידים}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{1} – צופן קיסר}\par  עם \enLR{K=3}: הצפינו את המילה \code{NET}. עם \enLR{K=5}: פענחו את \code{MJQQT}. \enLR{(A=0}…\enLR{Z=25)} \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{NET: N(13)}→\enLR{Q, E(4)}→\enLR{H, T(19)}→\enLR{W} = \textbf{\enLR{QHW}}. פענוח \enLR{MJQQT} עם \enLR{K=5: M(12)-5=H, J(9)-5=E, Q(16)-5=L, Q}→\enLR{L, T(19)-5=O} = \textbf{\enLR{HELLO}}.\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{2} – איזה כלי לאיזו מטרה}\par  לכל דרישה בחרו: \enLR{hash} / הצפנה סימטרית / א-סימטרית / \enLR{HMAC} / חתימה דיגיטלית.\newline  א. לוודא שקובץ שהורד לא שונה. ב. להצפין \enLR{10GB} גיבוי במהירות. ג. לשלוח מפתח סודי דרך האינטרנט בבטחה. ד. לוודא שעדכון תוכנה הגיע באמת מהיצרן. ה. לאחסן סיסמאות במסד נתונים. \par\vskip2pt\hrule\vskip3pt\textbf{}א. \enLR{hash} ב. סימטרית \enLR{(AES)} ג. א-סימטרית / \enLR{DH} ד. חתימה דיגיטלית ה. \enLR{hash + salt} (פונקציה איטית)\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{3} – ציבורי או פרטי?}\par  דנה רוצה לשלוח ליוסי הודעה סודית, ולחתום עליה. איזה מפתח היא משתמשת בכל שלב?\newline  א. להצפין את ההודעה כך שרק יוסי יקרא. ב. לחתום כדי שיוסי ידע שזה ממנה. ואצל יוסי: ג. לפענח את ההודעה. ד. לאמת את החתימה. \par\vskip2pt\hrule\vskip3pt\textbf{}א. הציבורי של יוסי ב. הפרטי של דנה ג. הפרטי של יוסי ד. הציבורי של דנה\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{4} – קידוד/הצפנה/גיבוב}\par  סווגו כל אחד: א. \code{btoa} ל-\enLR{Base64.} ב. \enLR{SHA-256.} ג. \enLR{AES-256-CBC.} ד. \enLR{Morse.} ה. \enLR{bcrypt.} \par\vskip2pt\hrule\vskip3pt\textbf{}א. קידוד ב. גיבוב ג. הצפנה ד. קידוד ה. גיבוב (איטי, לסיסמאות)\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{5} – דיון: התנגשות}\par  הסבירו במילים שלכם מדוע "עמידות להתנגשויות" חשובה לחתימה דיגיטלית. מה תוקף יכול לעשות אם הוא מוצא שני מסמכים עם אותו \enLR{hash}? \par\vskip2pt\hrule\vskip3pt\textbf{}בחתימה חותמים על ה-\enLR{hash.} אם התוקף מוצא מסמך זדוני עם אותו \enLR{hash} כמו מסמך תמים שנחתם – החתימה "תקפה" גם על הזדוני, והוא יכול להחליף אותם. בדיוק בגלל זה \enLR{MD5} ו-\enLR{SHA-1} פסולים לחתימה.\end{exbox}
+
+\sectionheading{\enLR{7.12} שאלות בסגנון בגרות}
+
+\begin{exambox}\boxtitle{שאלה \enLR{1}}\par  איזה אלגוריתם מבטיח סודיות של מידע מוצפן? \enLR{MD5 / WPA-2 / AES / HASH} \par\vskip2pt\hrule\vskip3pt\textbf{}\textbf{\enLR{AES}}. השאר: \enLR{MD5/HASH} – שלמות; \enLR{WPA-2} – פרוטוקול.\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{2}}\par  בצופן \enLR{C=(P+K) mod 26}, מה תפקיד ה-\enLR{mod 26}? \par\vskip2pt\hrule\vskip3pt\textbf{}מספר האותיות בשפה; "מגלגל" את התוצאה חזרה לטווח \enLR{0}–\enLR{25.}\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{3}}\par  כאשר האלגוריתם הא-סימטרי מצפין במפתח ציבורי – באיזה מפתח מפענחים? \par\vskip2pt\hrule\vskip3pt\textbf{}במפתח הפרטי (של הנמען).\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{4}}\par  איזה אלגוריתם מאפשר לשני צדדים להסכים על מפתח סודי משותף מעל ערוץ ציבורי? \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{Diffie-Hellman.}\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{5}}\par  מהו ההבדל העיקרי בין הצפנה סימטרית לא-סימטרית מבחינת מפתחות, ומהו החיסרון המרכזי של כל אחת? \par\vskip2pt\hrule\vskip3pt\textbf{}סימטרית – מפתח אחד משותף; חיסרון: חלוקת המפתח ומדרגיות. א-סימטרית – זוג מפתחות (ציבורי/פרטי); חיסרון: איטית מאוד.\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{6}}\par  מדוע נדרשת \enLR{PKI}, ומה תפקיד ה-\enLR{CA}? \par\vskip2pt\hrule\vskip3pt\textbf{}כדי לוודא שמפתח ציבורי אכן שייך לישות שהוא טוען (נגד \enLR{MITM).} ה-\enLR{CA} הוא גורם מהימן שמנפיק וחותם תעודות שמקשרות זהות למפתח ציבורי.\end{exambox}
+
+\sectionheading{\enLR{7.13} מעבדה \enLR{(3} שעות)}
+
+\begin{enumerate}
+\item \textbf{קיסר:} באתר \enLR{cryptii.com} הצפינו ופענחו; בדקו כמה מהר \enLR{brute force} על \enLR{25} מפתחות שובר אותו.
+\item \textbf{\enLR{Hash}:} באתר (או \code{echo -n "password" | sha256sum}) חשבו \enLR{SHA-256} של "\enLR{hello"} ושל "\enLR{Hello"} – ראו את אפקט המפולת. שנו ביט אחד וראו פלט שונה לגמרי.
+\item \textbf{שלמות:} הורידו קובץ, שנו בו תו אחד, חשבו \enLR{hash} לפני ואחרי – הראו שהשתנה.
+\item \textbf{סיסמאות:} הראו \enLR{rainbow table} אונליין ששובר \enLR{MD5} של "\enLR{123456"}, ואיך \enLR{salt} מסכל אותו.
+\item \textbf{תעודות:} בדפדפן, לחצו על 🔒 של אתר בנק, הציגו את התעודה, את ה-\enLR{CA} ואת שרשרת האמון ותוקף התעודה.
+\item \textbf{\enLR{RSA} ל-\enLR{SSH} (קישור לפרק \enLR{2)}:} ב-\enLR{Packet Tracer} צרו מפתחות \enLR{RSA} בנתב והתחברו ב-\enLR{SSH} – הדגישו שאלה בדיוק הא-סימטרי בפעולה.
+\end{enumerate}
+
+\sectionheading{בנק שאלות שתלמידים שואלים – ותשובות מוכנות}
+
+שאלות נפוצות בפרק ההצפנה, עם תשובות מוכנות.\par
+
+\textbf{ש: "אם גיבוב הוא חד-כיווני, איך אתרים 'שוברים' סיסמאות \enLR{MD5}?"}\newline ת: הם לא הופכים את הגיבוב – הם \underline{מנחשים}. מחשבים מראש את הגיבוב של מיליארדי סיסמאות נפוצות (טבלת \enLR{rainbow)} ומחפשים התאמה. לכן: מוסיפים \textbf{\enLR{salt}} (ערך אקראי לכל סיסמה) שהופך טבלה מוכנה לחסרת ערך, ומשתמשים בפונקציה \underline{איטית} \enLR{(bcrypt)} שהופכת ניחוש המוני לבלתי מעשי.\par
+
+\textbf{ש: "אז \enLR{Base64} זו הצפנה?"}\newline ת: לא! \enLR{Base64} הוא \textbf{קידוד} – שינוי צורת כתיבה בלי סוד. כל אחד מפענח אותו בשנייה (רמז: מחרוזת שמסתיימת ב-'=='). קידוד ≠ הצפנה. השאלה המבחינה: "האם צריך מפתח סודי כדי לחזור?".\par
+
+\textbf{ש: "אם אני מצפין הכול ב-\enLR{AES}, אני מוגן לגמרי?"}\newline ת: הצפנה נותנת \underline{סודיות} בלבד. היא לא מונעת מחיקה של הקובץ (זמינות – כופרה דווקא \emph{משתמשת} בהצפנה נגדכם!) ולא בהכרח מוודאת שהמידע לא שונה (שלמות – לזה צריך גיבוב/\enLR{HMAC).} צריך את שלושתם.\par
+
+\textbf{ש: "מה ההבדל בין סימטרי לא-סימטרי, ומתי משתמשים בכל אחד?"}\newline ת: \textbf{סימטרי} \enLR{(AES)} = מפתח אחד משותף, מהיר מאוד – טוב לכמויות מידע גדולות, אבל יש בעיה: איך מעבירים את המפתח בבטחה? \textbf{א-סימטרי} \enLR{(RSA/DH)} = זוג מפתחות ציבורי/פרטי, פותר את בעיית העברת המפתח, אבל איטי. בפועל \underline{משלבים}: א-סימטרי כדי להסכים על מפתח, ואז סימטרי לתעבורה (כך עובד \enLR{HTTPS).}\par
+
+\textbf{ש: "אם המפתח הציבורי גלוי לכולם, איך זה מאובטח?"}\newline ת: כי מה שמוצפן במפתח הציבורי ניתן לפענוח \underline{רק} במפתח הפרטי התואם, שנשאר סודי אצל הבעלים. גם אם כל העולם מכיר את המפתח הציבורי שלכם – רק אתם יכולים לפענח את מה ששלחו אליכם.\par
+
+\textbf{ש: "איך \enLR{Diffie-Hellman} מסכים על מפתח סודי אם המאזין רואה הכול?"}\newline ת: משל הצבעים: כל צד מערבב צבע סודי עם צבע בסיס משותף, מחליפים את התערובות בפומבי, וכל אחד מוסיף שוב את הסוד שלו. שניהם מגיעים לאותו צבע – אבל המאזין לא יכול, כי "הפרדת צבעים" (לוגריתם דיסקרטי) היא בלתי הפיכה מעשית. \enLR{DH} לא מעביר את המפתח – הוא \underline{מייצר} אותו בשני הצדדים.\par
+
+\textbf{ש: "אם \enLR{RSA} כל כך טוב, למה בכלל צריך תעודות ו-\enLR{PKI}?"}\newline ת: כי \enLR{RSA} לבדו לא אומר \underline{למי} שייך המפתח הציבורי. תוקף \enLR{MITM} יכול לתת לכם את המפתח \emph{שלו} ולטעון שהוא הבנק. תעודה חתומה על ידי \enLR{CA} מהימן מוכיחה "המפתח הזה באמת שייך לבנק". זה מה שקורה כשרואים 🔒 בדפדפן.\par
+
+\textbf{ש: "מה ההבדל בין חתימה דיגיטלית להצפנה?"}\newline ת: הצפנה מסתירה תוכן (סודיות), ומשתמשת ב\underline{מפתח הציבורי של הנמען}. חתימה מוכיחה מי שלח ושהמסמך לא שונה (אימות+שלמות), ומשתמשת ב\underline{מפתח הפרטי של השולח}. שני שימושים הפוכים של אותו זוג מפתחות.\par
+
+\textbf{ש: "האם מחשב קוונטי ישבור את כל ההצפנות?"}\newline ת: הוא מאיים בעיקר על ה\underline{א-סימטריות} \enLR{(RSA/DH)}, פחות על סימטריות \enLR{(AES-256} נחשב עמיד). לכן \enLR{NIST} כבר בחר \enLR{(2024)} אלגוריתמים "פוסט-קוונטיים". זה איום עתידי שמתכוננים אליו כבר היום.\par
+
+\sectionheading{מילון מונחים – הגדרות}
+
+הגדרות תמציתיות של המונחים המרכזיים בפרק. שימושי גם כדף עזר לבחינה.\par
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{הגדרה} & \textbf{מונח} \\
+\hline
+\endhead
+מדע יצירת ההצפנות. & \textbf{קריפטוגרפיה} \\
+\hline
+מדע שבירת ההצפנות. & \textbf{קריפטואנליזה} \\
+\hline
+הטקסט הגלוי (לפני) והטקסט המוצפן (אחרי). & \textbf{\enLR{Plaintext / Ciphertext}} \\
+\hline
+סוד שקובע את פעולת ההצפנה; בלעדיו הטקסט המוצפן חסר משמעות. & \textbf{מפתח \enLR{(Key)}} \\
+\hline
+המרת ייצוג ללא סוד \enLR{(Base64}, מורס) – אינו אבטחה. & \textbf{קידוד \enLR{(Encoding)}} \\
+\hline
+המרה הפיכה בעזרת מפתח סודי; מטרה: סודיות. & \textbf{הצפנה \enLR{(Encryption)}} \\
+\hline
+פונקציה חד-כיוונית שמפיקה טביעת אצבע קבועה; מטרה: שלמות. & \textbf{גיבוב \enLR{(Hashing)}} \\
+\hline
+ערך אקראי המתווסף לסיסמה לפני גיבוב, נגד טבלאות \enLR{rainbow.} & \textbf{\enLR{Salt}} \\
+\hline
+אלגוריתמי גיבוב ישנים ושבורים – לא לשימוש אבטחתי. & \textbf{\enLR{MD5 / SHA-1}} \\
+\hline
+אלגוריתם הגיבוב הסטנדרטי כיום. & \textbf{\enLR{SHA-256}} \\
+\hline
+צופן החלפה שמזיז כל אות במספר קבוע: \enLR{C=(P+K) mod 26.} & \textbf{צופן קיסר \enLR{(Caesar)}} \\
+\hline
+מפתח אחד משותף להצפנה ולפענוח; מהיר \enLR{(AES, 3DES, DES).} & \textbf{הצפנה סימטרית} \\
+\hline
+זוג מפתחות ציבורי/פרטי; פותר העברת מפתח; איטי \enLR{(RSA).} & \textbf{הצפנה א-סימטרית} \\
+\hline
+תקן ההצפנה הסימטרי המוביל כיום \enLR{(128/192/256} ביט). & \textbf{\enLR{AES}} \\
+\hline
+אלגוריתם א-סימטרי נפוץ להצפנה ולחתימה; משמש גם ל-\enLR{SSH.} & \textbf{\enLR{RSA}} \\
+\hline
+שיטה להסכמה על מפתח סודי משותף מעל ערוץ ציבורי. & \textbf{\enLR{Diffie-Hellman (DH)}} \\
+\hline
+זוג מפתחות; מה שמוצפן באחד מפוענח רק בשני. & \textbf{מפתח ציבורי / פרטי} \\
+\hline
+גיבוב עם מפתח סודי משותף; נותן שלמות ואימות מקור. & \textbf{\enLR{HMAC}} \\
+\hline
+גיבוב המסמך המוצפן במפתח הפרטי של השולח; אימות + אי-הכחשה. & \textbf{חתימה דיגיטלית} \\
+\hline
+תשתית מפתח ציבורי – מערכת גורמים מהימנים המנפיקים תעודות. & \textbf{\enLR{PKI}} \\
+\hline
+מסמך חתום ע"י \enLR{CA} הקושר זהות למפתח ציבורי. & \textbf{תעודה דיגיטלית \enLR{(X.509)}} \\
+\hline
+גורם מהימן המנפיק וחותם תעודות. & \textbf{\enLR{CA (Certificate Authority)}} \\
+\hline
+היררכיה: \enLR{Root CA} → \enLR{Intermediate} → תעודת שרת. & \textbf{שרשרת אמון \enLR{(Chain of Trust)}} \\
+\hline
+\end{xltabular}
+\end{document}

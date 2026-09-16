@@ -1,0 +1,206 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>תזכורת רשתות תקשורת</title>
+<style>* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #0b1220; color: #e5e7eb; font-family: "Noto Sans Hebrew", "Segoe UI", Arial, sans-serif; overflow: hidden; }
+#deck { position: fixed; inset: 0; }
+.slide { position: absolute; inset: 0; padding: 4vh 6vw 9vh; display: none; flex-direction: column; font-size: clamp(20px, 3.1vh, 40px); line-height: 1.45; overflow: hidden; }
+.slide.active { display: flex; }
+.slide h1 { font-size: 2.1em; margin: 0 0 .3em; color: #7dd3fc; line-height: 1.15; }
+.slide h2 { font-size: 1.55em; margin: 0 0 .5em; color: #7dd3fc; border-bottom: 3px solid #1d4ed8; padding-bottom: .2em; line-height: 1.2; }
+.slide h3 { font-size: 1.15em; margin: .4em 0 .2em; color: #fbbf24; }
+.slide p { margin: .25em 0; }
+.slide ul, .slide ol { margin: .2em 0; padding-right: 1.2em; }
+.slide li { margin: .22em 0; }
+.slide li li { font-size: .88em; color: #cbd5e1; }
+.slide .sub { color: #94a3b8; font-size: .8em; }
+.slide code { font-family: "Liberation Mono", Consolas, monospace; background: #1e293b; padding: 0 .3em; border-radius: 4px; direction: ltr; unicode-bidi: embed; font-size: .9em; color: #fde68a; }
+.slide pre { font-family: "Liberation Mono", Consolas, monospace; background: #111827; border: 1px solid #334155; border-radius: 10px; padding: .6em .9em; direction: ltr; text-align: left; font-size: .78em; line-height: 1.4; white-space: pre-wrap; margin: .4em 0; color: #e5e7eb; }
+.slide pre b { color: #7dd3fc; font-weight: bold; }
+.slide pre .c { color: #6b7280; font-style: italic; }
+.title { justify-content: center; align-items: center; text-align: center; background: radial-gradient(ellipse at top, #1e3a8a 0%, #0b1220 60%); }
+.title h1 { font-size: 2.6em; color: #fff; }
+.title .sub { font-size: 1.1em; color: #93c5fd; }
+.title .course { position: absolute; bottom: 12vh; color: #64748b; font-size: .7em; }
+.section { justify-content: center; align-items: center; text-align: center; background: linear-gradient(135deg, #172554, #0b1220); }
+.section h1 { color: #fbbf24; }
+.cols { display: flex; gap: 3vw; flex: 1; min-height: 0; }
+.cols > div { flex: 1; min-width: 0; }
+.cols > div.narrow { flex: .7; }
+table { border-collapse: collapse; width: 100%; font-size: .78em; margin: .3em 0; }
+th, td { border: 1px solid #334155; padding: .3em .6em; text-align: right; vertical-align: top; }
+th { background: #1e3a8a; color: #fff; }
+td { background: #0f172a; }
+.box { border-radius: 12px; padding: .5em .9em; margin: .4em 0; border-right: 8px solid; background: #111827; }
+.box .t { font-weight: bold; display: block; margin-bottom: .1em; }
+.def { border-color: #a78bfa; } .def .t { color: #c4b5fd; }
+.warn { border-color: #f87171; } .warn .t { color: #fca5a5; }
+.tip { border-color: #fbbf24; } .tip .t { color: #fde68a; }
+.ok { border-color: #34d399; } .ok .t { color: #6ee7b7; }
+.q { border-color: #60a5fa; background: #0c1a3a; } .q .t { color: #93c5fd; }
+.fragment { visibility: hidden; opacity: 0; transition: opacity .25s; }
+.fragment.visible { visibility: visible; opacity: 1; }
+.answer { background: #052e16; border: 2px solid #16a34a; border-radius: 10px; padding: .4em .8em; margin-top: .5em; color: #bbf7d0; }
+.answer::before { content: "תשובה: "; font-weight: bold; color: #4ade80; }
+.big { font-size: 1.5em; text-align: center; margin: .4em 0; color: #fbbf24; }
+.center { text-align: center; }
+.diagram { display: block; margin: .3em auto; max-width: 100%; max-height: 62vh; }
+.diagram text { font-family: "Noto Sans Hebrew", "Segoe UI", Arial, sans-serif; }
+.pill { display: inline-block; background: #1e3a8a; color: #bfdbfe; border-radius: 999px; padding: .05em .7em; margin: .1em; font-size: .85em; }
+.flow { display: flex; align-items: center; justify-content: center; gap: .4em; flex-wrap: wrap; margin: .5em 0; }
+.flow .n { background: #1e293b; border: 2px solid #3b82f6; border-radius: 12px; padding: .4em .8em; text-align: center; font-size: .85em; }
+.flow .a { color: #fbbf24; font-size: 1.3em; }
+.notes { display: none; }
+.en { direction: ltr; unicode-bidi: embed; display: inline-block; }
+#hud { position: fixed; bottom: 10px; left: 14px; display: flex; gap: 6px; align-items: center; z-index: 10; direction: ltr; opacity: .35; transition: opacity .2s; }
+#hud:hover { opacity: 1; }
+#hud button { background: #1e293b; color: #e5e7eb; border: 1px solid #475569; border-radius: 8px; font-size: 20px; width: 40px; height: 36px; cursor: pointer; }
+#counter { color: #94a3b8; font-size: 15px; min-width: 60px; text-align: center; font-family: monospace; }
+#progress { position: fixed; bottom: 0; left: 0; height: 5px; background: #3b82f6; width: 0; z-index: 10; transition: width .2s; }
+#notes { position: fixed; left: 0; right: 0; bottom: 0; max-height: 34vh; overflow: auto; background: rgba(15,23,42,.97); border-top: 3px solid #fbbf24; color: #fde68a; padding: 10px 24px 24px; font-size: 18px; line-height: 1.5; display: none; z-index: 9; }
+#notes.show { display: block; }
+#notes::before { content: "הערות למורה"; display: block; font-weight: bold; color: #fbbf24; margin-bottom: 4px; font-size: 14px; }
+.foot { position: absolute; bottom: 2.2vh; right: 6vw; color: #475569; font-size: .55em; }
+@media print { @page { size: 1280px 720px; margin: 0; } html,body{overflow:visible;height:auto} #deck{position:static} .slide { display: flex !important; position: relative; height: 720px; width:1280px; page-break-after: always; overflow: hidden; } #hud, #progress, #notes { display: none !important; } .fragment { visibility: visible; opacity: 1; } }
+.story { border-color: #e879f9; background: #2a0f33; } .story .t { color: #f0abfc; } .story .t::before { content: "📖 "; }
+.ex { border-color: #2dd4bf; } .ex .t { color: #5eead4; }
+</style></head><body>
+<div id="deck"><section class="slide title"><h1>תזכורת רשתות תקשורת</h1><div class="sub">רענון מהיר לחלק א' של הבגרות · OSI · סאבנטים · IPv6 · ניתוב · STP/OSPF</div><div class="course">אבטחת מידע · מגמת תקשוב</div>
+<div class="notes">זה רענון בלבד – הרשתות נלמדות אצל מורה אחר. המטרה: לרענן את מושגי חלק א' לפני שנעמיק באבטחה ולפני הבגרות. עברו מהר, זהו לא שיעור חדש.</div></section>
+
+<section class="slide"><h2>מודל OSI – היכן יושב כל דבר</h2>
+<table><tr><th>#</th><th>שכבה</th><th>דוגמאות</th></tr>
+<tr><td>4</td><td>Transport</td><td>TCP (אמין), UDP (מהיר)</td></tr>
+<tr><td>3</td><td>Network</td><td>IP, ICMP, OSPF · נתב</td></tr>
+<tr><td>2</td><td>Data Link</td><td>Ethernet, ARP, STP · מתג, MAC</td></tr>
+<tr><td>1</td><td>Physical</td><td>כבלים, ביטים</td></tr></table>
+<div class="box warn fragment"><span class="t">מלכודת בגרות</span>TCP = שכבה <b>4</b> (לא 3!) · UDP <u>לא</u> אמין · IMAP מקבל דוא"ל</div>
+<div class="notes">שאלת נכון/לא-נכון אהובה. הדגישו TCP=4 ו-UDP לא אמין.</div></section>
+
+<section class="slide"><h2>בסיסי ספירה</h2>
+<ul><li class="fragment">1 ספרת הקס = 4 ביט · 1 ספרת אוקטל = 3 ביט</li></ul>
+<div class="box fragment"><span class="t">BA3F בהקס</span>
+B=1011 A=1010 3=0011 F=1111<br>בינארי: <code>1011 1010 0011 1111</code><br>אוקטלי (קיבוץ 3 מימין): <code>135077</code></div>
+<div class="notes">תרגלו על הלוח עוד דוגמה. הקיבוץ ל-3 ביטים מימין הוא הטריק לאוקטלי.</div></section>
+
+<section class="slide"><h2>סאבנטים ו-Wildcard</h2>
+<p class="fragment big">שמישים = 2<sup>(32−prefix)</sup> − 2 · wildcard = 255.255.255.255 − mask</p>
+<table class="fragment"><tr><th>Prefix</th><th>Mask</th><th>שמישים</th><th>Wildcard</th></tr>
+<tr><td>/26</td><td>...192</td><td>62</td><td>0.0.0.63</td></tr>
+<tr><td>/28</td><td>...240</td><td>14</td><td>0.0.0.15</td></tr>
+<tr><td>/30</td><td>...252</td><td>2</td><td>0.0.0.3</td></tr></table>
+<div class="notes">/28 → 14 שמישים; /26 → mask 192, wildcard 63 – שתי שאלות אמיתיות מהבגרות.</div></section>
+
+<section class="slide"><h2>IPv6 – קיצור וסוגים</h2>
+<div class="box fragment"><span class="t">קיצור</span>משמיטים אפסים מובילים · <code>::</code> מחליף רצף אפסים (פעם אחת)<br><code>3001:0000:130F:0000:0000:0000:0001:133B</code> ⇒ <code>3001:0:130F::1:133B</code></div>
+<table class="fragment"><tr><th>סוג</th><th>תפקיד</th></tr>
+<tr><td>Global Unicast</td><td>ניתובה באינטרנט</td></tr>
+<tr><td>Link-Local (FE80)</td><td>רשת מקומית בלבד</td></tr>
+<tr><td>Unique Local</td><td>בין תתי-רשתות, לא ניתובה באינטרנט</td></tr>
+<tr><td>Multicast (FF00)</td><td>שידור לקבוצה</td></tr></table>
+<div class="notes">Unique Local = "פרטית" של IPv6 – זו התשובה לשאלה על תקשורת פנימית שלא ניתובה באינטרנט.</div></section>
+
+<section class="slide q"><h2>שאלת בגרות</h2><p>איזו כתובת IPv6 מספקת תקשורת בין תתי-רשתות אך אינה ניתובה באינטרנט?</p>
+<ul><li>1. global unicast</li><li>2. link local</li><li>3. multicast</li><li>4. unique local</li></ul>
+<div class="answer fragment">4 – unique local (המקבילה לכתובת פרטית ב-IPv4).</div>
+<div class="notes">תנו לכיתה לנסות. link-local נפסל כי הוא רק על אותו קו, לא בין תתי-רשתות.</div></section>
+
+<section class="slide"><h2>פרוטוקולים ופורטים</h2>
+<div class="cols"><div><table><tr><th>פרוטוקול</th><th>פורט</th></tr>
+<tr><td>SSH</td><td>22 (TCP)</td></tr>
+<tr><td>Telnet</td><td>23 (TCP)</td></tr>
+<tr><td>DNS</td><td>53</td></tr>
+<tr><td>DHCP</td><td>67/68 (UDP)</td></tr></table></div>
+<div><table><tr><th>פרוטוקול</th><th>פורט</th></tr>
+<tr><td>HTTP/HTTPS</td><td>80/443</td></tr>
+<tr><td>SMTP</td><td>25</td></tr>
+<tr><td>IMAP/POP3</td><td>143/110</td></tr>
+<tr><td>Syslog</td><td>514 (UDP)</td></tr></table></div></div>
+<div class="notes">אלה נשאלים כהשלמה או נכון/לא-נכון. SSH מוצפן, Telnet לא – חשוב לפרק 2.</div></section>
+
+<section class="slide"><h2>מרחק ניהולי (AD) – נמוך = עדיף</h2>
+<table><tr><th>מקור</th><th>AD</th></tr>
+<tr><td>Connected</td><td>0</td></tr>
+<tr><td>Static</td><td>1</td></tr>
+<tr><td>External BGP</td><td>20</td></tr>
+<tr><td>Internal EIGRP</td><td>90</td></tr>
+<tr><td>OSPF</td><td>110</td></tr>
+<tr><td>RIP</td><td>120</td></tr></table>
+<div class="notes">שאלת השלמת טבלה קלאסית. "נמוך = סומכים יותר על המקור".</div></section>
+
+<section class="slide"><h2>ניתוב סטטי ו-DHCP Relay</h2>
+<pre>R1(config)# <b>ip route</b> 10.10.2.20 255.255.255.252 10.10.255.1
+R1(config)# ip route 0.0.0.0 0.0.0.0 200.1.1.1   <span class="c">! default</span></pre>
+<div class="box fragment"><span class="t">DHCP Relay</span>בקשת DHCP היא broadcast ולא עוברת נתב. על ממשק הלקוח:<br><code>ip helper-address &lt;IP של שרת ה-DHCP&gt;</code></div>
+<div class="notes">ip route: יעד + mask + next-hop. DHCP relay נשאל עם טופולוגיה – ההיגיון: helper-address על הממשק שפונה ללקוח.</div></section>
+
+<section class="slide"><h2>VLAN ו-Router-on-a-Stick</h2>
+<pre>R1(config)# interface g0/0/1.10
+R1(config-subif)# <b>encapsulation dot1Q 10</b>
+R1(config-subif)# <b>ip address 172.18.1.254 255.255.0.0</b></pre>
+<ul><li class="fragment">VLAN = רשתות לוגיות מבודדות; מעבר ביניהן דורש ניתוב</li>
+<li class="fragment">Trunk 802.1Q נושא כמה VLANים בין מתגים</li>
+<li class="fragment"><code>show mac address-table</code> – טבלת ה-MAC של המתג</li></ul>
+<div class="notes">תת-ממשק לכל VLAN. שאלת השלמה נפוצה: interface .10 / encapsulation dot1Q / ip address.</div></section>
+
+<section class="slide"><h2>STP מול OSPF – כללי הבחירה</h2>
+<div class="cols"><div><div class="box def"><span class="t">STP – Root Bridge</span>Priority נמוך מנצח · בתיקו MAC נמוך · שכבה 2 · חסימת יציאות</div></div>
+<div><div class="box def"><span class="t">OSPF – DR/BDR</span>Priority גבוה מנצח · בתיקו Router-ID גבוה</div></div></div>
+<div class="box warn fragment"><span class="t">שימו לב – הפוך!</span>STP: נמוך מנצח · OSPF: גבוה מנצח</div>
+<div class="notes">הבלבול הכי נפוץ. תרגלו: 4 מתגים priority זהה → MAC נמוך; OSPF priority זהה → RID גבוה.</div></section>
+
+<section class="slide"><h2>CLI ואבחון תקלות</h2>
+<pre>R1(config-if)# <b>no switchport</b>     <span class="c">! פורט מתג → פורט L3 מנותב</span>
+R1# show ip interface brief
+R1# show ip route</pre>
+<div class="box fragment"><span class="t">בתחנת קצה (Windows)</span><code>ipconfig /displaydns</code> = הצגת מטמון ה-DNS · <code>/flushdns</code> = איפוס · <code>nslookup</code>, <code>tracert</code></div>
+<div class="box tip fragment"><span class="t">Top-Down</span>אבחון מלמעלה למטה: אפליקציה → הגדרות רשת → כבל פיזי</div>
+<div class="notes">ipconfig/displaydns נשאל – מציג cache, לא מאפס. CDP מזהה שכני סיסקו (show cdp neighbors).</div></section>
+
+<section class="slide"><h2>סיכום – מה לזכור לבגרות</h2><ul>
+<li class="fragment">TCP=שכבה 4, UDP לא אמין · Unique Local = "פרטית" ב-IPv6</li>
+<li class="fragment">שמישים = 2<sup>n</sup>−2 · wildcard = 255... − mask</li>
+<li class="fragment">AD: Static 1, OSPF 110, RIP 120 (נמוך מנצח)</li>
+<li class="fragment">STP: MAC נמוך = root · OSPF: RID גבוה = DR</li>
+<li class="fragment"><code>ip helper-address</code> ל-DHCP · <code>encapsulation dot1Q</code> ל-VLAN</li>
+</ul><div class="notes">חמש הנקודות הכי נשאלות. חזרו עליהן לפני הבגרות.</div></section>
+</div>
+<div id="hud"><button id="prev" title="הקודם">‹</button><span id="counter"></span><button id="next" title="הבא">›</button>
+<button id="notesBtn" title="הערות למורה (N)">✎</button><button id="fsBtn" title="מסך מלא (F)">⛶</button></div>
+<div id="progress"></div><div id="notes"></div>
+<script>(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const counter=document.getElementById('counter'), prog=document.getElementById('progress'), notesEl=document.getElementById('notes');
+  let i=0;
+  function fragsOf(s){return [...s.querySelectorAll('.fragment')];}
+  function show(n,allFrags){
+    n=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach(s=>s.classList.remove('active'));
+    i=n; const s=slides[i]; s.classList.add('active');
+    fragsOf(s).forEach(f=>f.classList.toggle('visible',!!allFrags));
+    counter.textContent=(i+1)+' / '+slides.length;
+    prog.style.width=((i+1)/slides.length*100)+'%';
+    const nt=s.querySelector('.notes'); notesEl.innerHTML=nt?nt.innerHTML:'<i>אין הערות לשקף זה</i>';
+    location.hash='#'+(i+1);
+  }
+  function next(){const f=fragsOf(slides[i]).find(x=>!x.classList.contains('visible')); if(f){f.classList.add('visible');return;} show(i+1,false);}
+  function prev(){const v=fragsOf(slides[i]).filter(x=>x.classList.contains('visible')); if(v.length){v[v.length-1].classList.remove('visible');return;} show(i-1,true);}
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT')return;
+    switch(e.key){
+      case 'ArrowRight': case ' ': case 'PageDown': case 'Enter': case 'ArrowDown': e.preventDefault(); next(); break;
+      case 'ArrowLeft': case 'PageUp': case 'Backspace': case 'ArrowUp': e.preventDefault(); prev(); break;
+      case 'Home': show(0,false); break; case 'End': show(slides.length-1,true); break;
+      case 'f': case 'F': toggleFS(); break;
+      case 'n': case 'N': notesEl.classList.toggle('show'); break;
+    }
+  });
+  function toggleFS(){ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }
+  document.getElementById('next').onclick=next; document.getElementById('prev').onclick=prev;
+  document.getElementById('fsBtn').onclick=toggleFS; document.getElementById('notesBtn').onclick=()=>notesEl.classList.toggle('show');
+  // click on slide: left third = prev, right third = next (works for RTL as "forward = left" too via keys)
+  document.getElementById('deck').addEventListener('click',e=>{ if(e.target.closest('a,button'))return; const x=e.clientX/innerWidth; if(x>0.66)next(); else if(x<0.33)prev(); });
+  // touch swipe
+  let tx=null; addEventListener('touchstart',e=>tx=e.touches[0].clientX); addEventListener('touchend',e=>{ if(tx===null)return; const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50){ dx<0?next():prev(); } tx=null; });
+  const h=parseInt(location.hash.slice(1)); show(isNaN(h)?0:h-1,false);
+})();
+</script></body></html>

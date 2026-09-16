@@ -1,0 +1,80 @@
+<section class="slide title"><h1>פרק 7<br>הצפנה וקריפטולוגיה</h1><div class="sub">קיסר · גיבוב · סימטרי/א-סימטרי · חתימה דיגיטלית · PKI</div><div class="course">אבטחת מידע · מגמת תקשוב</div>
+<div class="notes">הפרק התיאורטי-מתמטי. אבל הכול חוזר בפרק 8 (VPN). התחילו בשאלה: איך שולחים סוד למישהו שלא פגשתם?</div></section>
+
+<section class="slide"><h2>קידוד · הצפנה · גיבוב</h2>
+<table><tr><th></th><th>הפיך?</th><th>מפתח?</th><th>מטרה</th></tr>
+<tr><td>קידוד (Base64)</td><td>כן, לכולם</td><td>לא</td><td>נוחות</td></tr>
+<tr><td>הצפנה (AES)</td><td>כן, עם מפתח</td><td>כן</td><td>סודיות</td></tr>
+<tr><td>גיבוב (SHA)</td><td><b>לא</b></td><td>לא</td><td>שלמות</td></tr></table>
+<div class="box warn fragment"><span class="t">טעות נפוצה</span>Base64 זה <b>לא</b> הצפנה! רואים "==" בסוף? זה קידוד, נפתח בשנייה</div>
+<div class="notes">השאלה המבחינה: "צריך סוד כדי לחזור?" קידוד לא, הצפנה כן. נקודה קריטית שמבלבלת גם מתכנתים.</div></section>
+
+<section class="slide"><h2>צופן קיסר</h2>
+<p class="fragment big">C = (P + K) mod 26</p>
+<ul><li class="fragment">כל אות מוזזת ב-K קבוע (קיסר: 3)</li>
+<li class="fragment">mod 26 = מספר האותיות; "מגלגל" מ-Z חזרה ל-A</li></ul>
+<div class="box tip fragment"><span class="t">דוגמה K=10</span>H(7) → (7+10)=17 → R · &nbsp; Z(25) → 35 mod 26 = 9 → J</div>
+<div class="notes">נשאל בבגרות (5ג): תפקיד mod 26 = מספר האותיות בשפה. תרגלו על הלוח.</div></section>
+
+<section class="slide"><h2>איזה כלי לאיזו מטרה</h2>
+<table><tr><th>מטרה</th><th>כלי</th></tr>
+<tr><td>סודיות</td><td>הצפנה (AES / RSA)</td></tr>
+<tr><td>שלמות</td><td>Hash (SHA-256)</td></tr>
+<tr><td>שלמות + אימות</td><td>HMAC</td></tr>
+<tr><td>אימות + אי-הכחשה</td><td>חתימה דיגיטלית</td></tr></table>
+<div class="notes">מיפוי CIA לכלים. נשאל בבגרות (5ה): מי מבטיח סודיות? AES. לא MD5/HASH (שלמות).</div></section>
+
+<section class="slide"><h2>גיבוב (Hashing)</h2>
+<ul><li class="fragment">קלט בכל אורך → פלט קבוע, חד-כיווני</li>
+<li class="fragment">אפקט מפולת: שינוי ביט אחד → פלט שונה לגמרי</li>
+<li class="fragment">שימוש: שלמות קבצים, אחסון סיסמאות (+salt)</li></ul>
+<div class="box warn fragment"><span class="t">מצב</span>MD5 ו-SHA-1 = <b>שבורים</b> · SHA-256 = הסטנדרט</div>
+<div class="notes">אתרים "שוברים" MD5 לא בהפיכה אלא בניחוש (rainbow table). salt מסכל את זה.</div></section>
+
+<section class="slide"><h2>סימטרי מול א-סימטרי</h2>
+<div class="cols"><div><div class="box"><span class="t">סימטרי</span>מפתח אחד משותף. מהיר. AES/3DES/DES. חיסרון: חלוקת המפתח</div></div>
+<div><div class="box"><span class="t">א-סימטרי</span>זוג מפתחות (ציבורי+פרטי). איטי. RSA/DH. פותר חלוקת מפתח</div></div></div>
+<div class="notes">סימטרי מהיר פי 1000 – לכמויות מידע. א-סימטרי – לפתיחה ולחתימה. בפועל משלבים (היברידי).</div></section>
+
+<section class="slide"><h2>מפתח ציבורי/פרטי – שני שימושים</h2>
+<div class="box ok fragment"><span class="t">לסודיות</span>מצפינים ב<b>ציבורי של הנמען</b> ⇒ רק הוא (בעל הפרטי) יפענח</div>
+<div class="box tip fragment"><span class="t">לחתימה</span>מצפינים ב<b>פרטי של השולח</b> ⇒ כולם מאמתים בציבורי שלו</div>
+<div class="notes">נשאל בבגרות (5ד): ציבורי מצפין ⇒ פרטי מפענח. הבחנה קריטית – הפוך לחתימה.</div></section>
+
+<section class="slide"><h2>Diffie-Hellman – משל הצבעים</h2>
+<div class="flow fragment"><span class="n">צבע בסיס<br>(פומבי)</span><span class="a">+</span><span class="n">סוד של כל צד</span><span class="a">→</span><span class="n">סוד משותף</span></div>
+<ul><li class="fragment">מסכימים על מפתח סודי <b>מעל ערוץ ציבורי</b></li>
+<li class="fragment">המאזין רואה את התערובות – אך לא יכול להפריד</li></ul>
+<div class="notes">משל הצבעים הוא הדרך הכי טובה. DH לא מצפין מידע – רק מסכים על מפתח. נשאל בבגרות (4ו).</div></section>
+
+<section class="slide q"><h2>שאלת בגרות</h2><p>איזה אלגוריתם מאפשר לצדדים להסכים על מפתח פרטי מעל ערוץ ציבורי? נובל / Diffie-Hellman / דייקסטרה / קיסר</p>
+<div class="answer fragment">Diffie-Hellman. (דייקסטרה = מסלולים, לא הצפנה; קיסר = צופן קדום.)</div>
+<div class="notes">שאלה 4ו. מסיחים מוכרים משיעורים אחרים.</div></section>
+
+<section class="slide"><h2>חתימה דיגיטלית</h2>
+<div class="flow"><span class="n">מסמך</span><span class="a">→hash→</span><span class="n">digest</span><span class="a">→🔑פרטי→</span><span class="n">חתימה</span></div>
+<ul><li class="fragment"><b>שולח:</b> מגבב את המסמך, מצפין את ה-hash בפרטי שלו</li>
+<li class="fragment"><b>מקבל:</b> מפענח בציבורי, מגבב מחדש, משווה</li>
+<li class="fragment">נותן: שלמות + אימות + אי-הכחשה</li></ul>
+<div class="notes">מצפינים את ה-hash (קטן) ולא את כל המסמך – כי א-סימטרי איטי. HMAC = גרסה עם מפתח משותף.</div></section>
+
+<section class="slide"><h2>PKI – למי שייך המפתח?</h2>
+<div class="flow"><span class="n">Root CA</span><span class="a">→חותם→</span><span class="n">Intermediate</span><span class="a">→חותם→</span><span class="n">תעודת שרת</span></div>
+<ul><li class="fragment"><b>תעודה</b> קושרת זהות למפתח ציבורי, חתומה ע"י CA</li>
+<li class="fragment"><b>CA</b> = גורם מהימן. שרשרת אמון עד root מובנה</li></ul>
+<div class="box warn fragment"><span class="t">DigiNotar 2011</span>CA נפרץ, הנפיקו תעודת google מזויפת → MITM על 300,000 איראנים</div>
+<div class="notes">PKI פותר: איך יודעים שהמפתח "של הבנק" אמיתי? זה מה שקורה כשרואים 🔒. סיפור DigiNotar ממחיש את השבריריות.</div></section>
+
+<section class="slide"><h2>HTTPS – הכול ביחד</h2>
+<ol><li class="fragment">DH/RSA מסכימים על <b>מפתח סימטרי</b> (session key)</li>
+<li class="fragment">תעודה מוכיחה שזה באמת הבנק</li>
+<li class="fragment">כל התעבורה ב-<b>AES</b> (מהיר)</li></ol>
+<p class="fragment big">א-סימטרי לפתיחה · סימטרי לתעבורה = היברידי</p>
+<div class="notes">מחבר את כל הפרק. זה בדיוק מה שקורה בכל כניסה לאתר בנק. ומקדים את IPsec בפרק 8.</div></section>
+
+<section class="slide"><h2>סיכום פרק 7</h2><ul>
+<li class="fragment">קידוד ≠ הצפנה ≠ גיבוב</li>
+<li class="fragment">סימטרי (AES, מהיר) · א-סימטרי (RSA/DH, פותר חלוקת מפתח)</li>
+<li class="fragment">ציבורי מצפין ⇒ פרטי מפענח (הפוך לחתימה)</li>
+<li class="fragment">DH = הסכמה על מפתח · PKI = מי שייך למפתח</li>
+</ul><div class="notes">חזרה. הדגישו שכל זה חוזר בפרק 8 (IPsec): AES+SHA+DH+PKI בפעולה.</div></section>

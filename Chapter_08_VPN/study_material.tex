@@ -1,0 +1,377 @@
+\documentclass[11pt]{article}
+\usepackage{fontspec}
+\directlua{luaotfload.add_fallback("hebfb",{"DejaVu Sans:mode=harf"})}
+\usepackage{polyglossia}
+\setdefaultlanguage{hebrew}
+\setotherlanguage{english}
+\setmainfont{Noto Sans Hebrew}[Script=Hebrew,RawFeature={fallback=hebfb}]
+\newfontfamily\codefont{DejaVu Sans Mono}[RawFeature={fallback=hebfb}]
+\usepackage[a4paper,margin=18mm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{mdframed}
+\usepackage{tabularx}
+\usepackage{xltabular}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\setlist{leftmargin=1.6em,itemsep=1pt,topsep=2pt}
+% colors
+\definecolor{h1}{HTML}{1E3A8A}\definecolor{h2}{HTML}{1E40AF}\definecolor{h3}{HTML}{0F172A}
+\definecolor{subgray}{HTML}{64748B}\definecolor{hdrbg}{HTML}{E0E7FF}
+\definecolor{cfg}{HTML}{E2E8F0}\definecolor{cbg}{HTML}{0F172A}\definecolor{cbold}{HTML}{7DD3FC}\definecolor{ccom}{HTML}{94A3B8}
+\definecolor{metabg}{HTML}{F1F5F9}
+\newcommand{\enLR}[1]{\textenglish{#1}}
+\newcommand{\code}[1]{\textenglish{\codefont #1}}
+\newcommand{\chapterheading}[1]{\vspace{2pt}{\LARGE\bfseries\color{h1}#1\par}\vskip2pt{\color{h1}\hrule height 2pt}\vskip6pt}
+\newcommand{\sectionheading}[1]{\vskip10pt\penalty-200{\large\bfseries\color{h2}#1\par}\vskip3pt}
+\newcommand{\subheading}[1]{\vskip6pt{\bfseries\color{h3}#1\par}\vskip2pt}
+\newcommand{\boxtitle}[1]{{\bfseries\color{boxti}#1}}
+% box environments (right border, tinted bg)
+\newmdenv[topline=false,bottomline=false,leftline=false,rightline=true,linewidth=2pt,innermargin=0pt,skipabove=6pt,skipbelow=6pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt]{genericbox}
+\definecolor{faqbg}{HTML}{ECFDF5}\definecolor{faqfr}{HTML}{10B981}\definecolor{faqti}{HTML}{065F46}
+\definecolor{misbg}{HTML}{FEF2F2}\definecolor{misfr}{HTML}{EF4444}\definecolor{misti}{HTML}{991B1B}
+\definecolor{tipbg}{HTML}{FFFBEB}\definecolor{tipfr}{HTML}{F59E0B}\definecolor{tipti}{HTML}{92400E}
+\definecolor{exabg}{HTML}{EFF6FF}\definecolor{exafr}{HTML}{3B82F6}\definecolor{exati}{HTML}{1E3A8A}
+\definecolor{defbg}{HTML}{F5F3FF}\definecolor{deffr}{HTML}{8B5CF6}\definecolor{defti}{HTML}{5B21B6}
+\definecolor{stobg}{HTML}{FDF4FF}\definecolor{stofr}{HTML}{D946EF}\definecolor{stoti}{HTML}{86198F}
+\definecolor{exbg}{HTML}{F0FDFA}\definecolor{exfr}{HTML}{14B8A6}\definecolor{exti}{HTML}{115E59}
+\newenvironment{faqbox}{\colorlet{boxti}{faqti}\begin{mdframed}[backgroundcolor=faqbg,linecolor=faqfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{mistakebox}{\colorlet{boxti}{misti}\begin{mdframed}[backgroundcolor=misbg,linecolor=misfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{tipbox}{\colorlet{boxti}{tipti}\begin{mdframed}[backgroundcolor=tipbg,linecolor=tipfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{exambox}{\colorlet{boxti}{exati}\begin{mdframed}[backgroundcolor=exabg,linecolor=exafr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{defbox}{\colorlet{boxti}{defti}\begin{mdframed}[backgroundcolor=defbg,linecolor=deffr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{storybox}{\colorlet{boxti}{stoti}\begin{mdframed}[backgroundcolor=stobg,linecolor=stofr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{exbox}{\colorlet{boxti}{exti}\begin{mdframed}[backgroundcolor=exbg,linecolor=exfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{metabox}{\begin{mdframed}[backgroundcolor=metabg,linewidth=0pt,innertopmargin=5pt,innerbottommargin=5pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=4pt,skipbelow=8pt]}{\end{mdframed}}
+\newmdenv[backgroundcolor=cbg,linewidth=0pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=8pt]{codebox}
+\setlength{\parindent}{0pt}\setlength{\parskip}{4pt}
+\renewcommand{\thepage}{\enLR{\arabic{page}}}
+\pagestyle{fancy}\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}
+\begin{document}
+\sloppy
+\chapterheading{פרק \enLR{8} – מערכות \enLR{VPN}}{\small\color{subgray}\enLR{10} שעות עיוני + \enLR{3} מעשי · שבועות \enLR{24}–\enLR{26}\par}\vskip4pt
+
+\begin{metabox}\textbf{מטרות:} מערכות \enLR{VPN} · הגדרת \enLR{VPN} · \enLR{IPsec} · הגדרה ב-\enLR{CLI} · \enLR{GRE} · \enLR{SSL VPN}\\ \textbf{בבגרות:} \enLR{IPsec} מאבטח את חבילת \enLR{TCP/IP} (שכבה \enLR{3)}\end{metabox}
+
+\begin{defbox}\boxtitle{לפני שמתחילים – מה זו "מנהרה מוצפנת"? (למי שאין רקע)}\par   \textbf{הבעיה:} כשמידע עובר באינטרנט, הוא עובר דרך נתבים רבים של חברות שונות. כל אחד בדרך יכול, עקרונית, לראות אותו. זה מסוכן למידע רגיש. \textbf{\enLR{VPN}} \enLR{(Virtual Private Network) = "}רשת פרטית וירטואלית". הוא יוצר \textbf{מנהרה מוצפנת} דרך האינטרנט הציבורי: המידע מוצפן בצד אחד, עובר את האינטרנט כג'יבריש, ומפוענח רק בצד השני. \textbf{אנלוגיה:} במקום לשלוח גלויה שכל דוור קורא (אינטרנט רגיל), שולחים מזוודה נעולה שרק לשולח ולנמען יש מפתח אליה \enLR{(VPN).} \textbf{שני שימושים:} חיבור \underline{סניף לסניף} \enLR{(Site-to-Site}, כמו לחבר שני משרדים), וחיבור \underline{עובד מהבית} \enLR{(Remote Access).}  \textbf{חשוב:} פרק זה מסתמך ישירות על פרק \enLR{7} (הצפנה). כל מה שנלמד שם – מפתח סימטרי, מפתח ציבורי/פרטי, גיבוב – חוזר כאן בפעולה. אם משהו לא ברור, חזרו לפרק \enLR{7.}\end{defbox}
+
+\sectionheading{\enLR{8.1} מהו \enLR{VPN} ולמה הוא נחוץ}
+
+\textbf{\enLR{VPN}} \enLR{(Virtual Private Network)} יוצר "מנהרה" מוצפנת דרך רשת ציבורית (האינטרנט), כך שנתונים עוברים כאילו הם על קו פרטי. במקום לשכור קו תקשורת יקר בין סניפים \enLR{(leased line)}, משתמשים באינטרנט הזול – והצפנה מספקת את הפרטיות. \enLR{VPN} מספק את שלוש מטרות ה-\enLR{CIA} לתעבורה: \textbf{סודיות} (הצפנה), \textbf{שלמות} \enLR{(HMAC)}, \textbf{אימות} (מי הצד השני), ולעיתים \textbf{\enLR{anti-replay}} (מניעת שידור חוזר של חבילה שנלכדה).\par
+
+\begin{storybox}\boxtitle{סיפור מהחיים: בית הקפה והמנהל שעבד מרחוק}\par  מנהל מכירות יושב בבית קפה, מתחבר ל-\enLR{Wi-Fi} הפתוח, ופותח את מערכת ה-\enLR{CRM} של החברה. בלי \enLR{VPN}, כל מי שיושב בבית הקפה עם \enLR{Wireshark} (או \enLR{Evil Twin} – פרק \enLR{6)} רואה את הכול. עם \enLR{VPN}: המחשב פותח מנהרת \enLR{IPsec/SSL} מוצפנת אל שער החברה עוד לפני שנשלח ביט אחד של \enLR{CRM.} המאזין רואה רק "תעבורה מוצפנת ל-\enLR{VPN gateway"} – ג'יבריש. זה בדיוק מה שלמדנו בפרק \enLR{7 (AES+HMAC+DH)}, עכשיו ארוז כשירות רשת.\end{storybox}
+
+\sectionheading{\enLR{8.2} סוגי \enLR{VPN}}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{דוגמה} & \textbf{מי מתחבר למי} & \textbf{סוג} \\
+\hline
+\endhead
+סניף תל אביב ↔ סניף חיפה & שער (נתב/\enLR{ASA)} לשער – מחבר שתי רשתות שלמות. שקוף למשתמשים & \textbf{\enLR{Site-to-Site}} \\
+\hline
+עובד מהבית ↔ המשרד \enLR{(Cisco AnyConnect)} & משתמש יחיד (לקוח) ↔ שער החברה & \textbf{\enLR{Remote Access}} \\
+\hline
+\end{xltabular}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{} & \textbf{לפי מי מפעיל} \\
+\hline
+\endhead
+הארגון מנהל \enLR{(IPsec, SSL)} – מה שנלמד כאן & \textbf{\enLR{Enterprise VPN}} \\
+\hline
+ספק התקשורת מספק – \textbf{\enLR{MPLS}}, \enLR{Metro Ethernet} (מוזכר בתכנית: \enLR{MPLS, GRE)} & \textbf{\enLR{Service Provider VPN}} \\
+\hline
+\end{xltabular}
+
+\begin{mistakebox}\boxtitle{הבהרה חשובה}\par  "\enLR{VPN} מסחרי" \enLR{(NordVPN} וכו') נועד להסתרת זהות/מיקום – שימוש שונה מ-\enLR{VPN} ארגוני שמחבר משתמש/סניף לרשת החברה בבטחה. בקורס מדובר ב-\enLR{VPN} ארגוני.\end{mistakebox}
+
+\sectionheading{\enLR{8.3 GRE} – מנהור בסיסי (בלי הצפנה!)}
+
+\textbf{\enLR{GRE}} \enLR{(Generic Routing Encapsulation)} הוא פרוטוקול מנהור של סיסקו שעוטף חבילה בתוך חבילת \enLR{IP} חדשה. יתרון: יכול לשאת \textbf{\enLR{multicast} ו-\enLR{broadcast}} (ולכן פרוטוקולי ניתוב כמו \enLR{OSPF/EIGRP} רצים דרכו) וגם תעבורה שאינה \enLR{IP.} חיסרון קריטי: \textbf{\enLR{GRE} אינו מצפין כלום} – הוא רק עוטף. לכן בפועל: \textbf{\enLR{GRE over IPsec}} – \enLR{GRE} נותן את הגמישות \enLR{(multicast, routing), IPsec} נותן את ההצפנה.\par
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+\textcolor{ccom}{\texthebrew{! מנהרת \enLR{GRE} בין \enLR{R1} ל-\enLR{R2}}}\\
+R1(config)\# \textcolor{cbold}{\textbf{interface tunnel 0}}\\
+R1(config-if)\# \textcolor{cbold}{\textbf{ip address 172.16.1.1 255.255.255.252}}    \textcolor{ccom}{\texthebrew{! כתובת פנימית של המנהרה}}\\
+R1(config-if)\# \textcolor{cbold}{\textbf{tunnel source 200.1.1.1}}                   \textcolor{ccom}{\texthebrew{! ה-\enLR{IP} הציבורי המקומי}}\\
+R1(config-if)\# \textcolor{cbold}{\textbf{tunnel destination 200.2.2.2}}              \textcolor{ccom}{\texthebrew{! ה-\enLR{IP} הציבורי המרוחק}}\\
+R1(config-if)\# tunnel mode gre ip                            \textcolor{ccom}{\texthebrew{! ברירת מחדל}}\\
+\textcolor{ccom}{\texthebrew{! עכשיו מנתבים דרך המנהרה}}\\
+R1(config)\# ip route 10.2.2.0 255.255.255.0 172.16.1.2\\
+R1\# \textcolor{cbold}{\textbf{show ip interface brief | include Tunnel}}\\
+R1\# show interfaces tunnel 0
+\end{english}\end{codebox}
+
+\sectionheading{\enLR{8.4 IPsec} – לב הפרק}
+
+\textbf{\enLR{IPsec}} אינו פרוטוקול יחיד אלא \textbf{מסגרת} \enLR{(framework)} של פרוטוקולים שמאבטחת תעבורה ב\textbf{שכבה \enLR{3}} \enLR{(IP).} זו התשובה בבגרות: "\enLR{IPsec} נועד לאבטח את חבילת הפרוטוקולים \enLR{TCP/IP".} כיוון שהוא בשכבה \enLR{3}, הוא מאבטח \emph{כל} תעבורה מעליו \enLR{(TCP, UDP}, כל אפליקציה) בשקיפות – בניגוד ל-\enLR{SSL/TLS} שבשכבה גבוהה יותר.\par
+
+\begin{exambox}\boxtitle{בבגרות (שאלה \enLR{6}א)}\par  "איזה סוג תקשורת נועדה חבילת הפרוטוקולים \enLR{IPSEC} לאבטח?" – \textbf{\enLR{2. TCP/IP}} (שכבה \enLR{3).} לא \enLR{SSH}, לא \enLR{Telnet}, לא \enLR{UDP} ספציפית.\end{exambox}
+
+\subheading{שני פרוטוקולי ההגנה}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{\enLR{ESP (Encapsulating Security Payload)}} & \textbf{\enLR{AH (Authentication Header)}} & \textbf{} \\
+\hline
+\endhead
+\enLR{50} & \enLR{51} & פרוטוקול \enLR{IP} \\
+\hline
+כן (המטען) & כן (כולל הכותרת החיצונית) & שלמות + אימות \\
+\hline
+\textbf{כן} & \textbf{לא!} & \textbf{סודיות (הצפנה)} \\
+\hline
+כן (עם \enLR{NAT-T)} & לא (מגן על הכותרת) & עובד עם \enLR{NAT} \\
+\hline
+\textbf{הבחירה כמעט תמיד} & כמעט לא בשימוש (אין הצפנה) & שימוש \\
+\hline
+\end{xltabular}
+
+\subheading{שני מצבי פעולה}
+
+\begin{itemize}
+\item \textbf{\enLR{Transport mode}} – מצפין רק את המטען \enLR{(payload)}; הכותרת המקורית נשמרת. בין שני מארחים.
+\item \textbf{\enLR{Tunnel mode}} – מצפין את כל החבילה המקורית ועוטף בכותרת \enLR{IP} חדשה. בין שערים \enLR{(site-to-site).} \textbf{הנפוץ.}
+\end{itemize}
+
+\subheading{ארבעת מרכיבי ה-\enLR{IPsec} (מה שהמנהל צריך לבחור)}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{אפשרויות} & \textbf{תפקיד} \\
+\hline
+\endhead
+\enLR{DES / 3DES} / \textbf{\enLR{AES}} & הצפנה (סודיות) \\
+\hline
+\enLR{MD5} / \textbf{\enLR{SHA}} \enLR{(HMAC)} & שלמות \enLR{(hash)} \\
+\hline
+\textbf{\enLR{PSK}} (מפתח משותף מראש) / תעודות \enLR{RSA (PKI} – פרק \enLR{7)} & אימות הצדדים \\
+\hline
+\textbf{\enLR{DH}} \enLR{(Diffie-Hellman)} – קבוצות \enLR{1,2,5,14}… & החלפת מפתחות \\
+\hline
+\end{xltabular}
+
+שימו לב: כל מה שלמדנו בפרק \enLR{7} חוזר כאן – \enLR{AES} לסודיות, \enLR{SHA-HMAC} לשלמות, \enLR{DH} להחלפת מפתחות, \enLR{RSA/PKI} לאימות. \enLR{IPsec} הוא "פרק \enLR{7} בפעולה".\par
+
+\sectionheading{\enLR{8.5 IKE} – ניהול המפתחות והמנהרה}
+
+\textbf{\enLR{IKE}} \enLR{(Internet Key Exchange, "}מפתחות אינטרנט משתנים" בתכנית) הוא הפרוטוקול שמקים את מנהרת ה-\enLR{IPsec}: מבצע \enLR{DH}, מאמת את הצדדים, ומסכים על הפרמטרים. פועל בשני שלבים:\par
+
+\begin{defbox}\boxtitle{\enLR{IKE Phase 1} – בונים ערוץ ניהול מאובטח \enLR{(ISAKMP SA)}}\par  הצדדים מסכימים על מדיניות (הצפנה/\enLR{hash/DH}/אימות), מבצעים \enLR{DH}, ומאמתים זה את זה \enLR{(PSK} או תעודות). התוצאה: ערוץ מוצפן \emph{דו-כיווני} אחד שבו ינוהל שלב \enLR{2.} מצבים: \enLR{Main mode (6} הודעות, בטוח) או \enLR{Aggressive mode (3}, מהיר).\end{defbox}
+
+\begin{defbox}\boxtitle{\enLR{IKE Phase 2} – בונים את מנהרת הנתונים \enLR{(IPsec SA)}}\par  בתוך הערוץ המאובטח משלב \enLR{1}, מסכימים על ה-\enLR{transform set (ESP-AES-SHA)} ומקימים שני \textbf{\enLR{SA}} חד-כיווניים (אחד לכל כיוון) שדרכם תעבור התעבורה בפועל. מצב: \enLR{Quick mode.}\end{defbox}
+
+\textbf{\enLR{SA}} \enLR{(Security Association)} – "הסכם" חד-כיווני שמגדיר איך לאבטח זרם תעבורה מסוים, עם מזהה \textbf{\enLR{SPI}}. \enLR{Phase 2} מייצר \enLR{PFS (Perfect Forward Secrecy)} אם מפעילים \enLR{DH} מחדש – כך שדליפת מפתח אחד לא חושפת תעבורה עבר.\par
+
+\sectionheading{\enLR{8.6} הגדרת \enLR{Site-to-Site IPsec VPN} ב-\enLR{CLI (5} שלבים)}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+\textcolor{ccom}{\texthebrew{! ===== שלב \enLR{0: ACL "}מעניין" – איזו תעבורה להצפין =====}}\\
+R1(config)\# \textcolor{cbold}{\textbf{access-list 100 permit ip 10.1.1.0 0.0.0.255 10.2.2.0 0.0.0.255}}\\
+~\\
+\textcolor{ccom}{\texthebrew{! ===== שלב \enLR{1}: מדיניות \enLR{IKE Phase 1 (ISAKMP)} =====}}\\
+R1(config)\# \textcolor{cbold}{\textbf{crypto isakmp policy 10}}\\
+R1(config-isakmp)\# \textcolor{cbold}{\textbf{encryption aes 256}}\\
+R1(config-isakmp)\# \textcolor{cbold}{\textbf{hash sha}}\\
+R1(config-isakmp)\# \textcolor{cbold}{\textbf{authentication pre-share}}\\
+R1(config-isakmp)\# \textcolor{cbold}{\textbf{group 14}}                 \textcolor{ccom}{\texthebrew{! \enLR{DH group 14 (2048-bit)}}}\\
+R1(config-isakmp)\# lifetime 3600\\
+R1(config-isakmp)\# exit\\
+\textcolor{ccom}{\texthebrew{! מפתח משותף מראש + כתובת השכן}}\\
+R1(config)\# \textcolor{cbold}{\textbf{crypto isakmp key S3cr3tPSK address 200.2.2.2}}\\
+~\\
+\textcolor{ccom}{\texthebrew{! ===== שלב \enLR{2: transform set} – הגנת \enLR{Phase 2} =====}}\\
+R1(config)\# \textcolor{cbold}{\textbf{crypto ipsec transform-set TSET esp-aes 256 esp-sha-hmac}}\\
+R1(cfg-crypto-trans)\# mode tunnel\\
+R1(cfg-crypto-trans)\# exit\\
+~\\
+\textcolor{ccom}{\texthebrew{! ===== שלב \enLR{3: crypto map} – מקשר הכול =====}}\\
+R1(config)\# \textcolor{cbold}{\textbf{crypto map CMAP 10 ipsec-isakmp}}\\
+R1(config-crypto-map)\# \textcolor{cbold}{\textbf{set peer 200.2.2.2}}\\
+R1(config-crypto-map)\# \textcolor{cbold}{\textbf{set transform-set TSET}}\\
+R1(config-crypto-map)\# \textcolor{cbold}{\textbf{match address 100}}          \textcolor{ccom}{\texthebrew{! ה-\enLR{ACL} המעניין}}\\
+R1(config-crypto-map)\# set pfs group14\\
+R1(config-crypto-map)\# exit\\
+~\\
+\textcolor{ccom}{\texthebrew{! ===== שלב \enLR{4}: החלה על הממשק החיצוני =====}}\\
+R1(config)\# interface g0/0\\
+R1(config-if)\# \textcolor{cbold}{\textbf{crypto map CMAP}}\\
+\textcolor{ccom}{\texthebrew{! \enLR{(R2} מוגדר במראה: כתובות ו-\enLR{ACL} הפוכים, אותה מדיניות ואותו \enLR{PSK)}}}
+\end{english}\end{codebox}
+
+\begin{mistakebox}\boxtitle{טעויות נפוצות ב-\enLR{IPsec}}\par  • מדיניות \enLR{Phase 1} לא תואמת בין הצדדים \enLR{(encryption/hash/group/auth} שונים) ⇒ המנהרה לא קמה. \textbf{שני הצדדים חייבים להסכים.}\newline  • \enLR{PSK} שונה משני הצדדים.\newline  • ה-\enLR{ACL "}המעניין" לא מראה \enLR{(R1: 10.1}→\enLR{10.2; R2} חייב \enLR{10.2}→\enLR{10.1).} אם לא הפוך – תעבורה לא נכנסת למנהרה.\newline  • שכחו \code{crypto map} על הממשק – הכול מוגדר אבל כלום לא קורה.\newline  • יש \enLR{NAT} שמתרגם את התעבורה המעניינת \emph{לפני} ההצפנה ⇒ ה-\enLR{ACL} לא תואם. פתרון: \enLR{NAT exemption (ACL} עם \enLR{deny} לתעבורת ה-\enLR{VPN).}\newline  • המנהרה קמה רק כשיש "תעבורה מעניינת" – \enLR{ping} אחד לא מספיק לפעמים; שלחו כמה.\end{mistakebox}
+
+\subheading{וריפיקציה ופתרון תקלות}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+R1\# \textcolor{cbold}{\textbf{show crypto isakmp sa}}          \textcolor{ccom}{\texthebrew{! \enLR{Phase 1} – מצב \enLR{QM\_IDLE} = הצליח}}\\
+R1\# \textcolor{cbold}{\textbf{show crypto ipsec sa}}           \textcolor{ccom}{\texthebrew{! \enLR{Phase 2} – ספירת חבילות \enLR{encrypted/decrypted}}}\\
+R1\# \textcolor{cbold}{\textbf{show crypto map}}\\
+R1\# \textcolor{cbold}{\textbf{show crypto session}}\\
+R1\# debug crypto isakmp\\
+R1\# debug crypto ipsec
+\end{english}\end{codebox}
+
+\begin{faqbox}\boxtitle{שאלת תלמיד: "איך אני יודע שהמנהרה עובדת ולא סתם ה-\enLR{ping} עובר רגיל?"}\par  ב-\code{show crypto ipsec sa} תראו את המונים \code{\#pkts encrypt} ו-\code{\#pkts decrypt} עולים כשאתם שולחים תעבורה בין הרשתות. אם הם עולים – התעבורה עוברת במנהרה מוצפנת. אם ה-\enLR{ping} עובר אבל המונים \enLR{0} – התעבורה עוברת \emph{מחוץ} למנהרה (בעיה ב-\enLR{ACL} המעניין או ב-\enLR{NAT).} זה הכלי הכי חשוב לדיבוג.\end{faqbox}
+
+\sectionheading{\enLR{8.7 SSL/TLS VPN}}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{\enLR{SSL VPN}} & \textbf{\enLR{IPsec VPN}} & \textbf{} \\
+\hline
+\endhead
+\enLR{4}–\enLR{7} (מעל \enLR{TCP 443)} & \enLR{3} (רשת) & שכבה \\
+\hline
+\textbf{\enLR{Clientless}} – רק דפדפן (או לקוח קל \enLR{AnyConnect)} & צריך תוכנת לקוח מותקנת ומוגדרת & לקוח \\
+\hline
+עובר בקלות – זה "רק \enLR{HTTPS"} על \enLR{443} & לעיתים חסום (פרוטוקולים \enLR{50/51, UDP 500)} & מעבר חומות אש/\enLR{NAT} \\
+\hline
+אפליקציות \enLR{web} ספציפיות \enLR{(portal)} או מלא \enLR{(tunnel)} & גישת רשת מלאה & גישה \\
+\hline
+גישה מרחוק ממחשב לא מנוהל, ספקים, ניידים & \enLR{site-to-site}, גישה קבועה & מתאים ל \\
+\hline
+\end{xltabular}
+
+\enLR{SSL VPN} משתמש באותו \enLR{TLS} מפרק \enLR{7} (תעודות, \enLR{DH, AES).} זו הסיבה שהוא "פשוט עובד" מכל מקום – חומות אש כמעט תמיד מאפשרות \enLR{443.}\par
+
+\sectionheading{\enLR{8.8} ציוד וארכיטקטורה}
+
+\begin{itemize}
+\item \textbf{\enLR{Cisco ASA 5500}} – מכשיר האבטחה המרכזי: חומת אש + \enLR{VPN (IPsec} ו-\enLR{SSL) + IPS.} יורשו: \enLR{Firepower.}
+\item \textbf{\enLR{Cisco PIX 500}} – חומת האש/\enLR{VPN} ההיסטורית (הוחלפה ב-\enLR{ASA)}; מוזכרת בתכנית.
+\item \textbf{\enLR{Cisco VPN 3000 Concentrator}} – ריכוז \enLR{VPN} מרחוק (הופסק); מוזכר בתכנית.
+\item \textbf{\enLR{SOHO}} – נתב קטן עם \enLR{VPN} מובנה לעסק/בית.
+\item האצת חומרה (בתכנית): \textbf{\enLR{VAC+, SPA, AIM}} – מודולי הצפנה שמורידים עומס מה-\enLR{CPU.} היום מובנה במעבד.
+\item \textbf{\enLR{Cisco AnyConnect}} – לקוח ה-\enLR{VPN} המודרני \enLR{(IPsec/SSL)} למחשב ולנייד.
+\end{itemize}
+
+\sectionheading{\enLR{8.9} מדריך פקודות מרוכז – פרק \enLR{8}}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{שלב} & \textbf{פקודה} \\
+\hline
+\endhead
+\enLR{GRE} & \code{interface tunnel 0} + \code{tunnel source/destination} \\
+\hline
+\enLR{IKE Phase 1} & \code{crypto isakmp policy N} \enLR{(encryption/hash/authentication/group)} \\
+\hline
+\enLR{PSK} & \code{crypto isakmp key K address PEER} \\
+\hline
+הגנת \enLR{Phase 2} & \code{crypto ipsec transform-set NAME esp-aes esp-sha-hmac} \\
+\hline
+תעבורה מעניינת & \code{access-list 100 permit ip SRC DST} \\
+\hline
+קישור & \code{crypto map NAME N ipsec-isakmp} \enLR{(set peer / transform-set / match address)} \\
+\hline
+החלה & \code{crypto map NAME} (על ממשק) \\
+\hline
+וריפיקציה \enLR{Phase 1} & \code{show crypto isakmp sa} \\
+\hline
+וריפיקציה \enLR{Phase 2} (מונים) & \code{show crypto ipsec sa} \\
+\hline
+\end{xltabular}
+
+\sectionheading{\enLR{8.10} תרגילים לתלמידים}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{1} – מתאים לאיזה \enLR{VPN}?}\par  לכל תרחיש: \enLR{Site-to-Site} או \enLR{Remote Access}; ו-\enLR{IPsec} או \enLR{SSL.}\newline  א. חיבור קבוע בין \enLR{3} סניפים. ב. עובד שמתחבר מבית קפה מהלפטופ. ג. ספק חיצוני שצריך לגשת לאפליקציית \enLR{web} אחת ממחשב לא מנוהל. ד. שרתי שני מוקדי נתונים שצריכים להעביר גיבויים. \par\vskip2pt\hrule\vskip3pt\textbf{}א. \enLR{Site-to-Site / IPsec} ב. \enLR{Remote Access / IPsec} או \enLR{SSL (AnyConnect)} ג. \enLR{Remote Access / SSL clientless} ד. \enLR{Site-to-Site / IPsec}\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{2} – \enLR{AH} או \enLR{ESP}?}\par  א. צריך גם הצפנה. ב. הצדדים מאחורי \enLR{NAT.} ג. רוצים רק לוודא שהחבילה לא שונתה בלי להצפין. מה נבחר בכל מקרה, ולמה בפועל תמיד \enLR{ESP}? \par\vskip2pt\hrule\vskip3pt\textbf{}א. \enLR{ESP} (רק הוא מצפין). ב. \enLR{ESP (AH} נשבר עם \enLR{NAT).} ג. תיאורטית \enLR{AH}, אבל בפועל \enLR{ESP} במצב \enLR{authentication-only.} תמיד \enLR{ESP} כי \enLR{AH} לא מצפין ולא עובד עם \enLR{NAT.}\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{3} – זהו את התקלה}\par  המנהל הגדיר \enLR{IPsec}, \code{show crypto isakmp sa} מראה \enLR{QM\_IDLE}, אבל \enLR{ping} בין הרשתות נכשל ו-\code{show crypto ipsec sa} מראה \enLR{0 encrypted.} מה כנראה הבעיה? \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{Phase 1} הצליח (יש \enLR{ISAKMP SA)}, אבל \enLR{Phase 2} לא מעביר תעבורה: כנראה ה-\enLR{ACL} המעניין לא תואם/לא הפוך בין הצדדים, או ש-\enLR{NAT} מתרגם את התעבורה לפני ההצפנה. בודקים \code{match address} ו-\enLR{NAT exemption.}\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{4} – מיפוי לפרק \enLR{7}}\par  בקונפיג: \code{encryption aes 256}, \code{hash sha}, \code{group 14}, \code{authentication pre-share}. לכל אחד – איזו מטרת \enLR{CIA}/תפקיד הוא ממלא ואיזה מושג מפרק \enLR{7} הוא? \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{aes 256} → סודיות (סימטרי). \enLR{sha} → שלמות \enLR{(HMAC). group 14} → החלפת מפתחות \enLR{(Diffie-Hellman). pre-share} → אימות הצדדים (חלופה: תעודות \enLR{RSA/PKI).}\end{exbox}
+
+\sectionheading{\enLR{8.11} שאלות בסגנון בגרות}
+
+\begin{exambox}\boxtitle{שאלה \enLR{1}}\par  איזה סוג תקשורת נועדה חבילת הפרוטוקולים \enLR{IPsec} לאבטח? \enLR{SSH / TCP/IP / TELNET / UDP} \par\vskip2pt\hrule\vskip3pt\textbf{}\textbf{\enLR{TCP/IP}} (שכבה \enLR{3} – ולכן כל התעבורה מעליו).\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{2}}\par  מהו ההבדל בין \enLR{AH} ל-\enLR{ESP}, ומדוע בפועל משתמשים ב-\enLR{ESP}? \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{AH} – שלמות ואימות בלבד, ללא הצפנה. \enLR{ESP} – שלמות, אימות \textbf{והצפנה}. משתמשים ב-\enLR{ESP} כי רק הוא נותן סודיות, וגם עובד עם \enLR{NAT.}\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{3}}\par  מה תפקיד \enLR{IKE Phase 1} לעומת \enLR{Phase 2}? \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{Phase 1} – בונה ערוץ ניהול מאובטח \enLR{(ISAKMP SA): DH}, אימות הצדדים, הסכמה על מדיניות. \enLR{Phase 2} – בונה בתוכו את מנהרות הנתונים \enLR{(IPsec SA)} שדרכן עוברת התעבורה.\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{4}}\par  מדוע \enLR{GRE} לבדו אינו מספיק לחיבור מאובטח בין סניפים, וכיצד פותרים? \par\vskip2pt\hrule\vskip3pt\textbf{}\enLR{GRE} עוטף אך אינו מצפין – התעבורה גלויה. פתרון: \enLR{GRE over IPsec} – \enLR{GRE} לגמישות \enLR{(multicast/routing), IPsec} להצפנה.\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{5}}\par  מתי נעדיף \enLR{SSL VPN} על פני \enLR{IPsec VPN}? \par\vskip2pt\hrule\vskip3pt\textbf{}גישה מרחוק ממחשב לא מנוהל / דרך דפדפן בלבד \enLR{(clientless)}, וכשצריך לעבור חומות אש/\enLR{NAT} בקלות – \enLR{SSL} על \enLR{443} עובר כמעט תמיד.\end{exambox}
+
+\begin{exambox}\boxtitle{שאלה \enLR{6}}\par  השלימו את הפקודה שמגדירה \enLR{transform set} עם \enLR{AES} ו-\enLR{SHA}: \code{crypto ipsec transform-set TSET \_\_\_\_\_\_ \_\_\_\_\_\_} \par\vskip2pt\hrule\vskip3pt\textbf{}\code{esp-aes esp-sha-hmac}\end{exambox}
+
+\sectionheading{\enLR{8.12} מעבדה \enLR{(3} שעות) – \enLR{IPsec Site-to-Site} ב-\enLR{Packet Tracer}}
+
+\begin{enumerate}
+\item טופולוגיה: \enLR{LAN1 (10.1.1.0/24)} — \enLR{R1} — "אינטרנט" \enLR{(R-ISP)} — \enLR{R2} — \enLR{LAN2 (10.2.2.0/24).} ודאו ניתוב מקצה לקצה \enLR{(ping} עובר לפני \enLR{VPN).}
+\item ב-\enLR{R1} ו-\enLR{R2} הגדירו את \enLR{5} השלבים מ-\enLR{8.6} (במראה). \enLR{PSK} זהה, מדיניות זהה, \enLR{ACL} הפוך.
+\item מ-\enLR{PC} ב-\enLR{LAN1} עשו \enLR{ping} ל-\enLR{PC} ב-\enLR{LAN2} – יופעל "\enLR{interesting traffic".}
+\item \code{show crypto isakmp sa} ⇒ \enLR{QM\_IDLE.} \code{show crypto ipsec sa} ⇒ מונים עולים.
+\item ב-\enLR{Simulation mode} לכדו חבילה על קו ה"אינטרנט" – ראו שהיא \enLR{ESP} ולא ניתן לקרוא את התוכן.
+\item \textbf{\enLR{GRE} (אופציונלי):} הקימו מנהרת \enLR{GRE} והריצו \enLR{OSPF} דרכה; ראו ש-\enLR{multicast} של \enLR{OSPF} עובר – מה שלא היה עובד ב-\enLR{IPsec} לבדו.
+\end{enumerate}
+
+\sectionheading{בנק שאלות שתלמידים שואלים – ותשובות מוכנות}
+
+שאלות נפוצות בפרק ה-\enLR{VPN}, עם תשובות מוכנות.\par
+
+\textbf{ש: "מה ההבדל בין ה-\enLR{VPN} שאנחנו לומדים ל-\enLR{VPN} מסחרי כמו \enLR{NordVPN}?"}\newline ת: \enLR{VPN} מסחרי נועד להסתיר את הזהות/המיקום שלכם ולעקוף חסימות. \enLR{VPN} \underline{ארגוני} (מה שאנחנו לומדים) מחבר בבטחה עובד או סניף אל רשת החברה. אותה טכנולוגיית מנהרה מוצפנת, מטרות שונות.\par
+
+\textbf{ש: "אם \enLR{GRE} יוצר מנהרה, למה הוא לא מספיק לחיבור מאובטח?"}\newline ת: כי \enLR{GRE} רק \underline{עוטף} את החבילה – הוא \textbf{לא מצפין} כלום. כל מי שמאזין בדרך רואה את התוכן. לכן משלבים "\enLR{GRE over IPsec": GRE} נותן גמישות (מעביר \enLR{multicast}/ניתוב), \enLR{IPsec} נותן את ההצפנה.\par
+
+\textbf{ש: "\enLR{IPsec} מצפין – אז מה זה \enLR{AH} ו-\enLR{ESP}?"}\newline ת: שני "אופנים" של \enLR{IPsec.} \textbf{\enLR{AH}} נותן שלמות ואימות בלבד – \underline{בלי הצפנה}. \textbf{\enLR{ESP}} נותן שלמות, אימות \underline{וגם הצפנה}. בפועל תמיד משתמשים ב-\enLR{ESP} (רק הוא מצפין, וגם עובד עם \enLR{NAT).}\par
+
+\textbf{ש: "למה \enLR{IKE} עובד בשני שלבים? זה נשמע מסובך."}\newline ת: \enLR{Phase 1} בונה קודם \underline{ערוץ ניהול מאובטח} אחד (מבצע \enLR{Diffie-Hellman} ומאמת את הצדדים). רק בתוך הערוץ המוגן הזה, \enLR{Phase 2} בונה את מנהרות הנתונים בפועל. זה כמו קודם לבנות חדר סגור, ואז לנהל בו את המשא-ומתן.\par
+
+\textbf{ש: "איך אני יודע שהמנהרה באמת עובדת ולא שה-\enLR{ping} סתם עובר רגיל?"}\newline ת: \code{show crypto ipsec sa} – מסתכלים על המונים \code{\#pkts encrypt/decrypt}. אם הם עולים כששולחים תעבורה, היא באמת עוברת מוצפנת. אם ה-\enLR{ping} עובר אבל המונים \enLR{0} – התעבורה עוברת \underline{מחוץ} למנהרה (בעיה ב-\enLR{ACL} המעניין או ב-\enLR{NAT).}\par
+
+\textbf{ש: "מתי עדיף \enLR{SSL VPN} על \enLR{IPsec}?"}\newline ת: כשצריך גישה מרחוק ממחשב \underline{לא מנוהל} או דרך דפדפן בלבד \enLR{(clientless)}, וכשרוצים מעבר קל דרך חומות אש – \enLR{SSL} רץ על פורט \enLR{443} שכמעט תמיד פתוח. \enLR{IPsec} מתאים יותר לחיבורים קבועים (סניף לסניף).\par
+
+\textbf{ש: "המנהרה קמה \enLR{(QM\_IDLE)} אבל ה-\enLR{ping} נכשל. מה קורה?"}\newline ת: \enLR{Phase 1} הצליח (יש \enLR{ISAKMP SA)} אבל \enLR{Phase 2} לא מעביר תעבורה. הסיבות הנפוצות: ה-\enLR{ACL "}המעניין" לא \underline{הפוך} בין שני הצדדים, או ש-\enLR{NAT} מתרגם את התעבורה \emph{לפני} ההצפנה. בודקים \code{match address} ופטור מ-\enLR{NAT.}\par
+
+\textbf{ש: "כל מה שהגדרתי ב-\enLR{IPsec} נראה נכון אבל המנהרה לא קמה בכלל. מה לבדוק?"}\newline ת: מדיניות \enLR{Phase 1} חייבת להיות \underline{זהה} בשני הצדדים \enLR{(encryption/hash/DH group/authentication)} וגם ה-\enLR{PSK} זהה. אי-התאמה של אחד מהם מונעת מהמנהרה לקום. בודקים עם \code{show crypto isakmp sa} ו-\code{debug crypto isakmp}.\par
+
+\sectionheading{מילון מונחים – הגדרות}
+
+הגדרות תמציתיות של המונחים המרכזיים בפרק. שימושי גם כדף עזר לבחינה.\par
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{הגדרה} & \textbf{מונח} \\
+\hline
+\endhead
+רשת פרטית וירטואלית – מנהרה מוצפנת דרך רשת ציבורית. & \textbf{\enLR{VPN}} \\
+\hline
+\enLR{VPN} בין שני שערים (סניפים), שקוף למשתמשים. & \textbf{\enLR{Site-to-Site}} \\
+\hline
+\enLR{VPN} של משתמש יחיד (עובד מהבית) אל שער החברה. & \textbf{\enLR{Remote Access}} \\
+\hline
+פרוטוקול מנהור שעוטף חבילות (כולל \enLR{multicast)} – אך אינו מצפין. & \textbf{\enLR{GRE}} \\
+\hline
+מסגרת פרוטוקולים לאבטחת תעבורה בשכבה \enLR{3 (TCP/IP).} & \textbf{\enLR{IPsec}} \\
+\hline
+פרוטוקול \enLR{IPsec}: שלמות ואימות בלבד – ללא הצפנה. & \textbf{\enLR{AH}} \\
+\hline
+פרוטוקול \enLR{IPsec}: שלמות, אימות והצפנה; הבחירה המקובלת. & \textbf{\enLR{ESP}} \\
+\hline
+\enLR{IPsec} בין מארחים \enLR{(transport)} או בין שערים עם עטיפה \enLR{(tunnel).} & \textbf{\enLR{Transport / Tunnel mode}} \\
+\hline
+פרוטוקול שמקים את מנהרת ה-\enLR{IPsec} (מבצע \enLR{DH} ואימות). & \textbf{\enLR{IKE}} \\
+\hline
+\enLR{IKE}: בונה ערוץ ניהול מאובטח \enLR{(1)} ואז את מנהרות הנתונים \enLR{(2).} & \textbf{\enLR{Phase 1 / Phase 2}} \\
+\hline
+הסכם חד-כיווני המגדיר איך לאבטח זרם תעבורה, עם מזהה \enLR{SPI.} & \textbf{\enLR{SA (Security Association)}} \\
+\hline
+מפתח משותף מראש לאימות הצדדים ב-\enLR{IKE} (חלופה לתעודות). & \textbf{\enLR{PSK (Pre-Shared Key)}} \\
+\hline
+צירוף אלגוריתמי ההגנה של \enLR{Phase 2} (למשל \enLR{esp-aes esp-sha-hmac).} & \textbf{\enLR{Transform set}} \\
+\hline
+אובייקט שמקשר \enLR{peer, transform set} ו-\enLR{ACL '}מעניין', ומוחל על ממשק. & \textbf{\enLR{Crypto map}} \\
+\hline
+התעבורה (מוגדרת ב-\enLR{ACL)} שאמורה לעבור במנהרה המוצפנת. & \textbf{\enLR{interesting traffic}} \\
+\hline
+\enLR{VPN} מעל \enLR{TCP 443}; לרוב \enLR{clientless} (דרך דפדפן); עובר חומות אש בקלות. & \textbf{\enLR{SSL/TLS VPN}} \\
+\hline
+מכשיר אבטחה המשלב חומת אש, \enLR{VPN} ו-\enLR{IPS.} & \textbf{\enLR{Cisco ASA}} \\
+\hline
+\end{xltabular}
+\end{document}

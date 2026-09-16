@@ -1,0 +1,242 @@
+<h1>פרק 8 – מערכות VPN <small>10 שעות עיוני + 3 מעשי · שבועות 24–26</small></h1>
+<div class="meta"><span><b>מטרות:</b> מערכות VPN · הגדרת VPN · IPsec · הגדרה ב-CLI · GRE · SSL VPN</span><span><b>בבגרות:</b> IPsec מאבטח את חבילת TCP/IP (שכבה 3)</span></div>
+<div class="box def"><span class="t">לפני שמתחילים – מה זו "מנהרה מוצפנת"? (למי שאין רקע)</span>
+<ul>
+<li><b>הבעיה:</b> כשמידע עובר באינטרנט, הוא עובר דרך נתבים רבים של חברות שונות. כל אחד בדרך יכול, עקרונית, לראות אותו. זה מסוכן למידע רגיש.</li>
+<li><b>VPN</b> (Virtual Private Network) = "רשת פרטית וירטואלית". הוא יוצר <b>מנהרה מוצפנת</b> דרך האינטרנט הציבורי: המידע מוצפן בצד אחד, עובר את האינטרנט כג'יבריש, ומפוענח רק בצד השני.</li>
+<li><b>אנלוגיה:</b> במקום לשלוח גלויה שכל דוור קורא (אינטרנט רגיל), שולחים מזוודה נעולה שרק לשולח ולנמען יש מפתח אליה (VPN).</li>
+<li><b>שני שימושים:</b> חיבור <u>סניף לסניף</u> (Site-to-Site, כמו לחבר שני משרדים), וחיבור <u>עובד מהבית</u> (Remote Access).</li>
+</ul>
+<b>חשוב:</b> פרק זה מסתמך ישירות על פרק 7 (הצפנה). כל מה שנלמד שם – מפתח סימטרי, מפתח ציבורי/פרטי, גיבוב – חוזר כאן בפעולה. אם משהו לא ברור, חזרו לפרק 7.</div>
+
+
+<h2>8.1 מהו VPN ולמה הוא נחוץ</h2>
+<p><b>VPN</b> (Virtual Private Network) יוצר "מנהרה" מוצפנת דרך רשת ציבורית (האינטרנט), כך שנתונים עוברים כאילו הם על קו פרטי. במקום לשכור קו תקשורת יקר בין סניפים (leased line), משתמשים באינטרנט הזול – והצפנה מספקת את הפרטיות. VPN מספק את שלוש מטרות ה-CIA לתעבורה: <b>סודיות</b> (הצפנה), <b>שלמות</b> (HMAC), <b>אימות</b> (מי הצד השני), ולעיתים <b>anti-replay</b> (מניעת שידור חוזר של חבילה שנלכדה).</p>
+<div class="box story"><span class="t">סיפור מהחיים: בית הקפה והמנהל שעבד מרחוק</span>
+מנהל מכירות יושב בבית קפה, מתחבר ל-Wi-Fi הפתוח, ופותח את מערכת ה-CRM של החברה. בלי VPN, כל מי שיושב בבית הקפה עם Wireshark (או Evil Twin – פרק 6) רואה את הכול. עם VPN: המחשב פותח מנהרת IPsec/SSL מוצפנת אל שער החברה עוד לפני שנשלח ביט אחד של CRM. המאזין רואה רק "תעבורה מוצפנת ל-VPN gateway" – ג'יבריש. זה בדיוק מה שלמדנו בפרק 7 (AES+HMAC+DH), עכשיו ארוז כשירות רשת.</div>
+
+<h2>8.2 סוגי VPN</h2>
+<table>
+<tr><th>סוג</th><th>מי מתחבר למי</th><th>דוגמה</th></tr>
+<tr><td><b>Site-to-Site</b></td><td>שער (נתב/ASA) לשער – מחבר שתי רשתות שלמות. שקוף למשתמשים</td><td>סניף תל אביב ↔ סניף חיפה</td></tr>
+<tr><td><b>Remote Access</b></td><td>משתמש יחיד (לקוח) ↔ שער החברה</td><td>עובד מהבית ↔ המשרד (Cisco AnyConnect)</td></tr>
+</table>
+<table>
+<tr><th>לפי מי מפעיל</th><th></th></tr>
+<tr><td><b>Enterprise VPN</b></td><td>הארגון מנהל (IPsec, SSL) – מה שנלמד כאן</td></tr>
+<tr><td><b>Service Provider VPN</b></td><td>ספק התקשורת מספק – <b>MPLS</b>, Metro Ethernet (מוזכר בתכנית: MPLS, GRE)</td></tr>
+</table>
+<div class="box mistake"><span class="t">הבהרה חשובה</span>
+"VPN מסחרי" (NordVPN וכו') נועד להסתרת זהות/מיקום – שימוש שונה מ-VPN ארגוני שמחבר משתמש/סניף לרשת החברה בבטחה. בקורס מדובר ב-VPN ארגוני.</div>
+
+<h2>8.3 GRE – מנהור בסיסי (בלי הצפנה!)</h2>
+<p><b>GRE</b> (Generic Routing Encapsulation) הוא פרוטוקול מנהור של סיסקו שעוטף חבילה בתוך חבילת IP חדשה. יתרון: יכול לשאת <b>multicast ו-broadcast</b> (ולכן פרוטוקולי ניתוב כמו OSPF/EIGRP רצים דרכו) וגם תעבורה שאינה IP. חיסרון קריטי: <b>GRE אינו מצפין כלום</b> – הוא רק עוטף. לכן בפועל: <b>GRE over IPsec</b> – GRE נותן את הגמישות (multicast, routing), IPsec נותן את ההצפנה.</p>
+<pre><span class="c">! מנהרת GRE בין R1 ל-R2</span>
+R1(config)# <b>interface tunnel 0</b>
+R1(config-if)# <b>ip address 172.16.1.1 255.255.255.252</b>    <span class="c">! כתובת פנימית של המנהרה</span>
+R1(config-if)# <b>tunnel source 200.1.1.1</b>                   <span class="c">! ה-IP הציבורי המקומי</span>
+R1(config-if)# <b>tunnel destination 200.2.2.2</b>              <span class="c">! ה-IP הציבורי המרוחק</span>
+R1(config-if)# tunnel mode gre ip                            <span class="c">! ברירת מחדל</span>
+<span class="c">! עכשיו מנתבים דרך המנהרה</span>
+R1(config)# ip route 10.2.2.0 255.255.255.0 172.16.1.2
+R1# <b>show ip interface brief | include Tunnel</b>
+R1# show interfaces tunnel 0</pre>
+
+<h2>8.4 IPsec – לב הפרק</h2>
+<p><b>IPsec</b> אינו פרוטוקול יחיד אלא <b>מסגרת</b> (framework) של פרוטוקולים שמאבטחת תעבורה ב<b>שכבה 3</b> (IP). זו התשובה בבגרות: "IPsec נועד לאבטח את חבילת הפרוטוקולים TCP/IP". כיוון שהוא בשכבה 3, הוא מאבטח <i>כל</i> תעבורה מעליו (TCP, UDP, כל אפליקציה) בשקיפות – בניגוד ל-SSL/TLS שבשכבה גבוהה יותר.</p>
+<div class="box exam"><span class="t">בבגרות (שאלה 6א)</span>
+"איזה סוג תקשורת נועדה חבילת הפרוטוקולים IPSEC לאבטח?" – <b>2. TCP/IP</b> (שכבה 3). לא SSH, לא Telnet, לא UDP ספציפית.</div>
+<h3>שני פרוטוקולי ההגנה</h3>
+<table>
+<tr><th></th><th>AH (Authentication Header)</th><th>ESP (Encapsulating Security Payload)</th></tr>
+<tr><td>פרוטוקול IP</td><td>51</td><td>50</td></tr>
+<tr><td>שלמות + אימות</td><td>כן (כולל הכותרת החיצונית)</td><td>כן (המטען)</td></tr>
+<tr><td><b>סודיות (הצפנה)</b></td><td><b>לא!</b></td><td><b>כן</b></td></tr>
+<tr><td>עובד עם NAT</td><td>לא (מגן על הכותרת)</td><td>כן (עם NAT-T)</td></tr>
+<tr><td>שימוש</td><td>כמעט לא בשימוש (אין הצפנה)</td><td><b>הבחירה כמעט תמיד</b></td></tr>
+</table>
+<h3>שני מצבי פעולה</h3>
+<ul>
+<li><b>Transport mode</b> – מצפין רק את המטען (payload); הכותרת המקורית נשמרת. בין שני מארחים.</li>
+<li><b>Tunnel mode</b> – מצפין את כל החבילה המקורית ועוטף בכותרת IP חדשה. בין שערים (site-to-site). <b>הנפוץ.</b></li>
+</ul>
+<h3>ארבעת מרכיבי ה-IPsec (מה שהמנהל צריך לבחור)</h3>
+<table>
+<tr><th>תפקיד</th><th>אפשרויות</th></tr>
+<tr><td>הצפנה (סודיות)</td><td>DES / 3DES / <b>AES</b></td></tr>
+<tr><td>שלמות (hash)</td><td>MD5 / <b>SHA</b> (HMAC)</td></tr>
+<tr><td>אימות הצדדים</td><td><b>PSK</b> (מפתח משותף מראש) / תעודות RSA (PKI – פרק 7)</td></tr>
+<tr><td>החלפת מפתחות</td><td><b>DH</b> (Diffie-Hellman) – קבוצות 1,2,5,14…</td></tr>
+</table>
+<p>שימו לב: כל מה שלמדנו בפרק 7 חוזר כאן – AES לסודיות, SHA-HMAC לשלמות, DH להחלפת מפתחות, RSA/PKI לאימות. IPsec הוא "פרק 7 בפעולה".</p>
+
+<h2>8.5 IKE – ניהול המפתחות והמנהרה</h2>
+<p><b>IKE</b> (Internet Key Exchange, "מפתחות אינטרנט משתנים" בתכנית) הוא הפרוטוקול שמקים את מנהרת ה-IPsec: מבצע DH, מאמת את הצדדים, ומסכים על הפרמטרים. פועל בשני שלבים:</p>
+<div class="box def"><span class="t">IKE Phase 1 – בונים ערוץ ניהול מאובטח (ISAKMP SA)</span>
+הצדדים מסכימים על מדיניות (הצפנה/hash/DH/אימות), מבצעים DH, ומאמתים זה את זה (PSK או תעודות). התוצאה: ערוץ מוצפן <i>דו-כיווני</i> אחד שבו ינוהל שלב 2. מצבים: Main mode (6 הודעות, בטוח) או Aggressive mode (3, מהיר).</div>
+<div class="box def"><span class="t">IKE Phase 2 – בונים את מנהרת הנתונים (IPsec SA)</span>
+בתוך הערוץ המאובטח משלב 1, מסכימים על ה-transform set (ESP-AES-SHA) ומקימים שני <b>SA</b> חד-כיווניים (אחד לכל כיוון) שדרכם תעבור התעבורה בפועל. מצב: Quick mode.</div>
+<p><b>SA</b> (Security Association) – "הסכם" חד-כיווני שמגדיר איך לאבטח זרם תעבורה מסוים, עם מזהה <b>SPI</b>. Phase 2 מייצר PFS (Perfect Forward Secrecy) אם מפעילים DH מחדש – כך שדליפת מפתח אחד לא חושפת תעבורה עבר.</p>
+
+<h2>8.6 הגדרת Site-to-Site IPsec VPN ב-CLI (5 שלבים)</h2>
+<pre><span class="c">! ===== שלב 0: ACL "מעניין" – איזו תעבורה להצפין =====</span>
+R1(config)# <b>access-list 100 permit ip 10.1.1.0 0.0.0.255 10.2.2.0 0.0.0.255</b>
+
+<span class="c">! ===== שלב 1: מדיניות IKE Phase 1 (ISAKMP) =====</span>
+R1(config)# <b>crypto isakmp policy 10</b>
+R1(config-isakmp)# <b>encryption aes 256</b>
+R1(config-isakmp)# <b>hash sha</b>
+R1(config-isakmp)# <b>authentication pre-share</b>
+R1(config-isakmp)# <b>group 14</b>                 <span class="c">! DH group 14 (2048-bit)</span>
+R1(config-isakmp)# lifetime 3600
+R1(config-isakmp)# exit
+<span class="c">! מפתח משותף מראש + כתובת השכן</span>
+R1(config)# <b>crypto isakmp key S3cr3tPSK address 200.2.2.2</b>
+
+<span class="c">! ===== שלב 2: transform set – הגנת Phase 2 =====</span>
+R1(config)# <b>crypto ipsec transform-set TSET esp-aes 256 esp-sha-hmac</b>
+R1(cfg-crypto-trans)# mode tunnel
+R1(cfg-crypto-trans)# exit
+
+<span class="c">! ===== שלב 3: crypto map – מקשר הכול =====</span>
+R1(config)# <b>crypto map CMAP 10 ipsec-isakmp</b>
+R1(config-crypto-map)# <b>set peer 200.2.2.2</b>
+R1(config-crypto-map)# <b>set transform-set TSET</b>
+R1(config-crypto-map)# <b>match address 100</b>          <span class="c">! ה-ACL המעניין</span>
+R1(config-crypto-map)# set pfs group14
+R1(config-crypto-map)# exit
+
+<span class="c">! ===== שלב 4: החלה על הממשק החיצוני =====</span>
+R1(config)# interface g0/0
+R1(config-if)# <b>crypto map CMAP</b>
+<span class="c">! (R2 מוגדר במראה: כתובות ו-ACL הפוכים, אותה מדיניות ואותו PSK)</span></pre>
+<div class="box mistake"><span class="t">טעויות נפוצות ב-IPsec</span>
+• מדיניות Phase 1 לא תואמת בין הצדדים (encryption/hash/group/auth שונים) ⇒ המנהרה לא קמה. <b>שני הצדדים חייבים להסכים.</b><br>
+• PSK שונה משני הצדדים.<br>
+• ה-ACL "המעניין" לא מראה (R1: 10.1→10.2; R2 חייב 10.2→10.1). אם לא הפוך – תעבורה לא נכנסת למנהרה.<br>
+• שכחו <code>crypto map</code> על הממשק – הכול מוגדר אבל כלום לא קורה.<br>
+• יש NAT שמתרגם את התעבורה המעניינת <i>לפני</i> ההצפנה ⇒ ה-ACL לא תואם. פתרון: NAT exemption (ACL עם deny לתעבורת ה-VPN).<br>
+• המנהרה קמה רק כשיש "תעבורה מעניינת" – ping אחד לא מספיק לפעמים; שלחו כמה.</div>
+<h3>וריפיקציה ופתרון תקלות</h3>
+<pre>R1# <b>show crypto isakmp sa</b>          <span class="c">! Phase 1 – מצב QM_IDLE = הצליח</span>
+R1# <b>show crypto ipsec sa</b>           <span class="c">! Phase 2 – ספירת חבילות encrypted/decrypted</span>
+R1# <b>show crypto map</b>
+R1# <b>show crypto session</b>
+R1# debug crypto isakmp
+R1# debug crypto ipsec</pre>
+<div class="box faq"><span class="t">שאלת תלמיד: "איך אני יודע שהמנהרה עובדת ולא סתם ה-ping עובר רגיל?"</span>
+ב-<code>show crypto ipsec sa</code> תראו את המונים <code>#pkts encrypt</code> ו-<code>#pkts decrypt</code> עולים כשאתם שולחים תעבורה בין הרשתות. אם הם עולים – התעבורה עוברת במנהרה מוצפנת. אם ה-ping עובר אבל המונים 0 – התעבורה עוברת <i>מחוץ</i> למנהרה (בעיה ב-ACL המעניין או ב-NAT). זה הכלי הכי חשוב לדיבוג.</div>
+
+<h2>8.7 SSL/TLS VPN</h2>
+<table>
+<tr><th></th><th>IPsec VPN</th><th>SSL VPN</th></tr>
+<tr><td>שכבה</td><td>3 (רשת)</td><td>4–7 (מעל TCP 443)</td></tr>
+<tr><td>לקוח</td><td>צריך תוכנת לקוח מותקנת ומוגדרת</td><td><b>Clientless</b> – רק דפדפן (או לקוח קל AnyConnect)</td></tr>
+<tr><td>מעבר חומות אש/NAT</td><td>לעיתים חסום (פרוטוקולים 50/51, UDP 500)</td><td>עובר בקלות – זה "רק HTTPS" על 443</td></tr>
+<tr><td>גישה</td><td>גישת רשת מלאה</td><td>אפליקציות web ספציפיות (portal) או מלא (tunnel)</td></tr>
+<tr><td>מתאים ל</td><td>site-to-site, גישה קבועה</td><td>גישה מרחוק ממחשב לא מנוהל, ספקים, ניידים</td></tr>
+</table>
+<p>SSL VPN משתמש באותו TLS מפרק 7 (תעודות, DH, AES). זו הסיבה שהוא "פשוט עובד" מכל מקום – חומות אש כמעט תמיד מאפשרות 443.</p>
+
+<h2>8.8 ציוד וארכיטקטורה</h2>
+<ul>
+<li><b>Cisco ASA 5500</b> – מכשיר האבטחה המרכזי: חומת אש + VPN (IPsec ו-SSL) + IPS. יורשו: Firepower.</li>
+<li><b>Cisco PIX 500</b> – חומת האש/VPN ההיסטורית (הוחלפה ב-ASA); מוזכרת בתכנית.</li>
+<li><b>Cisco VPN 3000 Concentrator</b> – ריכוז VPN מרחוק (הופסק); מוזכר בתכנית.</li>
+<li><b>SOHO</b> – נתב קטן עם VPN מובנה לעסק/בית.</li>
+<li>האצת חומרה (בתכנית): <b>VAC+, SPA, AIM</b> – מודולי הצפנה שמורידים עומס מה-CPU. היום מובנה במעבד.</li>
+<li><b>Cisco AnyConnect</b> – לקוח ה-VPN המודרני (IPsec/SSL) למחשב ולנייד.</li>
+</ul>
+
+<h2>8.9 מדריך פקודות מרוכז – פרק 8</h2>
+<table>
+<tr><th>פקודה</th><th>שלב</th></tr>
+<tr><td><code>interface tunnel 0</code> + <code>tunnel source/destination</code></td><td>GRE</td></tr>
+<tr><td><code>crypto isakmp policy N</code> (encryption/hash/authentication/group)</td><td>IKE Phase 1</td></tr>
+<tr><td><code>crypto isakmp key K address PEER</code></td><td>PSK</td></tr>
+<tr><td><code>crypto ipsec transform-set NAME esp-aes esp-sha-hmac</code></td><td>הגנת Phase 2</td></tr>
+<tr><td><code>access-list 100 permit ip SRC DST</code></td><td>תעבורה מעניינת</td></tr>
+<tr><td><code>crypto map NAME N ipsec-isakmp</code> (set peer / transform-set / match address)</td><td>קישור</td></tr>
+<tr><td><code>crypto map NAME</code> (על ממשק)</td><td>החלה</td></tr>
+<tr><td><code>show crypto isakmp sa</code></td><td>וריפיקציה Phase 1</td></tr>
+<tr><td><code>show crypto ipsec sa</code></td><td>וריפיקציה Phase 2 (מונים)</td></tr>
+</table>
+
+<h2>8.10 תרגילים לתלמידים</h2>
+<div class="box ex"><span class="t">תרגיל 1 – מתאים לאיזה VPN?</span>
+לכל תרחיש: Site-to-Site או Remote Access; ו-IPsec או SSL.<br>
+א. חיבור קבוע בין 3 סניפים. ב. עובד שמתחבר מבית קפה מהלפטופ. ג. ספק חיצוני שצריך לגשת לאפליקציית web אחת ממחשב לא מנוהל. ד. שרתי שני מוקדי נתונים שצריכים להעביר גיבויים.
+<div class="ans">א. Site-to-Site / IPsec &nbsp; ב. Remote Access / IPsec או SSL (AnyConnect) &nbsp; ג. Remote Access / SSL clientless &nbsp; ד. Site-to-Site / IPsec</div></div>
+<div class="box ex"><span class="t">תרגיל 2 – AH או ESP?</span>
+א. צריך גם הצפנה. ב. הצדדים מאחורי NAT. ג. רוצים רק לוודא שהחבילה לא שונתה בלי להצפין. מה נבחר בכל מקרה, ולמה בפועל תמיד ESP?
+<div class="ans">א. ESP (רק הוא מצפין). ב. ESP (AH נשבר עם NAT). ג. תיאורטית AH, אבל בפועל ESP במצב authentication-only. תמיד ESP כי AH לא מצפין ולא עובד עם NAT.</div></div>
+<div class="box ex"><span class="t">תרגיל 3 – זהו את התקלה</span>
+המנהל הגדיר IPsec, <code>show crypto isakmp sa</code> מראה QM_IDLE, אבל ping בין הרשתות נכשל ו-<code>show crypto ipsec sa</code> מראה 0 encrypted. מה כנראה הבעיה?
+<div class="ans">Phase 1 הצליח (יש ISAKMP SA), אבל Phase 2 לא מעביר תעבורה: כנראה ה-ACL המעניין לא תואם/לא הפוך בין הצדדים, או ש-NAT מתרגם את התעבורה לפני ההצפנה. בודקים <code>match address</code> ו-NAT exemption.</div></div>
+<div class="box ex"><span class="t">תרגיל 4 – מיפוי לפרק 7</span>
+בקונפיג: <code>encryption aes 256</code>, <code>hash sha</code>, <code>group 14</code>, <code>authentication pre-share</code>. לכל אחד – איזו מטרת CIA/תפקיד הוא ממלא ואיזה מושג מפרק 7 הוא?
+<div class="ans">aes 256 → סודיות (סימטרי). sha → שלמות (HMAC). group 14 → החלפת מפתחות (Diffie-Hellman). pre-share → אימות הצדדים (חלופה: תעודות RSA/PKI).</div></div>
+
+<h2>8.11 שאלות בסגנון בגרות</h2>
+<div class="box exam"><span class="t">שאלה 1</span>
+איזה סוג תקשורת נועדה חבילת הפרוטוקולים IPsec לאבטח? SSH / TCP/IP / TELNET / UDP
+<div class="ans"><b>TCP/IP</b> (שכבה 3 – ולכן כל התעבורה מעליו).</div></div>
+<div class="box exam"><span class="t">שאלה 2</span>
+מהו ההבדל בין AH ל-ESP, ומדוע בפועל משתמשים ב-ESP?
+<div class="ans">AH – שלמות ואימות בלבד, ללא הצפנה. ESP – שלמות, אימות <b>והצפנה</b>. משתמשים ב-ESP כי רק הוא נותן סודיות, וגם עובד עם NAT.</div></div>
+<div class="box exam"><span class="t">שאלה 3</span>
+מה תפקיד IKE Phase 1 לעומת Phase 2?
+<div class="ans">Phase 1 – בונה ערוץ ניהול מאובטח (ISAKMP SA): DH, אימות הצדדים, הסכמה על מדיניות. Phase 2 – בונה בתוכו את מנהרות הנתונים (IPsec SA) שדרכן עוברת התעבורה.</div></div>
+<div class="box exam"><span class="t">שאלה 4</span>
+מדוע GRE לבדו אינו מספיק לחיבור מאובטח בין סניפים, וכיצד פותרים?
+<div class="ans">GRE עוטף אך אינו מצפין – התעבורה גלויה. פתרון: GRE over IPsec – GRE לגמישות (multicast/routing), IPsec להצפנה.</div></div>
+<div class="box exam"><span class="t">שאלה 5</span>
+מתי נעדיף SSL VPN על פני IPsec VPN?
+<div class="ans">גישה מרחוק ממחשב לא מנוהל / דרך דפדפן בלבד (clientless), וכשצריך לעבור חומות אש/NAT בקלות – SSL על 443 עובר כמעט תמיד.</div></div>
+<div class="box exam"><span class="t">שאלה 6</span>
+השלימו את הפקודה שמגדירה transform set עם AES ו-SHA: <code>crypto ipsec transform-set TSET ______ ______</code>
+<div class="ans"><code>esp-aes esp-sha-hmac</code></div></div>
+
+<h2>8.12 מעבדה (3 שעות) – IPsec Site-to-Site ב-Packet Tracer</h2>
+<ol>
+<li>טופולוגיה: LAN1 (10.1.1.0/24) — R1 — "אינטרנט" (R-ISP) — R2 — LAN2 (10.2.2.0/24). ודאו ניתוב מקצה לקצה (ping עובר לפני VPN).</li>
+<li>ב-R1 ו-R2 הגדירו את 5 השלבים מ-8.6 (במראה). PSK זהה, מדיניות זהה, ACL הפוך.</li>
+<li>מ-PC ב-LAN1 עשו ping ל-PC ב-LAN2 – יופעל "interesting traffic".</li>
+<li><code>show crypto isakmp sa</code> ⇒ QM_IDLE. <code>show crypto ipsec sa</code> ⇒ מונים עולים.</li>
+<li>ב-Simulation mode לכדו חבילה על קו ה"אינטרנט" – ראו שהיא ESP ולא ניתן לקרוא את התוכן.</li>
+<li><b>GRE (אופציונלי):</b> הקימו מנהרת GRE והריצו OSPF דרכה; ראו ש-multicast של OSPF עובר – מה שלא היה עובד ב-IPsec לבדו.</li>
+</ol>
+
+<h2>בנק שאלות שתלמידים שואלים – ותשובות מוכנות</h2>
+<p>שאלות נפוצות בפרק ה-VPN, עם תשובות מוכנות.</p>
+<p><b>ש: "מה ההבדל בין ה-VPN שאנחנו לומדים ל-VPN מסחרי כמו NordVPN?"</b><br>ת: VPN מסחרי נועד להסתיר את הזהות/המיקום שלכם ולעקוף חסימות. VPN <u>ארגוני</u> (מה שאנחנו לומדים) מחבר בבטחה עובד או סניף אל רשת החברה. אותה טכנולוגיית מנהרה מוצפנת, מטרות שונות.</p>
+<p><b>ש: "אם GRE יוצר מנהרה, למה הוא לא מספיק לחיבור מאובטח?"</b><br>ת: כי GRE רק <u>עוטף</u> את החבילה – הוא <b>לא מצפין</b> כלום. כל מי שמאזין בדרך רואה את התוכן. לכן משלבים "GRE over IPsec": GRE נותן גמישות (מעביר multicast/ניתוב), IPsec נותן את ההצפנה.</p>
+<p><b>ש: "IPsec מצפין – אז מה זה AH ו-ESP?"</b><br>ת: שני "אופנים" של IPsec. <b>AH</b> נותן שלמות ואימות בלבד – <u>בלי הצפנה</u>. <b>ESP</b> נותן שלמות, אימות <u>וגם הצפנה</u>. בפועל תמיד משתמשים ב-ESP (רק הוא מצפין, וגם עובד עם NAT).</p>
+<p><b>ש: "למה IKE עובד בשני שלבים? זה נשמע מסובך."</b><br>ת: Phase 1 בונה קודם <u>ערוץ ניהול מאובטח</u> אחד (מבצע Diffie-Hellman ומאמת את הצדדים). רק בתוך הערוץ המוגן הזה, Phase 2 בונה את מנהרות הנתונים בפועל. זה כמו קודם לבנות חדר סגור, ואז לנהל בו את המשא-ומתן.</p>
+<p><b>ש: "איך אני יודע שהמנהרה באמת עובדת ולא שה-ping סתם עובר רגיל?"</b><br>ת: <code>show crypto ipsec sa</code> – מסתכלים על המונים <code>#pkts encrypt/decrypt</code>. אם הם עולים כששולחים תעבורה, היא באמת עוברת מוצפנת. אם ה-ping עובר אבל המונים 0 – התעבורה עוברת <u>מחוץ</u> למנהרה (בעיה ב-ACL המעניין או ב-NAT).</p>
+<p><b>ש: "מתי עדיף SSL VPN על IPsec?"</b><br>ת: כשצריך גישה מרחוק ממחשב <u>לא מנוהל</u> או דרך דפדפן בלבד (clientless), וכשרוצים מעבר קל דרך חומות אש – SSL רץ על פורט 443 שכמעט תמיד פתוח. IPsec מתאים יותר לחיבורים קבועים (סניף לסניף).</p>
+<p><b>ש: "המנהרה קמה (QM_IDLE) אבל ה-ping נכשל. מה קורה?"</b><br>ת: Phase 1 הצליח (יש ISAKMP SA) אבל Phase 2 לא מעביר תעבורה. הסיבות הנפוצות: ה-ACL "המעניין" לא <u>הפוך</u> בין שני הצדדים, או ש-NAT מתרגם את התעבורה <i>לפני</i> ההצפנה. בודקים <code>match address</code> ופטור מ-NAT.</p>
+<p><b>ש: "כל מה שהגדרתי ב-IPsec נראה נכון אבל המנהרה לא קמה בכלל. מה לבדוק?"</b><br>ת: מדיניות Phase 1 חייבת להיות <u>זהה</u> בשני הצדדים (encryption/hash/DH group/authentication) וגם ה-PSK זהה. אי-התאמה של אחד מהם מונעת מהמנהרה לקום. בודקים עם <code>show crypto isakmp sa</code> ו-<code>debug crypto isakmp</code>.</p>
+
+<h2>מילון מונחים – הגדרות</h2>
+<p>הגדרות תמציתיות של המונחים המרכזיים בפרק. שימושי גם כדף עזר לבחינה.</p>
+<table>
+<tr><th>מונח</th><th>הגדרה</th></tr>
+<tr><td><b>VPN</b></td><td>רשת פרטית וירטואלית – מנהרה מוצפנת דרך רשת ציבורית.</td></tr>
+<tr><td><b>Site-to-Site</b></td><td>VPN בין שני שערים (סניפים), שקוף למשתמשים.</td></tr>
+<tr><td><b>Remote Access</b></td><td>VPN של משתמש יחיד (עובד מהבית) אל שער החברה.</td></tr>
+<tr><td><b>GRE</b></td><td>פרוטוקול מנהור שעוטף חבילות (כולל multicast) – אך אינו מצפין.</td></tr>
+<tr><td><b>IPsec</b></td><td>מסגרת פרוטוקולים לאבטחת תעבורה בשכבה 3 (TCP/IP).</td></tr>
+<tr><td><b>AH</b></td><td>פרוטוקול IPsec: שלמות ואימות בלבד – ללא הצפנה.</td></tr>
+<tr><td><b>ESP</b></td><td>פרוטוקול IPsec: שלמות, אימות והצפנה; הבחירה המקובלת.</td></tr>
+<tr><td><b>Transport / Tunnel mode</b></td><td>IPsec בין מארחים (transport) או בין שערים עם עטיפה (tunnel).</td></tr>
+<tr><td><b>IKE</b></td><td>פרוטוקול שמקים את מנהרת ה-IPsec (מבצע DH ואימות).</td></tr>
+<tr><td><b>Phase 1 / Phase 2</b></td><td>IKE: בונה ערוץ ניהול מאובטח (1) ואז את מנהרות הנתונים (2).</td></tr>
+<tr><td><b>SA (Security Association)</b></td><td>הסכם חד-כיווני המגדיר איך לאבטח זרם תעבורה, עם מזהה SPI.</td></tr>
+<tr><td><b>PSK (Pre-Shared Key)</b></td><td>מפתח משותף מראש לאימות הצדדים ב-IKE (חלופה לתעודות).</td></tr>
+<tr><td><b>Transform set</b></td><td>צירוף אלגוריתמי ההגנה של Phase 2 (למשל esp-aes esp-sha-hmac).</td></tr>
+<tr><td><b>Crypto map</b></td><td>אובייקט שמקשר peer, transform set ו-ACL 'מעניין', ומוחל על ממשק.</td></tr>
+<tr><td><b>interesting traffic</b></td><td>התעבורה (מוגדרת ב-ACL) שאמורה לעבור במנהרה המוצפנת.</td></tr>
+<tr><td><b>SSL/TLS VPN</b></td><td>VPN מעל TCP 443; לרוב clientless (דרך דפדפן); עובר חומות אש בקלות.</td></tr>
+<tr><td><b>Cisco ASA</b></td><td>מכשיר אבטחה המשלב חומת אש, VPN ו-IPS.</td></tr>
+</table>

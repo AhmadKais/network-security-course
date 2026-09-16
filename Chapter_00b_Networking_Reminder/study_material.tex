@@ -1,0 +1,285 @@
+\documentclass[11pt]{article}
+\usepackage{fontspec}
+\directlua{luaotfload.add_fallback("hebfb",{"DejaVu Sans:mode=harf"})}
+\usepackage{polyglossia}
+\setdefaultlanguage{hebrew}
+\setotherlanguage{english}
+\setmainfont{Noto Sans Hebrew}[Script=Hebrew,RawFeature={fallback=hebfb}]
+\newfontfamily\codefont{DejaVu Sans Mono}[RawFeature={fallback=hebfb}]
+\usepackage[a4paper,margin=18mm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{mdframed}
+\usepackage{tabularx}
+\usepackage{xltabular}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\setlist{leftmargin=1.6em,itemsep=1pt,topsep=2pt}
+% colors
+\definecolor{h1}{HTML}{1E3A8A}\definecolor{h2}{HTML}{1E40AF}\definecolor{h3}{HTML}{0F172A}
+\definecolor{subgray}{HTML}{64748B}\definecolor{hdrbg}{HTML}{E0E7FF}
+\definecolor{cfg}{HTML}{E2E8F0}\definecolor{cbg}{HTML}{0F172A}\definecolor{cbold}{HTML}{7DD3FC}\definecolor{ccom}{HTML}{94A3B8}
+\definecolor{metabg}{HTML}{F1F5F9}
+\newcommand{\enLR}[1]{\textenglish{#1}}
+\newcommand{\code}[1]{\textenglish{\codefont #1}}
+\newcommand{\chapterheading}[1]{\vspace{2pt}{\LARGE\bfseries\color{h1}#1\par}\vskip2pt{\color{h1}\hrule height 2pt}\vskip6pt}
+\newcommand{\sectionheading}[1]{\vskip10pt\penalty-200{\large\bfseries\color{h2}#1\par}\vskip3pt}
+\newcommand{\subheading}[1]{\vskip6pt{\bfseries\color{h3}#1\par}\vskip2pt}
+\newcommand{\boxtitle}[1]{{\bfseries\color{boxti}#1}}
+% box environments (right border, tinted bg)
+\newmdenv[topline=false,bottomline=false,leftline=false,rightline=true,linewidth=2pt,innermargin=0pt,skipabove=6pt,skipbelow=6pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt]{genericbox}
+\definecolor{faqbg}{HTML}{ECFDF5}\definecolor{faqfr}{HTML}{10B981}\definecolor{faqti}{HTML}{065F46}
+\definecolor{misbg}{HTML}{FEF2F2}\definecolor{misfr}{HTML}{EF4444}\definecolor{misti}{HTML}{991B1B}
+\definecolor{tipbg}{HTML}{FFFBEB}\definecolor{tipfr}{HTML}{F59E0B}\definecolor{tipti}{HTML}{92400E}
+\definecolor{exabg}{HTML}{EFF6FF}\definecolor{exafr}{HTML}{3B82F6}\definecolor{exati}{HTML}{1E3A8A}
+\definecolor{defbg}{HTML}{F5F3FF}\definecolor{deffr}{HTML}{8B5CF6}\definecolor{defti}{HTML}{5B21B6}
+\definecolor{stobg}{HTML}{FDF4FF}\definecolor{stofr}{HTML}{D946EF}\definecolor{stoti}{HTML}{86198F}
+\definecolor{exbg}{HTML}{F0FDFA}\definecolor{exfr}{HTML}{14B8A6}\definecolor{exti}{HTML}{115E59}
+\newenvironment{faqbox}{\colorlet{boxti}{faqti}\begin{mdframed}[backgroundcolor=faqbg,linecolor=faqfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{mistakebox}{\colorlet{boxti}{misti}\begin{mdframed}[backgroundcolor=misbg,linecolor=misfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{tipbox}{\colorlet{boxti}{tipti}\begin{mdframed}[backgroundcolor=tipbg,linecolor=tipfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{exambox}{\colorlet{boxti}{exati}\begin{mdframed}[backgroundcolor=exabg,linecolor=exafr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{defbox}{\colorlet{boxti}{defti}\begin{mdframed}[backgroundcolor=defbg,linecolor=deffr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{storybox}{\colorlet{boxti}{stoti}\begin{mdframed}[backgroundcolor=stobg,linecolor=stofr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{exbox}{\colorlet{boxti}{exti}\begin{mdframed}[backgroundcolor=exbg,linecolor=exfr,rightline=true,leftline=false,topline=false,bottomline=false,linewidth=2pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=6pt]}{\end{mdframed}}
+\newenvironment{metabox}{\begin{mdframed}[backgroundcolor=metabg,linewidth=0pt,innertopmargin=5pt,innerbottommargin=5pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=4pt,skipbelow=8pt]}{\end{mdframed}}
+\newmdenv[backgroundcolor=cbg,linewidth=0pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt,skipabove=6pt,skipbelow=8pt]{codebox}
+\setlength{\parindent}{0pt}\setlength{\parskip}{4pt}
+\renewcommand{\thepage}{\enLR{\arabic{page}}}
+\pagestyle{fancy}\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}
+\begin{document}
+\sloppy
+\chapterheading{תזכורת רשתות תקשורת}{\small\color{subgray}רענון לקראת חלק א' של הבגרות · אינו מחליף את קורס הרשתות\par}\vskip4pt
+
+\begin{metabox}\textbf{מטרה:} לרענן את מושגי הרשתות הנדרשים לחלק א' של שאלון \enLR{735001 (50} נק')\\ \textbf{הערה:} החומר נלמד בהרחבה אצל מורה הרשתות; זהו דף עזר מרוכז לחזרה\end{metabox}
+
+\sectionheading{\enLR{1.} מודל \enLR{OSI} ו-\enLR{TCP/IP} – היכן יושב כל דבר}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{פרוטוקולים / התקנים} & \textbf{יחידה} & \textbf{\#} & \textbf{שכבה \enLR{OSI}} \\
+\hline
+\endhead
+\enLR{HTTP, HTTPS, DNS, DHCP, FTP, SMTP, IMAP, SSH, Telnet, SNMP} & \enLR{Data} & \enLR{7}–\enLR{5} & \enLR{Application / Presentation / Session} \\
+\hline
+\textbf{\enLR{TCP}} (אמין, מספרי רצף, לחיצת יד), \textbf{\enLR{UDP}} (מהיר, ללא חיבור) & \enLR{Segment} & \enLR{4} & \enLR{Transport} \\
+\hline
+\enLR{IP, ICMP, OSPF}; \textbf{נתב \enLR{(Router)}} & \enLR{Packet} & \enLR{3} & \enLR{Network} \\
+\hline
+\enLR{Ethernet, ARP, STP}; \textbf{מתג \enLR{(Switch)}}, כתובות \enLR{MAC} & \enLR{Frame} & \enLR{2} & \enLR{Data Link} \\
+\hline
+כבלים, חשמל & \enLR{Bits} & \enLR{1} & \enLR{Physical} \\
+\hline
+\end{xltabular}
+
+\begin{exambox}\boxtitle{נשאל בבגרות (נכון/לא נכון)}\par  \enLR{TCP} פועל בשכבה \enLR{4} (לא \enLR{3}!) · \enLR{IMAP} מקבל דוא"ל (נכון) · \enLR{UDP} \underline{אינו} יוצר תקשורת אמינה (לא נכון – זה \enLR{TCP).}\end{exambox}
+
+\sectionheading{\enLR{2.} בסיסי ספירה: בינארי · הקסדצימלי · אוקטלי}
+
+\begin{itemize}
+\item \enLR{1} ספרה הקסדצימלית = \enLR{4} ביטים; \enLR{1} ספרה אוקטלית = \enLR{3} ביטים.
+\item המרה: הקס → בינארי (כל ספרה ל-\enLR{4} ביט), ואז לקבץ ל-\enLR{3} לאוקטלי.
+\end{itemize}
+
+\begin{exambox}\boxtitle{דוגמה (כמו בבגרות): \enLR{BA3F} בהקס}\par  \enLR{B=1011, A=1010, 3=0011, F=1111} ⇒ \textbf{בינארי:} \enLR{1011 1010 0011 1111}\newline  לאוקטלי מקבצים \enLR{3} ביטים מימין: \enLR{1 011 101 000 111 111} ⇒ \textbf{אוקטלי:} \enLR{135077}\end{exambox}
+
+\sectionheading{\enLR{3.} כתובות \enLR{IPv4}, סאבנטים ו-\enLR{Wildcard}}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\enLR{10.0.0.0/8} · \enLR{172.16.0.0/12} · \enLR{192.168.0.0/16} & \textbf{כתובות פרטיות} \\
+\hline
+\enLR{2}\textsuperscript{\enLR{(32}−\enLR{prefix)}} − \enLR{2} (פחות כתובת רשת ו-\enLR{broadcast)} & \textbf{מספר מארחים שמישים} \\
+\hline
+\enLR{255.255.255.255} − \enLR{subnet mask} & \textbf{\enLR{Wildcard}} \\
+\hline
+\end{xltabular}
+
+\subheading{טבלת ייחוס מהירה}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{\enLR{Wildcard}} & \textbf{מארחים שמישים} & \textbf{גודל בלוק} & \textbf{\enLR{Subnet mask}} & \textbf{\enLR{Prefix}} \\
+\hline
+\endhead
+\enLR{0.0.0.255} & \enLR{254} & \enLR{256} & \enLR{255.255.255.0} & /\enLR{24} \\
+\hline
+\enLR{0.0.0.127} & \enLR{126} & \enLR{128} & \enLR{255.255.255.128} & /\enLR{25} \\
+\hline
+\enLR{0.0.0.63} & \enLR{62} & \enLR{64} & \enLR{255.255.255.192} & /\enLR{26} \\
+\hline
+\enLR{0.0.0.31} & \enLR{30} & \enLR{32} & \enLR{255.255.255.224} & /\enLR{27} \\
+\hline
+\enLR{0.0.0.15} & \enLR{14} & \enLR{16} & \enLR{255.255.255.240} & /\enLR{28} \\
+\hline
+\enLR{0.0.0.3} & \enLR{2} & \enLR{4} & \enLR{255.255.255.252} & /\enLR{30} \\
+\hline
+\end{xltabular}
+
+\begin{exambox}\boxtitle{דוגמאות מהבגרות}\par  • מספר מארחים שמישים ב-\code{172.16.16.16/28} ⇒ \enLR{2}\textsuperscript{\enLR{4}}−\enLR{2} = \textbf{\enLR{14}}.\newline  • \code{135.8.x/26} ⇒ \enLR{Subnet mask} = \textbf{\enLR{255.255.255.192}} · \enLR{Wildcard} = \textbf{\enLR{0.0.0.63}}.\newline  • מציאת הרשת: לכתובת עם /\enLR{30}, הבלוקים הם \enLR{0,4,8}… ⇒ \code{10.10.2.20/30} ⟵ רשת .\enLR{20}, מארחים שמישים .\enLR{21}–.\enLR{22, broadcast .23.}\end{exambox}
+
+\sectionheading{\enLR{4. IPv6} – קיצור וסוגי כתובות}
+
+\subheading{כללי קיצור}
+
+\begin{itemize}
+\item משמיטים אפסים מובילים בכל בלוק (\code{130F} נשאר, \code{0000}→\code{0}).
+\item \code{::} מחליף רצף אחד של בלוקי אפסים (פעם אחת בלבד בכתובת).
+\end{itemize}
+
+\begin{exambox}\boxtitle{דוגמה מהבגרות}\par  \code{3001:0000:130F:0000:0000:0000:0001:133B} ⇒ \textbf{\code{3001:0:130F::1:133B}}\end{exambox}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{תפקיד} & \textbf{תחילית} & \textbf{סוג כתובת} \\
+\hline
+\endhead
+ניתובה באינטרנט (כמו כתובת ציבורית) & \enLR{2000::/3} & \textbf{\enLR{Global Unicast}} \\
+\hline
+תקשורת בקו/רשת מקומית בלבד; לא עוברת נתב & \enLR{FE80::/10} & \textbf{\enLR{Link-Local}} \\
+\hline
+\textbf{תקשורת בין תתי-רשתות פנימיות, לא ניתובה באינטרנט} (מקביל לכתובת פרטית) & \enLR{FC00::/7 (FD00::/8)} & \textbf{\enLR{Unique Local (ULA)}} \\
+\hline
+שידור לקבוצה & \enLR{FF00::/8} & \textbf{\enLR{Multicast}} \\
+\hline
+\end{xltabular}
+
+\begin{exambox}\boxtitle{נשאל בבגרות}\par  "סוג כתובת המספק תקשורת בין תתי-רשתות אך שאינו ניתוב באינטרנט" ⇒ \textbf{\enLR{Unique Local}}.\end{exambox}
+
+\sectionheading{\enLR{5.} פרוטוקולים ופורטים חשובים}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{תפקיד} & \textbf{\enLR{TCP/UDP}} & \textbf{פורט} & \textbf{פרוטוקול} \\
+\hline
+\endhead
+העברת קבצים & \enLR{TCP} & \enLR{20/21} & \enLR{FTP} \\
+\hline
+ניהול מרחוק מוצפן & \enLR{TCP} & \enLR{22} & \enLR{SSH} \\
+\hline
+ניהול מרחוק (לא מוצפן!) & \enLR{TCP} & \enLR{23} & \enLR{Telnet} \\
+\hline
+שליחת דוא"ל & \enLR{TCP} & \enLR{25} & \enLR{SMTP} \\
+\hline
+תרגום שם ⇄ כתובת & \enLR{UDP/TCP} & \enLR{53} & \enLR{DNS} \\
+\hline
+הקצאת כתובות אוטומטית & \enLR{UDP} & \enLR{67/68} & \enLR{DHCP} \\
+\hline
+גלישה & \enLR{TCP} & \enLR{80 / 443} & \enLR{HTTP / HTTPS} \\
+\hline
+קבלת דוא"ל & \enLR{TCP} & \enLR{143 / 110} & \enLR{IMAP / POP3} \\
+\hline
+ניטור ציוד & \enLR{UDP} & \enLR{161} & \enLR{SNMP} \\
+\hline
+יומן אירועים & \enLR{UDP} & \enLR{514} & \enLR{Syslog} \\
+\hline
+\end{xltabular}
+
+\sectionheading{\enLR{6.} ניתוב: מרחק ניהולי, ניתוב סטטי ו-\enLR{DHCP Relay}}
+
+\subheading{מרחק ניהולי \enLR{(Administrative Distance)} – "עד כמה סומכים על מקור המידע" (נמוך = עדיף)}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{\enLR{AD}} & \textbf{מקור} \\
+\hline
+\endhead
+\enLR{0} & \enLR{Connected} (מחובר ישירות) \\
+\hline
+\enLR{1} & ניתוב סטטי \enLR{(Static)} \\
+\hline
+\enLR{20} & \enLR{External BGP} \\
+\hline
+\enLR{90} & \enLR{Internal EIGRP} \\
+\hline
+\enLR{110} & \enLR{OSPF} \\
+\hline
+\enLR{120} & \enLR{RIP} \\
+\hline
+\end{xltabular}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+\textcolor{ccom}{\texthebrew{! ניתוב סטטי: אל רשת היעד, דרך ה-\enLR{next-hop}}}\\
+R1(config)\# \textcolor{cbold}{\textbf{ip route 10.10.2.20 255.255.255.252 10.10.255.1}}\\
+\textcolor{ccom}{\texthebrew{! ניתוב ברירת מחדל (לאינטרנט / כגיבוי)}}\\
+R1(config)\# \textcolor{cbold}{\textbf{ip route 0.0.0.0 0.0.0.0 200.1.1.1}}\\
+\textcolor{ccom}{\texthebrew{! גיבוי \enLR{(floating static)} – \enLR{AD} גבוה מ-\enLR{OSPF} כדי שלא יבטל את הניתוב הדינמי}}\\
+R1(config)\# ip route 10.0.0.0 255.0.0.0 200.1.1.2 \textcolor{cbold}{\textbf{120}}
+\end{english}\end{codebox}
+
+\begin{exambox}\boxtitle{\enLR{DHCP Relay} – כשהשרת ברשת אחרת}\par  בקשת \enLR{DHCP} היא \enLR{broadcast} ואינה עוברת נתב. מגדירים על הממשק של הלקוח את כתובת שרת ה-\enLR{DHCP}: \enLR{R1(config)\# interface g0/0 R1(config-if)}\# \textbf{\enLR{ip helper-address 192.50.100.100}} ! כתובת שרת ה-\enLR{DHCP}\end{exambox}
+
+\sectionheading{\enLR{7.} מיתוג: \enLR{VLAN, Trunk} ו-\enLR{Router-on-a-Stick}}
+
+\begin{itemize}
+\item \textbf{\enLR{VLAN}} – מפצל מתג לרשתות לוגיות מבודדות. מעבר בין \enLR{VLAN}ים דורש ניתוב.
+\item \textbf{\enLR{Trunk (802.1Q)}} – קישור שנושא כמה \enLR{VLAN}ים בין מתגים; מוסיף תג של מספר ה-\enLR{VLAN.}
+\item \textbf{\enLR{Router-on-a-Stick}} – נתב עם תת-ממשקים \enLR{(subinterfaces)}, אחד לכל \enLR{VLAN}, לניתוב ביניהם.
+\end{itemize}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+\textcolor{ccom}{\texthebrew{! ניתוב בין \enLR{VLAN}ים על ממשק פיזי אחד}}\\
+R1(config)\# interface g0/0/1.10\\
+R1(config-subif)\# \textcolor{cbold}{\textbf{encapsulation dot1Q 10}}\\
+R1(config-subif)\# \textcolor{cbold}{\textbf{ip address 172.18.1.254 255.255.0.0}}\\
+R1(config)\# interface g0/0/1.20\\
+R1(config-subif)\# encapsulation dot1Q 20\\
+R1(config-subif)\# ip address 172.18.2.254 255.255.0.0\\
+\textcolor{ccom}{\texthebrew{! בדיקת טבלת ה-\enLR{MAC} של המתג}}\\
+S1\# \textcolor{cbold}{\textbf{show mac address-table}}
+\end{english}\end{codebox}
+
+\sectionheading{\enLR{8. STP} ו-\enLR{OSPF} – כללי הבחירה (נשאלים כמעט תמיד)}
+
+\begin{defbox}\boxtitle{\enLR{STP} – בחירת \enLR{Root Bridge}}\par  \enLR{Bridge ID} = \textbf{\enLR{Priority}} (ברירת מחדל \enLR{32768)} + \textbf{\enLR{MAC}}.\newline  מנצח: ה-\enLR{Priority} \underline{הנמוך}; בתיקו – ה-\textbf{\enLR{MAC} הנמוך}.\newline  \enLR{STP} פועל בשכבה \textbf{\enLR{2}} ומונע לולאות ע"י \textbf{חסימת יציאות} \enLR{(port blocking).}\end{defbox}
+\begin{defbox}\boxtitle{\enLR{OSPF} – בחירת \enLR{DR / BDR}}\par  מנצח: ה-\textbf{\enLR{Priority} הגבוה}; בתיקו – ה-\textbf{\enLR{Router-ID} הגבוה}.\newline  \underline{שימו לב – הפוך מ-\enLR{STP}:} ב-\enLR{STP} נמוך מנצח, ב-\enLR{OSPF} גבוה מנצח.\end{defbox}
+
+\begin{exambox}\boxtitle{דוגמאות מהבגרות}\par  • \enLR{4} מתגים, \enLR{priority} זהה, \enLR{MAC} הנמוך ⇒ אותו מתג הופך ל-\enLR{root.}\newline  • \enLR{OSPF: R1(pri 2, RID 1.1.1.1), R3(pri 2, RID 3.3.3.3)} ⇒ בין בעלי \enLR{priority 2} מנצח \enLR{R3 (RID} גבוה) כ-\textbf{\enLR{DR}}, ו-\enLR{R1} כ-\textbf{\enLR{BDR}}.\end{exambox}
+
+\sectionheading{\enLR{9.} פקודות \enLR{CLI} ואבחון תקלות}
+
+\begin{xltabular}{\linewidth}{|>{\setRTL\raggedleft\arraybackslash}X|>{\setRTL\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{hdrbg}\textbf{הנחיה} & \textbf{מצב} \\
+\hline
+\endhead
+\code{Router>} – פקודות \enLR{show} בסיסיות, \enLR{ping} & \enLR{User EXEC} \\
+\hline
+\code{Router\#} – \code{enable} & \enLR{Privileged EXEC} \\
+\hline
+\code{Router(config)\#} – \code{configure terminal} & \enLR{Global config} \\
+\hline
+\code{Router(config-if)\#} & \enLR{Interface} \\
+\hline
+\end{xltabular}
+
+\begin{codebox}\begin{english}\codefont\footnotesize\color{cfg}\setlength{\parindent}{0pt}
+Switch(config)\# \textcolor{cbold}{\textbf{hostname R1}}\\
+R1(config)\# interface g0/1\\
+R1(config-if)\# \textcolor{cbold}{\textbf{no switchport}}          \textcolor{ccom}{\texthebrew{! הופך פורט מתג \enLR{L3} לפורט מנותב}}\\
+R1(config-if)\# ip address 10.100.20.42 255.255.255.0\\
+R1(config-if)\# no shutdown\\
+\textcolor{ccom}{\texthebrew{! בדיקות נפוצות}}\\
+R1\# show ip interface brief\\
+R1\# show ip route\\
+R1\# show running-config
+\end{english}\end{codebox}
+
+\subheading{אבחון תקלות – שיטת \enLR{Top-Down}}
+
+בודקים מהשכבה העליונה כלפי מטה: גישה לאפליקציה/שירות ⟶ הגדרות רשת \enLR{(IP/gateway/DNS)} ⟶ חיבור פיזי (כבל, נורית). דוגמה: בדיקת גישה לנתב החברה ⟶ בדיקת הגדרות ⟶ בדיקת כבל רשת.\par
+
+\begin{exambox}\boxtitle{פקודות אבחון בתחנת קצה \enLR{(Windows)}}\par  • \code{ipconfig /all} – \enLR{IP, MAC, gateway, DNS.}\newline  • \code{ipconfig /displaydns} – \textbf{הצגת זיכרון המטמון \enLR{(cache)} של ה-\enLR{DNS}} במחשב.\newline  • \code{ipconfig /flushdns} – איפוס המטמון. • \code{nslookup}, \code{ping}, \code{tracert}, \code{arp -a}.\end{exambox}
+
+\begin{exambox}\boxtitle{\enLR{CDP}}\par  פרוטוקול \textbf{\enLR{CDP}} מאפשר לזהות התקנים סמוכים של סיסקו ברשת המקומית (\code{show cdp neighbors}). מטעמי אבטחה מכבים אותו על פורטי קצה (\code{no cdp enable}).\end{exambox}
+
+\sectionheading{\enLR{10.} תרגילי חזרה מהירים}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{1}}\par  א. כמה מארחים שמישים ב-\code{/27}? ב. מהי ה-\enLR{wildcard} של \code{10.20.0.0/16}? ג. באיזו שכבה פועל \enLR{TCP}? \par\vskip2pt\hrule\vskip3pt\textbf{}א. \enLR{30} ב. \enLR{0.0.255.255} ג. שכבה \enLR{4 (Transport)}\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{2}}\par  קצרו: \code{2001:0DB8:0000:0000:0000:00FF:0000:0001} \par\vskip2pt\hrule\vskip3pt\textbf{}\code{2001:DB8::FF:0:1}\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{3}}\par  לנתב יש מסלול \enLR{OSPF (AD 110)} ומסלול סטטי \enLR{(AD 1)} לאותה רשת. איזה ייבחר ולמה? \par\vskip2pt\hrule\vskip3pt\textbf{}הסטטי – ה-\enLR{AD} הנמוך יותר מעיד על מקור מהימן/מועדף.\end{exbox}
+
+\begin{exbox}\boxtitle{תרגיל \enLR{4}}\par  מנהל רוצה ששרת \enLR{DHCP} ברשת אחרת יקצה כתובות ללקוחות ברשת של \enLR{R1.} איזו פקודה נדרשת ועל איזה ממשק? \par\vskip2pt\hrule\vskip3pt\textbf{}\code{ip helper-address <IP של שרת ה-DHCP>} על הממשק של \enLR{R1} הפונה ללקוחות.\end{exbox}
+\end{document}

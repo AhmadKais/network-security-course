@@ -1,0 +1,267 @@
+<h1>פרק 5 – מניעת חדירה לרשת המקומית והרחבה (IDS / IPS) <small>11 שעות עיוני + 3 מעשי · שבועות 13–16</small></h1>
+<div class="meta"><span><b>מטרות:</b> מערכות זיהוי פלישה (IDS) · מערכות מניעת פלישה (IPS) · הגדרה ב-CLI · ניטור ופתרון תקלות</span><span><b>בבגרות:</b> ההבדל IDS/IPS (ניטור+התראה מול ניטור+חסימה אוטומטית)</span></div>
+<div class="box def"><span class="t">לפני שמתחילים – במה זה שונה מחומת אש? (למי שאין רקע)</span>
+<ul>
+<li><b>חומת אש</b> (פרק 4) בודקת <u>כתובות ופורטים</u> – "מי מדבר עם מי ובאיזו דלת". היא לא מסתכלת מה <i>בתוך</i> החבילה.</li>
+<li><b>IDS/IPS</b> מסתכלות על <u>התוכן</u> של החבילה ועל <u>ההתנהגות</u> – ומחפשות סימנים של התקפה, גם אם הפורט מותר.</li>
+</ul>
+<b>אנלוגיה:</b> חומת אש = שומר שבודק תעודת זהות בכניסה. IDS/IPS = מצלמות אבטחה + מאבטח בתוך הבניין שמזהים התנהגות חשודה גם של מי שנכנס חוקית.
+<ul>
+<li><b>IDS</b> (Detection) = מצלמה ש<u>מתריעה</u> אם רואה משהו חשוד (אבל לא עוצרת).</li>
+<li><b>IPS</b> (Prevention) = מאבטח ש<u>גם עוצר</u> את החשוד במקום.</li>
+<li><b>חתימה (Signature)</b> = "תמונת מבוקש" – תבנית ידועה של התקפה שהמערכת מחפשת.</li>
+</ul></div>
+
+
+<h2>5.1 למה חומת אש לא מספיקה</h2>
+<p>חומת אש (פרק 4) מחליטה לפי <i>כתובות ופורטים</i>. אבל התקפה יכולה להגיע בדיוק בפורט שפתחנו: SQL injection בתוך בקשת HTTP לפורט 80, ניצול חולשה בשרת המייל בפורט 25, או תולעת שמתפשטת דרך SMB שאנחנו מאפשרים בין סניפים. חומת האש רואה "TCP 80 ל-web server – מותר" ולא מסתכלת מה <i>בתוך</i> החבילה. כאן נכנסות מערכות IDS/IPS: הן מסתכלות על <b>התוכן</b> וההתנהגות ומחפשות סימנים של התקפה.</p>
+<div class="box story"><span class="t">סיפור מהחיים: 10 דקות של Slammer (2003)</span>
+תולעת SQL Slammer הייתה חבילת UDP <i>אחת</i> בגודל 376 בתים לפורט 1434 (Microsoft SQL). כל שרת נגוע שלח אותה לכתובות אקראיות בקצב מרבי. תוך 10 דקות נדבקו 75,000 שרתים; כספומטים של Bank of America הפסיקו לעבוד, חלק מטיסות Continental בוטלו, ו-911 בסיאטל נפל. מי שהיה עם IPS מעודכן – חתימה אחת ("UDP 1434, גודל 376, המחרוזת הזו") חסמה את זה מיד. מי שהיה רק עם חומת אש שאיפשרה SQL בין הסניפים – נדבק. ומה שמדהים: מיקרוסופט פרסמה תיקון 6 חודשים קודם.</div>
+
+<h2>5.2 IDS מול IPS – ההבדל המהותי</h2>
+<table>
+<tr><th></th><th>IDS – Intrusion Detection System</th><th>IPS – Intrusion Prevention System</th></tr>
+<tr><td><b>הגדרה (כמו בבגרות)</b></td><td>מערכת ניטור שנועדה <b>לספק התראות</b> בעת ניסיונות חדירה</td><td>מערכת ניטור שמאפשרת זיהוי <b>וחסימה אוטומטית</b> של ניסיונות חדירה</td></tr>
+<tr><td><b>מיקום</b></td><td><b>מחוץ לנתיב</b> (out-of-band, promiscuous): מקבלת <i>עותק</i> של התעבורה דרך SPAN/TAP</td><td><b>בתוך הנתיב</b> (inline): התעבורה <i>עוברת דרכה</i>, חבילה אחר חבילה</td></tr>
+<tr><td><b>תגובה</b></td><td>התראה (syslog, מייל), רישום; יכולה לבקש מחומת אש/נתב לחסום <i>אחרי</i> שהחבילה הראשונה כבר עברה, או לשלוח TCP reset</td><td>מפילה את החבילה הזדונית עוד לפני שהגיעה ליעד; חוסמת את החיבור/התוקף</td></tr>
+<tr><td><b>השפעה על הרשת</b></td><td>אפס השהיה; אם ה-IDS נופל – הרשת ממשיכה</td><td>מוסיפה השהיה (latency); אם ה-IPS נופל – או שהרשת נופלת (fail-closed) או שעוברים ללא הגנה (fail-open)</td></tr>
+<tr><td><b>מחיר של טעות (false positive)</b></td><td>התראה מיותרת – מטריד</td><td>תעבורה לגיטימית נחסמת – פוגע בעסק. לכן IPS דורש כוונון קפדני</td></tr>
+<tr><td><b>מה היא רואה</b></td><td>יכולה לפספס חבילות בעומס (עותק)</td><td>רואה הכול, כולל חבילות שהיא עצמה מפילה</td></tr>
+<tr><td><b>מקרי שימוש</b></td><td>ניטור, forensics, סביבה שלא סובלת חסימה בטעות</td><td>הגנה בזמן אמת בקצה ובין אזורים</td></tr>
+</table>
+<div class="box faq"><span class="t">שאלת תלמיד: "אז למה שמישהו יבחר IDS, אם IPS גם מזהה וגם חוסם?"</span>
+שלוש סיבות: (1) <b>סיכון של false positive</b> – בבית חולים או בבורסה, לחסום תעבורה לגיטימית בטעות גרוע יותר מלהחמיץ התקפה; מתחילים ב-IDS, מכווננים, ורק אז עוברים ל-IPS. (2) <b>ביצועים</b> – IPS inline על קו 100Gbps הוא ציוד יקר מאוד; IDS על עותק יכול לדגום. (3) <b>נראות</b> – IDS פנימי (על SPAN של המתג המרכזי) רואה תנועה רוחבית בין מחשבים שלא עוברת דרך שום חומת אש. בפועל ארגונים מפעילים את שניהם. ורוב מוצרי ה-IPS ניתנים להגדרה במצב IDS (monitor-only).</div>
+
+<h2>5.3 מבוסס-מארח (HIPS) מול מבוסס-רשת (NIPS)</h2>
+<table>
+<tr><th></th><th>HIPS – Host-based</th><th>NIPS – Network-based</th></tr>
+<tr><td>איפה</td><td>תוכנה על השרת/המחשב עצמו (agent)</td><td>מכשיר/מודול בנתיב הרשת (ASA עם מודול IPS, Firepower, IOS IPS, Snort/Suricata)</td></tr>
+<tr><td>מה רואה</td><td>הכול במחשב: קריאות מערכת, קבצים, registry, זיכרון, <b>ותעבורה מוצפנת אחרי הפענוח</b></td><td>תעבורת רשת בלבד; לא רואה לתוך TLS בלי SSL inspection</td></tr>
+<tr><td>יתרון</td><td>מגן גם כשהמחשב מחוץ לרשת (לפטופ בבית); מבין את ההקשר (איזו אפליקציה)</td><td>מכשיר אחד מגן על מאות מחשבים; לא צואך מערכת ההפעלה; רואה סריקות ו-DoS</td></tr>
+<tr><td>חיסרון</td><td>התקנה ותחזוקה בכל מחשב; צורך משאבים; תלוי במערכת ההפעלה</td><td>עיוור למה שקורה בתוך המארח ולתעבורה מוצפנת</td></tr>
+<tr><td>דוגמה</td><td><b>Cisco Security Agent (CSA)</b> – מוזכר בתכנית; הופסק ב-2010. היום: Cisco Secure Endpoint (AMP), CrowdStrike, Microsoft Defender – התחום נקרא <b>EDR</b></td><td>Cisco Firepower NGIPS, Snort (קוד פתוח, שנרכש על ידי סיסקו), Suricata, Palo Alto Threat Prevention</td></tr>
+</table>
+<p><b>CSA</b> עבד לפי גישה התנהגותית ולא לפי חתימות: הוא יירט קריאות מערכת (system calls) ועצר התנהגות חשודה – "תוכנה שהגיעה במייל מנסה לשנות את ה-registry ולפתוח פורט" – גם בלי להכיר את הנוזקה. זה הרעיון של HIPS מודרני.</p>
+
+<h2>5.4 שיטות זיהוי</h2>
+<table>
+<tr><th>שיטה</th><th>איך</th><th>יתרון</th><th>חיסרון</th></tr>
+<tr><td><b>מבוססת חתימות</b> (Signature / pattern)</td><td>השוואה לתבניות ידועות של התקפות (מחרוזת, רצף חבילות)</td><td>מדויקת, מעט false positive, קלה להבנה</td><td>לא מזהה התקפה חדשה (zero-day); דורשת עדכונים</td></tr>
+<tr><td><b>מבוססת אנומליה</b> (Anomaly / profile)</td><td>לומדת "מה נורמלי" (baseline) ומתריעה על חריגה – פתאום 500 חיבורי SSH בדקה</td><td>מזהה התקפות לא מוכרות</td><td>הרבה false positive; אם ה-baseline נלמד בזמן התקפה – היא "נורמלית"</td></tr>
+<tr><td><b>מבוססת מדיניות</b> (Policy)</td><td>המנהל מגדיר כללים: "אסור Telnet מרשת X"</td><td>פשוט, מדויק לארגון</td><td>מוגבל למה שחשבו עליו</td></tr>
+<tr><td><b>מבוססת פיתיון</b> (Honeypot)</td><td>מערכת "מזמינה" שאין לה שימוש לגיטימי – כל גישה אליה חשודה</td><td>אפס false positive; לומדים על התוקף</td><td>לא מגן ישירות; דורש תחזוקה</td></tr>
+<tr><td><b>מוניטין</b> (Reputation)</td><td>רשימות של IP/דומיינים זדוניים ידועים (Cisco Talos)</td><td>מהיר</td><td>תוקף חדש לא ברשימה</td></tr>
+</table>
+
+<h2>5.5 חתימות (Signatures)</h2>
+<p><b>חתימה</b> היא תיאור של תבנית התקפה שה-IPS מחפש. חתימות מקובצות ב<b>קובץ חתימות</b> (Signature package / SDF) שסיסקו מעדכנת; לכל חתימה מזהה (ID) ותת-מזהה (subsig), ולכל אחת <b>מנוע</b> (micro-engine) שמתאים לסוג – atomic-ip, service-http, string-tcp, multi-string ועוד.</p>
+<h3>אטומית מול מורכבת – נשאל בתכנית</h3>
+<table>
+<tr><th></th><th>חתימה אטומית (Atomic)</th><th>חתימה מורכבת (Composite / Stateful)</th></tr>
+<tr><td>מה בודקת</td><td><b>חבילה אחת</b> ובודדת – למשל: "ICMP echo עם גודל > 1000" או "TCP עם דגלי SYN+FIN יחד" (לא חוקי)</td><td><b>רצף</b> של חבילות/אירועים לאורך זמן – למשל: "יותר מ-100 SYN לפורטים שונים באותו מארח תוך 5 שניות" (port scan), או מחרוזת שמפוצלת בין כמה חבילות</td></tr>
+<tr><td>זיכרון/מצב</td><td>לא צריך לשמור מצב – מהיר וזול</td><td>חייבת לזכור (state), עד "חלון אירועים" (event horizon)</td></tr>
+<tr><td>דוגמה</td><td>Ping of Death, LAND attack (מקור = יעד)</td><td>SYN flood, סריקת פורטים, brute force</td></tr>
+</table>
+<h3>תכונות של חתימה</h3>
+<ul>
+<li><b>Enabled / Disabled</b> – פעילה או לא (מושבתת = טעונה בזיכרון אך לא בודקת).</li>
+<li><b>Retired / Unretired</b> – בפנסיה = לא טעונה לזיכרון כלל (חוסך משאבים). כדי להשתמש בחתימה היא צריכה להיות unretired <i>וגם</i> enabled.</li>
+<li><b>Severity</b> – informational / low / medium / high.</li>
+<li><b>Fidelity rating (SFR)</b> – עד כמה החתימה מדויקת (0–100).</li>
+<li><b>Action</b> – מה לעשות כשיש התאמה (ראו 5.6).</li>
+<li><b>קטגוריות</b> – ב-IOS IPS: <code>ios_ips basic</code> (חתימות בסיסיות, לנתב עם זיכרון מועט) ו-<code>ios_ips advanced</code>.</li>
+</ul>
+
+<h2>5.6 פעולות (Actions) ואזעקות (Alarms)</h2>
+<h3>מה IPS יכול לעשות כשחתימה תואמת</h3>
+<table>
+<tr><th>פעולה</th><th>משמעות</th></tr>
+<tr><td><b>produce-alert</b></td><td>שלח התראה (syslog / SDEE). ברירת מחדל ברוב החתימות.</td></tr>
+<tr><td><b>produce-verbose-alert</b></td><td>התראה + עותק של החבילה (לניתוח).</td></tr>
+<tr><td><b>deny-packet-inline</b></td><td>הפל את החבילה הזו.</td></tr>
+<tr><td><b>deny-connection-inline</b></td><td>הפל את כל החבילות של החיבור (TCP flow) הזה.</td></tr>
+<tr><td><b>deny-attacker-inline</b></td><td>הפל כל תעבורה מכתובת התוקף לזמן מוגדר – החזק ביותר, והמסוכן ביותר ב-false positive.</td></tr>
+<tr><td><b>reset-tcp-connection</b></td><td>שלח TCP RST לשני הצדדים – היחידה שגם IDS (מחוץ לנתיב) יכולה לבצע.</td></tr>
+</table>
+<h3>ארבעה סוגי תוצאות – חובה להבין</h3>
+<table>
+<tr><th></th><th>הייתה התקפה</th><th>לא הייתה התקפה</th></tr>
+<tr><td><b>המערכת התריעה</b></td><td><b>True Positive</b> – מצוין</td><td><b>False Positive</b> – אזעקת שווא; מטריד, וב-IPS חוסם משהו לגיטימי</td></tr>
+<tr><td><b>המערכת שתקה</b></td><td><b>False Negative</b> – הכי גרוע: התקפה עברה בשקט</td><td><b>True Negative</b> – מצוין</td></tr>
+</table>
+<div class="box faq"><span class="t">שאלת תלמיד: "מה יותר גרוע – false positive או false negative?"</span>
+תלוי במערכת. ב-<b>IDS</b> false positive זה רק רעש; false negative זה פריצה שלא ראינו – גרוע. ב-<b>IPS</b> false positive חוסם עסק (הזמנות לא נכנסות, טלפוניה נופלת) – זה מה שמפחיד מנהלים ולכן הם מעדיפים לפעמים לכבות חתימות; ואז מגיע ה-false negative. האיזון נקרא <b>כוונון (tuning)</b> – מכבים חתימות לא רלוונטיות (חתימות ל-IIS ברשת של Linux), מעלים סף, ומחריגים כתובות מהימנות. אין תשובה אחת; זה מה שעושים אנשי SOC כל היום.</div>
+
+<h2>5.7 ניטור IPS</h2>
+<ul>
+<li><b>Syslog</b> – ההתראות נשלחות כהודעות (<code>%IPS-4-SIGNATURE: Sig:2004 Subsig:0 Sev:25 ICMP Echo Request [10.1.1.5:0 -&gt; 10.2.2.2:0]</code>).</li>
+<li><b>SDEE</b> (Security Device Event Exchange) – פרוטוקול מבוסס HTTPS/XML שסיסקו יצרה כדי שתחנת ניהול תשלוף אירועים מה-IPS (pull) בצורה מאובטחת. דורש <code>ip http secure-server</code>.</li>
+<li><b>תחנות ניהול:</b> בעבר IEV / IME / MARS (מוזכרים בחומרים ישנים); היום Firepower Management Center (FMC), או SIEM כללי (Splunk, QRadar, ELK) שמקבל syslog מכל המערכות ומבצע <b>קורלציה</b> – "אותו IP הופיע ב-IPS, בחומת האש וב-AD תוך דקה".</li>
+</ul>
+
+<h2>5.8 הגדרת IOS IPS ב-CLI</h2>
+<p>נתב סיסקו יכול לתפקד כ-IPS (מוגבל) בעצמו. התהליך המלא בציוד אמיתי:</p>
+<ol>
+<li>הורדת חבילת חתימות (<code>IOS-Sxxx-CLI.pkg</code>) ומפתח ציבורי (<code>realm-cisco.pub.key.txt</code>) מ-Cisco.com.</li>
+<li>יצירת תיקייה ב-flash לחתימות.</li>
+<li>הגדרת המפתח הציבורי (כדי שהנתב יוודא שהחבילה חתומה על ידי סיסקו).</li>
+<li>הגדרת IPS: שם, מיקום, התראות, קטגוריות.</li>
+<li>החלה על ממשק וטעינת החבילה.</li>
+</ol>
+<pre><span class="c">! שלב 2 – תיקייה</span>
+R1# <b>mkdir ipsdir</b>
+<span class="c">! שלב 3 – מפתח ציבורי של סיסקו (מעתיקים מהקובץ; קטע מקוצר)</span>
+R1(config)# crypto key pubkey-chain rsa
+R1(config-pubkey-chain)# <b>named-key realm-cisco.pub signature</b>
+R1(config-pubkey-key)# key-string
+R1(config-pubkey)# 30820122 300D0609 2A864886 ...
+R1(config-pubkey)# quit
+<span class="c">! שלב 4 – הגדרת ה-IPS</span>
+R1(config)# <b>ip ips config location flash:ipsdir</b>
+R1(config)# <b>ip ips name MYIPS</b>            <span class="c">! אפשר: ip ips name MYIPS list 101 – רק תעבורה שתואמת ל-ACL</span>
+R1(config)# <b>ip ips notify log</b>            <span class="c">! התראות ל-syslog</span>
+R1(config)# ip http secure-server
+R1(config)# <b>ip ips notify sdee</b>           <span class="c">! ולתחנת ניהול</span>
+R1(config)# <b>ip ips signature-category</b>
+R1(config-ips-category)# <b>category all</b>
+R1(config-ips-category-action)# <b>retired true</b>          <span class="c">! קודם – הכול בפנסיה</span>
+R1(config-ips-category-action)# exit
+R1(config-ips-category)# <b>category ios_ips basic</b>
+R1(config-ips-category-action)# <b>retired false</b>         <span class="c">! ואז – רק הבסיסיות פעילות</span>
+R1(config-ips-category-action)# exit
+R1(config-ips-category)# exit
+<span class="c">! שלב 5 – החלה על ממשק (בכיוון שממנו מגיעה התעבורה החשודה)</span>
+R1(config)# interface g0/0
+R1(config-if)# <b>ip ips MYIPS in</b>
+<span class="c">! טעינת חבילת החתימות (מ-TFTP/USB) – ב-Packet Tracer שלב זה לא קיים</span>
+R1# <b>copy tftp://10.0.0.5/IOS-S416-CLI.pkg idconf</b></pre>
+<h3>שינוי חתימה בודדת – הדוגמה הקלאסית: התראה + חסימה על ping</h3>
+<pre>R1(config)# <b>ip ips signature-definition</b>
+R1(config-sigdef)# <b>signature 2004 0</b>           <span class="c">! 2004/0 = ICMP Echo Request</span>
+R1(config-sigdef-sig)# <b>status</b>
+R1(config-sigdef-sig-status)# <b>retired false</b>
+R1(config-sigdef-sig-status)# <b>enabled true</b>
+R1(config-sigdef-sig-status)# exit
+R1(config-sigdef-sig)# <b>engine</b>
+R1(config-sigdef-sig-engine)# <b>event-action produce-alert</b>
+R1(config-sigdef-sig-engine)# <b>event-action deny-packet-inline</b>
+R1(config-sigdef-sig-engine)# exit
+R1(config-sigdef-sig)# exit
+R1(config-sigdef)# exit
+Do you want to accept these changes? [confirm]</pre>
+<div class="box tip"><span class="t">טיפ: מה עובד ב-Packet Tracer</span>
+Packet Tracer תומך בתת-קבוצה: <code>ip ips config location</code>, <code>ip ips name</code>, <code>ip ips notify log</code>, <code>signature-category</code> (all retired / ios_ips basic), <code>ip ips NAME in|out</code>, ושינוי חתימה 2004 0 (ICMP echo) עם produce-alert ו-deny-packet-inline. אין טעינת חבילה ואין SDEE. תרגיל ה-ping הוא התרגיל שעובד – ורואים בשרת ה-syslog את ההתראה ואת ה-ping נכשל. זה מספיק להמחשה.</div>
+
+<h2>5.9 וריפיקציה ופתרון תקלות</h2>
+<pre>R1# <b>show ip ips all</b>                   <span class="c">! סיכום: שם, ממשקים, קטגוריות, מספר חתימות טעונות</span>
+R1# <b>show ip ips configuration</b>
+R1# <b>show ip ips interfaces</b>
+R1# <b>show ip ips signatures</b> [count]      <span class="c">! אילו חתימות פעילות</span>
+R1# <b>show ip ips statistics</b>            <span class="c">! כמה חבילות נבדקו, כמה התראות</span>
+R1# <b>clear ip ips statistics</b>
+R1# show ip ips sessions
+R1# debug ip ips</pre>
+<table>
+<tr><th>תסמין</th><th>סיבה נפוצה ופתרון</th></tr>
+<tr><td>אין התראות בכלל</td><td>ה-IPS לא מוחל על הממשק / בכיוון הלא נכון. תעבורה נכנסת מהאינטרנט ⇒ <code>in</code> על הממשק החיצוני. בדקו <code>show ip ips interfaces</code>.</td></tr>
+<tr><td>"0 signatures loaded"</td><td>קטגוריה all retired ולא unretired כלום; או חבילת חתימות לא נטענה (<code>copy … idconf</code>); או מפתח ציבורי חסר/שגוי – הנתב דוחה חבילה לא חתומה.</td></tr>
+<tr><td>הנתב איטי / CPU 100%</td><td>יותר מדי חתימות (advanced על נתב קטן). השאירו ios_ips basic, השתמשו ב-<code>list ACL</code> כדי לבדוק רק תעבורה רלוונטית.</td></tr>
+<tr><td>יש התראה אך החבילה עוברת</td><td>ה-action הוא produce-alert בלבד; הוסיפו deny-packet-inline. או שהחתימה enabled אך retired.</td></tr>
+<tr><td>תעבורה לגיטימית נחסמת</td><td>false positive. זהו את החתימה ב-syslog ובטלו/כווננו אותה; או השתמשו ב-<code>ip ips name X list ACL</code> להחריג.</td></tr>
+</table>
+
+<h2>5.10 מדריך פקודות מרוכז – פרק 5</h2>
+<table>
+<tr><th>פקודה</th><th>תפקיד</th></tr>
+<tr><td><code>mkdir ipsdir</code></td><td>תיקייה לחתימות</td></tr>
+<tr><td><code>crypto key pubkey-chain rsa</code> → <code>named-key realm-cisco.pub signature</code></td><td>מפתח לאימות חבילה</td></tr>
+<tr><td><code>ip ips config location flash:ipsdir</code></td><td>מיקום</td></tr>
+<tr><td><code>ip ips name NAME [list ACL]</code></td><td>כלל IPS</td></tr>
+<tr><td><code>ip ips notify log | sdee</code></td><td>יעד התראות</td></tr>
+<tr><td><code>ip ips signature-category</code> → <code>category all</code> → <code>retired true</code></td><td>כיבוי כל החתימות</td></tr>
+<tr><td><code>category ios_ips basic</code> → <code>retired false</code></td><td>הפעלת הבסיסיות</td></tr>
+<tr><td><code>ip ips NAME in|out</code> (ממשק)</td><td>החלה</td></tr>
+<tr><td><code>copy tftp://…pkg idconf</code></td><td>טעינת חתימות</td></tr>
+<tr><td><code>ip ips signature-definition</code> → <code>signature ID SUB</code> → <code>status</code>/<code>engine</code></td><td>עריכת חתימה</td></tr>
+<tr><td><code>show ip ips all | configuration | signatures | statistics</code></td><td>וריפיקציה</td></tr>
+</table>
+
+<h2>5.11 תרגילים לתלמידים</h2>
+<div class="box ex"><span class="t">תרגיל 1 – True/False Positive/Negative</span>
+סווגו: א. ה-IPS חסם עדכון Windows לגיטימי כי הוא "נראה כמו הורדת קובץ הרצה חשוד". ב. תולעת עברה דרך ה-IDS בלי התראה כי החתימה לא עודכנה. ג. ה-IDS התריע על סריקת Nmap שאכן בוצעה. ד. תעבורת Zoom עברה כרגיל ללא התראה.
+<div class="ans">א. False Positive &nbsp; ב. False Negative &nbsp; ג. True Positive &nbsp; ד. True Negative</div></div>
+<div class="box ex"><span class="t">תרגיל 2 – אטומית או מורכבת?</span>
+א. חבילת TCP עם כל 6 הדגלים דלוקים ("Xmas scan"). ב. 50 ניסיונות כניסה כושלים ל-SSH מאותו IP תוך דקה. ג. חבילת IP שבה כתובת המקור שווה לכתובת היעד. ד. מחרוזת <code>/etc/passwd</code> שמפוצלת בין שתי חבילות HTTP.
+<div class="ans">א. אטומית &nbsp; ב. מורכבת &nbsp; ג. אטומית (LAND) &nbsp; ד. מורכבת (דורשת הרכבת זרם)</div></div>
+<div class="box ex"><span class="t">תרגיל 3 – בחירת פעולה</span>
+לכל מצב בחרו את ה-action המתאים ביותר ונמקו: א. חתימה עם fidelity 30 (לא מדויקת) לפעילות חשודה קלה. ב. חתימה ל-SQL injection ודאית (fidelity 95) לשרת ה-web. ג. תוקף ששולח 10,000 SYN בשנייה. ד. IDS מחוץ לנתיב שזיהה session זדוני.
+<div class="ans">א. produce-alert בלבד – סיכון false positive גבוה. ב. deny-connection-inline (או deny-packet) + alert. ג. deny-attacker-inline – לחסום את המקור לזמן. ד. reset-tcp-connection – היחיד שזמין ל-IDS מחוץ לנתיב.</div></div>
+<div class="box ex"><span class="t">תרגיל 4 – תכנון פריסה</span>
+ציירו רשת: אינטרנט – נתב קצה – חומת אש – מתג מרכזי – (שרתים, משתמשים). סמנו היכן תמקמו IPS והיכן IDS, ונמקו. היכן תתקינו HIPS?
+<div class="ans">IPS inline בין חומת האש למתג המרכזי (או כמודול בחומת האש) – מגן על הכול מהאינטרנט. IDS על SPAN של המתג המרכזי – רואה תנועה רוחבית פנימית. HIPS/EDR על השרתים (בעיקר web, DB, DC) ועל מחשבי המשתמשים (ניידים).</div></div>
+
+<h2>5.12 שאלות בסגנון בגרות</h2>
+<div class="box exam"><span class="t">שאלה 1</span>
+התאימו: מערכת ____ היא מערכת ניטור שמאפשרת זיהוי וחסימה אוטומטית של ניסיונות חדירה. מערכת ____ היא מערכת ניטור שנועדה לספק התראות בעת ניסיונות חדירה. (IDS / IPS / DNS / RADIUS / TACACS)
+<div class="ans">IPS · IDS</div></div>
+<div class="box exam"><span class="t">שאלה 2</span>
+מהו ההבדל במיקום ברשת בין IDS ל-IPS, ומה המשמעות לגבי השהיה?
+<div class="ans">IDS – מחוץ לנתיב (promiscuous), מקבל עותק ⇒ אין השהיה. IPS – בתוך הנתיב (inline), התעבורה עוברת דרכו ⇒ מוסיף השהיה.</div></div>
+<div class="box exam"><span class="t">שאלה 3</span>
+מה ההבדל בין חתימה אטומית לחתימה מורכבת?
+<div class="ans">אטומית – בודקת חבילה בודדת, ללא שמירת מצב. מורכבת – בודקת רצף חבילות לאורך זמן, שומרת מצב.</div></div>
+<div class="box exam"><span class="t">שאלה 4</span>
+מנהל הגדיר IOS IPS ו-<code>category all retired true</code> בלבד. אילו חתימות פעילות?
+<div class="ans">אף אחת – חייבים לבצע unretire (<code>retired false</code>) לקטגוריה כלשהי, למשל ios_ips basic.</div></div>
+<div class="box exam"><span class="t">שאלה 5</span>
+איזו מהפעולות הבאות אינה זמינה ל-IDS שנמצא מחוץ לנתיב התעבורה? 1. produce-alert &nbsp; 2. deny-packet-inline &nbsp; 3. reset-tcp-connection &nbsp; 4. produce-verbose-alert
+<div class="ans"><b>2</b> – אי אפשר להפיל חבילה שכבר עברה; ה-IDS רואה רק עותק.</div></div>
+<div class="box exam"><span class="t">שאלה 6</span>
+מהו HIPS ומה יתרונו המרכזי על פני IPS רשתי?
+<div class="ans">Host-based IPS – תוכנה על המארח עצמו. יתרון: רואה תעבורה מוצפנת אחרי הפענוח ואת ההתנהגות בתוך המחשב (קבצים, זיכרון), ומגן גם כשהמחשב מחוץ לרשת הארגון.</div></div>
+
+<h2>5.13 מעבדה (3 שעות) – IOS IPS ב-Packet Tracer</h2>
+<ol>
+<li>טופולוגיה: PC-A (10.1.1.10) — R1 — PC-B (10.2.2.10); שרת Syslog ברשת של PC-B. הגדירו logging לשרת.</li>
+<li>ב-R1: <code>mkdir ipsdir</code>, <code>ip ips config location flash:ipsdir</code>, <code>ip ips name IOSIPS</code>, <code>ip ips notify log</code>, קטגוריות: all retired, ios_ips basic unretired.</li>
+<li>שנו חתימה 2004 0: retired false, enabled true, event-action produce-alert + deny-packet-inline.</li>
+<li>החילו <code>ip ips IOSIPS out</code> על הממשק לכיוון PC-B (או in על הממשק מ-PC-A).</li>
+<li>מ-PC-A: ping ל-PC-B ⇒ נכשל. בשרת ה-syslog: הודעת <code>%IPS-4-SIGNATURE: Sig:2004</code>. מ-PC-B ping ל-PC-A ⇒ מצליח (הכיוון!). הסבירו.</li>
+<li>הסירו את deny-packet-inline והשאירו produce-alert. ping עובר אך יש התראה – זו התנהגות IDS. דונו בהבדל.</li>
+<li><code>show ip ips all</code>, <code>show ip ips statistics</code> – כמה חבילות נבדקו?</li>
+</ol>
+
+<h2>בנק שאלות שתלמידים שואלים – ותשובות מוכנות</h2>
+<p>שאלות נפוצות בפרק IDS/IPS, עם תשובות מוכנות.</p>
+<p><b>ש: "אם IPS גם מזהה וגם חוסם, למה שמישהו יבחר IDS?"</b><br>ת: שלוש סיבות: (1) סיכון של <b>false positive</b> – בבית חולים או בבורסה, לחסום תעבורה לגיטימית בטעות גרוע מלהחמיץ התקפה. (2) ביצועים – IPS inline על קו מהיר יקר מאוד. (3) IDS פנימי (על SPAN) רואה תנועה רוחבית בין מחשבים שלא עוברת בשום חומת אש. בפועל מפעילים את שניהם.</p>
+<p><b>ש: "מה ההבדל בין IDS/IPS לאנטי-וירוס?"</b><br>ת: אנטי-וירוס מגן על <u>קבצים במחשב אחד</u>. IPS מגן על <u>תעבורת הרשת</u> בין מחשבים. HIPS (host-based) מטשטש את הגבול – הוא IPS שרץ על המחשב עצמו.</p>
+<p><b>ש: "מה יותר גרוע – false positive או false negative?"</b><br>ת: תלוי במערכת. ב-IDS, false positive הוא רק רעש; false negative (התקפה שעברה בשקט) גרוע יותר. ב-IPS, false positive <u>חוסם עסק</u> (הזמנות לא נכנסות) – ולכן מנהלים לפעמים מכבים חתימות, וזה מוביל ל-false negatives. האיזון הזה נקרא "כוונון" (tuning) וזו עבודת ה-SOC.</p>
+<p><b>ש: "מה ההבדל בין חתימה אטומית למורכבת?"</b><br>ת: אטומית בודקת <u>חבילה אחת</u> (למשל Ping of Death – חבילה גדולה מדי) – מהירה, בלי זיכרון. מורכבת בודקת <u>רצף</u> של חבילות לאורך זמן (למשל סריקת פורטים או SYN flood) – חייבת לזכור מצב.</p>
+<p><b>ש: "אם IPS מבוסס חתימות, איך הוא תופס התקפה חדשה שאין לה חתימה?"</b><br>ת: הוא לא, אם הוא רק מבוסס-חתימות – זו החולשה. לכן קיימות שיטות נוספות: זיהוי <b>אנומליה</b> (חריגה מ"נורמלי") ו<b>מוניטין</b> (רשימות IP זדוניים). מערכות מודרניות משלבות כמה שיטות.</p>
+<p><b>ש: "מה זה SPAN ולמה IDS צריך אותו?"</b><br>ת: SPAN הוא "שיקוף פורט" – המתג מעתיק את כל התעבורה לפורט שאליו מחובר ה-IDS. כך ה-IDS מקבל <u>עותק</u> של הכול בלי לשבת בנתיב עצמו – ולכן אם ה-IDS נופל, הרשת ממשיכה לעבוד.</p>
+<p><b>ש: "אילו פעולות IPS יכול לבצע כשהוא מזהה התקפה?"</b><br>ת: מ-alert בלבד (produce-alert), דרך הפלת החבילה (deny-packet-inline), הפלת כל החיבור (deny-connection-inline), חסימת התוקף לזמן (deny-attacker-inline), ועד שליחת TCP reset – הפעולה היחידה שגם IDS מחוץ לנתיב יכול לבצע.</p>
+<p><b>ש: "מה זה CSA שמופיע בתכנית?"</b><br>ת: Cisco Security Agent – תוכנת HIPS ישנה שהותקנה על תחנות קצה וזיהתה התנהגות חשודה (לא רק חתימות). היא הופסקה ב-2010; היום התחום נקרא EDR (כמו Microsoft Defender, CrowdStrike).</p>
+
+<h2>מילון מונחים – הגדרות</h2>
+<p>הגדרות תמציתיות של המונחים המרכזיים בפרק. שימושי גם כדף עזר לבחינה.</p>
+<table>
+<tr><th>מונח</th><th>הגדרה</th></tr>
+<tr><td><b>IDS (Intrusion Detection System)</b></td><td>מערכת שמנטרת ומתריעה על ניסיונות חדירה, אך אינה חוסמת.</td></tr>
+<tr><td><b>IPS (Intrusion Prevention System)</b></td><td>מערכת שמזהה וגם חוסמת אוטומטית ניסיונות חדירה.</td></tr>
+<tr><td><b>inline / out-of-band</b></td><td>IPS יושב בנתיב התעבורה (inline); IDS מקבל עותק מחוץ לנתיב (out-of-band).</td></tr>
+<tr><td><b>HIPS</b></td><td>IPS מבוסס-מארח – תוכנה על המחשב/שרת עצמו; רואה גם תעבורה מוצפנת.</td></tr>
+<tr><td><b>NIPS</b></td><td>IPS מבוסס-רשת – מכשיר בנתיב שמגן על מארחים רבים.</td></tr>
+<tr><td><b>CSA (Cisco Security Agent)</b></td><td>תוכנת HIPS ישנה של סיסקו; היום התחום נקרא EDR.</td></tr>
+<tr><td><b>חתימה (Signature)</b></td><td>תבנית ידועה של התקפה שהמערכת מחפשת בתעבורה.</td></tr>
+<tr><td><b>חתימה אטומית</b></td><td>בודקת חבילה בודדת, ללא שמירת מצב (למשל Ping of Death).</td></tr>
+<tr><td><b>חתימה מורכבת</b></td><td>בודקת רצף חבילות לאורך זמן, שומרת מצב (למשל סריקת פורטים).</td></tr>
+<tr><td><b>זיהוי מבוסס-אנומליה</b></td><td>זיהוי חריגה מ'התנהגות נורמלית' שנלמדה (baseline).</td></tr>
+<tr><td><b>Honeypot</b></td><td>מערכת פיתיון שאין לה שימוש לגיטימי; כל גישה אליה חשודה.</td></tr>
+<tr><td><b>False Positive</b></td><td>אזעקת שווא – התראה על תעבורה לגיטימית.</td></tr>
+<tr><td><b>False Negative</b></td><td>החמצה – התקפה אמיתית שלא זוהתה (המצב הגרוע ביותר).</td></tr>
+<tr><td><b>True Positive / Negative</b></td><td>זיהוי נכון של התקפה (positive) או של תעבורה תקינה (negative).</td></tr>
+<tr><td><b>Tuning (כוונון)</b></td><td>התאמת חתימות והחרגות כדי לצמצם false positives; עבודת ה-SOC.</td></tr>
+<tr><td><b>Action (פעולה)</b></td><td>מה שה-IPS עושה בהתאמה: alert, deny-packet/connection/attacker, TCP reset.</td></tr>
+<tr><td><b>SDEE</b></td><td>פרוטוקול מאובטח (HTTPS/XML) שדרכו תחנת ניהול שולפת אירועי IPS.</td></tr>
+<tr><td><b>SPAN</b></td><td>שיקוף פורט – העתקת תעבורה לפורט שאליו מחובר IDS/מנתח.</td></tr>
+</table>

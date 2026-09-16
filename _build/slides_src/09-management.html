@@ -1,0 +1,68 @@
+<section class="slide title"><h1>פרק 9<br>ניהול אבטחת רשת מתקדם</h1><div class="sub">ניהול סיכונים · בקרות · Nmap/Nessus · BCP/DRP · אתיקה</div><div class="course">אבטחת מידע · מגמת תקשוב</div>
+<div class="notes">הפרק המסכם. מהכלים לתמונה הניהולית. זה גם הפרק שמחבר את הקורס לעולם המקצועי ולחוק.</div></section>
+
+<section class="slide"><h2>ניהול סיכונים</h2>
+<p class="fragment big">סיכון = איום × פגיעות × ערך הנכס</p>
+<ul><li class="fragment">אבטחה מושלמת = אינסוף כסף; אפסית = פריצה</li>
+<li class="fragment">המטרה: איזון סיכון מול עלות</li></ul>
+<div class="notes">אי אפשר לבטל איומים. אפשר להקטין פגיעות ולהקטין השפעה. הכול עניין של איזון.</div></section>
+
+<section class="slide"><h2>4 דרכי טיפול בסיכון</h2>
+<table><tr><th>אסטרטגיה</th><th>דוגמה</th></tr>
+<tr><td>הפחתה</td><td>התקנת IPS</td></tr>
+<tr><td>העברה</td><td>ביטוח סייבר</td></tr>
+<tr><td>קבלה</td><td>חיים עם סיכון נמוך</td></tr>
+<tr><td>בידוד/הימנעות</td><td>רשת נפרדת / הפסקת שירות</td></tr></table>
+<div class="notes">נושא מרכזי בפרק. תנו לכיתה תרחישים ובקשו לבחור אסטרטגיה (תרגיל 2).</div></section>
+
+<section class="slide q"><h2>שאלת בגרות: סוגי בקרות</h2>
+<p>התאימו: (1) הגנה על חדר שרתים (2) כתיבת מדיניות ונהלים (3) רשימות גישה וסיסמאות</p>
+<div class="answer fragment">1 = פיזית · 2 = מנהלית · 3 = לוגית</div>
+<div class="notes">שאלה 6ב מהבגרות. חזרה מפרק 1. חלוקה נוספת: מונעת/מגלה/מתקנת.</div></section>
+
+<section class="slide"><h2>עקרונות עיצוב מאובטח</h2>
+<ul><li class="fragment"><b>הגנה לעומק</b> – שכבות עצמאיות</li>
+<li class="fragment"><b>מינימום הרשאות</b> – כל אחד רק מה שצריך</li>
+<li class="fragment"><b>הפרדת תפקידים</b> – מאשר ≠ מבצע</li>
+<li class="fragment"><b>Zero Trust</b> – "אל תסמוך, תמיד אמת"</li></ul>
+<div class="notes">אלה עקרונות-על שחוזרים בכל הקורס. Zero Trust = הכיוון המודרני (אין "פנים מהימן").</div></section>
+
+<section class="slide"><h2>בדיקות אבטחה וכלים</h2>
+<table><tr><th>כלי</th><th>תפקיד</th></tr>
+<tr><td><b>Nmap</b></td><td>גילוי, סריקת פורטים, זיהוי שירותים</td></tr>
+<tr><td><b>Nessus</b></td><td>סורק פגיעויות (CVE)</td></tr>
+<tr><td>Metasploit</td><td>ניצול פגיעויות</td></tr>
+<tr><td>Wireshark</td><td>ניתוח תעבורה</td></tr></table>
+<div class="notes">נשאל בבגרות: מה Nmap עושה = גילוי/ניתוח/בקרה. לא אנטי-וירוס. ספרו על Equifax.</div></section>
+
+<section class="slide q"><h2>שאלת בגרות</h2><p>מה מאפשרת תוכנת Nmap? 1. זיהוי וירוסים 2. זיהוי טרויאנים 3. גילוי, ניתוח ובקרה ברשתות 4. חסימת פורטים</p>
+<div class="answer fragment">3 – גילוי מארחים, סריקת פורטים וזיהוי שירותים. לא אנטי-וירוס ולא חוסמת.</div>
+<div class="notes">שאלה 6ד. Nmap הוא כלי סיור (פרק 1) וגם כלי הגנה (מיפוי מה חשוף).</div></section>
+
+<section class="slide"><h2>המשכיות והתאוששות</h2>
+<div class="cols"><div><div class="box"><span class="t">BCP</span>המשכיות כל העסק בזמן אסון</div></div>
+<div><div class="box"><span class="t">DRP</span>שחזור מערכות ה-IT</div></div></div>
+<ul><li class="fragment"><b>RTO</b> – כמה זמן מותר להיות מושבתים</li>
+<li class="fragment"><b>RPO</b> – כמה נתונים מותר לאבד (תדירות גיבוי)</li>
+<li class="fragment">כלל <b>3-2-1</b> לגיבויים · גיבוי שלא נבדק = לא גיבוי</li></ul>
+<div class="notes">כלל 3-2-1 קריטי נגד כופרה (פרק 1). WCS בתכנית = תרחיש הגרוע ביותר. תרגיל RTO/RPO טוב כאן.</div></section>
+
+<section class="slide"><h2>תגובה לאירוע – 6 שלבים</h2>
+<div class="flow"><span class="n">הכנה</span><span class="a">→</span><span class="n">זיהוי</span><span class="a">→</span><span class="n">בלימה</span><span class="a">→</span><span class="n">מיגור</span><span class="a">→</span><span class="n">שחזור</span><span class="a">→</span><span class="n">לקחים</span></div>
+<p class="fragment sub">SDLC – אבטחה מ<b>ההתחלה</b> ("Security by Design"), לא כטלאי בסוף</p>
+<div class="notes">סימולציה בכיתה: "מחשב נדבק בכופרה" – עברו את 6 השלבים. SDLC – אבטחה זולה יותר מוקדם.</div></section>
+
+<section class="slide"><h2>אתיקה וחוק – חובה</h2>
+<div class="box warn fragment"><span class="t">חוק המחשבים התשנ"ה-1995</span>חדירה לחומר מחשב שלא כדין = עד 3 שנות מאסר · שיבוש = עד 5 שנים</div>
+<ul><li class="fragment">Nmap/כלי פריצה על רשת שאינה שלכם = עבירה, גם "רק לבדוק"</li>
+<li class="fragment">White hat פועל תמיד עם <b>אישור בכתב</b> והיקף מוגדר</li>
+<li class="fragment">מצאתם פגיעות? Responsible Disclosure – דווחו, תנו זמן לתקן</li></ul>
+<div class="notes">חובה ללמד ברצינות. תנו את הדילמה: תלמיד שמצא באג בציונים – מה מותר ומה אסור (תרגיל 4).</div></section>
+
+<section class="slide"><h2>סיכום פרק 9 והקורס</h2><ul>
+<li class="fragment">סיכון = איום × פגיעות × ערך; 4 דרכי טיפול</li>
+<li class="fragment">בקרות: מנהלי · פיזי · לוגי</li>
+<li class="fragment">Nmap/Nessus · BCP/DRP · SDLC</li>
+<li class="fragment"><b>אתיקה וחוק</b> – מעל הכול</li>
+</ul><div class="box tip fragment"><span class="t">סגרנו מעגל</span>התחלנו באיומים (פרק 1) · סיימנו בניהולם. כל 8 ההגנות משתלבות כאן</div>
+<div class="notes">חזרה כוללת. פרויקט מסכם: ארגון דמיוני + בקרה מכל פרק (תרגיל 5) = חזרה מצוינת לבגרות.</div></section>

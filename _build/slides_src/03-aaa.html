@@ -1,0 +1,74 @@
+<section class="slide title"><h1>פרק 3<br>מודל ה-AAA</h1><div class="sub">Authentication · Authorization · Accounting · RADIUS · TACACS+</div><div class="course">אבטחת מידע · מגמת תקשוב</div>
+<div class="notes">בפרק 2 כל נתב החזיק משתמשים בעצמו. היום – ניהול מרכזי. שאלו: איך מנתקים עובד שעזב מ-50 נתבים בלחיצה אחת?</div></section>
+
+<section class="slide"><h2>הבעיה: אימות מקומי לא מתרחב</h2>
+<ul><li class="fragment">50 נתבים × 10 מנהלים = 500 חשבונות לתחזק</li>
+<li class="fragment">עובד עזב? למחוק מ-50 מקומות</li>
+<li class="fragment">אין מעקב מי עשה מה</li></ul>
+<div class="box warn fragment"><span class="t">סיפור אמיתי</span>מנהל פוטר, ה-IT מחק חשבון Windows – אך חשבונות מקומיים בנתבים נשארו. 3 ימים אחר כך הקונפיג נמחק, ואף אחד לא ידע מי</div>
+<div class="notes">זה ה"למה" של הפרק. AAA מרכזי פותר את כל שלושת הכאבים.</div></section>
+
+<section class="slide"><h2>שלוש ה-A</h2>
+<table><tr><th>שירות</th><th>השאלה</th><th>דוגמה</th></tr>
+<tr><td><b>Authentication</b></td><td>מי אתה?</td><td>שם + סיסמה</td></tr>
+<tr><td><b>Authorization</b></td><td>מה מותר לך?</td><td>רמה 15 / רק show</td></tr>
+<tr><td><b>Accounting</b></td><td>מה עשית?</td><td>נכנס 8:12, הקליד reload</td></tr></table>
+<div class="box tip fragment"><span class="t">משל שדה התעופה</span>אימות=דרכון · הרשאה=כרטיס טיסה · Accounting=רישום הנוסעים</div>
+<div class="notes">משל שדה התעופה עובד מצוין. הדגישו: אי אפשר הרשאה בלי אימות קודם. נשאל בבגרות (התאמה).</div></section>
+
+<section class="slide"><h2>מקומי מול מבוסס-שרת</h2>
+<div class="cols"><div><div class="box"><span class="t">מקומי</span>משתמשים בקונפיג. לרשת קטנה / גיבוי</div></div>
+<div><div class="box ok"><span class="t">מבוסס שרת</span>שרת מרכזי (ISE/ACS). ניהול אחיד, לוג מרכזי</div></div></div>
+<div class="flow fragment"><span class="n">משתמש</span><span class="a">→</span><span class="n">נתב (NAS)</span><span class="a">→ RADIUS/TACACS+ →</span><span class="n">שרת AAA</span></div>
+<div class="notes">הנתב = NAS / AAA client. הפרוטוקול בינו לשרת = RADIUS או TACACS+ (השקף הבא).</div></section>
+
+<section class="slide"><h2>RADIUS מול TACACS+</h2>
+<table><tr><th></th><th>RADIUS</th><th>TACACS+</th></tr>
+<tr><td>מקור</td><td>תקן פתוח</td><td>Cisco</td></tr>
+<tr><td>תעבורה</td><td>UDP 1812/1813</td><td>TCP 49</td></tr>
+<tr><td>הצפנה</td><td>רק הסיסמה</td><td>כל החבילה</td></tr>
+<tr><td>הפרדת AAA</td><td>משולב</td><td>נפרד (per-command)</td></tr>
+<tr><td>שימוש</td><td>גישת משתמשים (Wi-Fi/VPN)</td><td>ניהול ציוד</td></tr></table>
+<div class="notes">הטבלה הכי נשאלת בפרק. הדגישו UDP/TCP וההצפנה – שאלת נכון/לא-נכון בבגרות.</div></section>
+
+<section class="slide q"><h2>שאלה: נכון או לא נכון?</h2>
+<ul><li>1. RADIUS מצפין רק את הסיסמה</li>
+<li>2. RADIUS לא מפריד הרשאות</li>
+<li>3. TACACS+ משתמש רק ב-UDP</li>
+<li>4. TACACS+ מספק שירות AAA</li></ul>
+<div class="answer fragment">1 נכון · 2 נכון · 3 <b>לא נכון</b> (TCP 49) · 4 נכון</div>
+<div class="notes">שאלה אמיתית מהבגרות (4ה). ה-3 הוא ה"מלכודת".</div></section>
+
+<section class="slide"><h2>הגדרה ב-CLI</h2>
+<pre>R1(config)# <b>aaa new-model</b>
+R1(config)# username admin secret P@ss   <span class="c">! גיבוי!</span>
+R1(config)# <b>tacacs-server host 10.0.0.5 key Key123</b>
+R1(config)# <b>aaa authentication login default group tacacs+ local</b></pre>
+<div class="box warn fragment"><span class="t">הטעות המסוכנת</span><code>aaa new-model</code> בלי משתמש מקומי + בלי <code>local</code> בסוף = ננעלתם בחוץ! השאירו תמיד חלון SSH פתוח</div>
+<div class="notes">הדגישו את סדר הפעולות: username קודם, ותמיד "local" בסוף השרשרת. ספרו על תרגיל הנעילה.</div></section>
+
+<section class="slide"><h2>מה זה ה-key?</h2>
+<div class="flow"><span class="n">נתב</span><span class="a">🔑 shared secret 🔑</span><span class="n">שרת AAA</span></div>
+<ul><li class="fragment">ה-<b>key</b> = סוד משותף בין הנתב לשרת (מצפין ומאמת)</li>
+<li class="fragment">הסיסמה של המשתמש = דבר אחר לגמרי (נמצאת בשרת)</li></ul>
+<p class="fragment sub">"מפתחות מוצפנים" בתכנית = ה-key הזה</p>
+<div class="notes">בלבול נפוץ. ה-key מאמת שהנתב הוא לקוח מורשה; הסיסמה מאמתת את האדם.</div></section>
+
+<section class="slide"><h2>802.1X – AAA לפורט מתג</h2>
+<div class="flow"><span class="n">Supplicant<br>(מחשב)</span><span class="a">EAPOL→</span><span class="n">Authenticator<br>(מתג/AP)</span><span class="a">RADIUS→</span><span class="n">שרת<br>אימות</span></div>
+<ul><li class="fragment">המתג <b>חוסם את הפורט</b> עד לאימות מוצלח</li>
+<li class="fragment">הבסיס ל-NAC (פרק 6) ול-WPA2-Enterprise</li></ul>
+<div class="notes">מקשר את פרק 3 לפרק 6. RADIUS = "גישת משתמשים לרשת". eduroam הוא דוגמה מצוינת.</div></section>
+
+<section class="slide q"><h2>שאלה: איזה פרוטוקול?</h2>
+<p>ארגון רוצה שמתמחה יוכל להקליד רק <code>show</code>, ולתעד כל פקודה של כל מנהל. RADIUS או TACACS+?</p>
+<div class="answer fragment">TACACS+ – מפריד אימות מהרשאה, תומך בהרשאה ובתיעוד לכל פקודה (per-command). RADIUS משלב ולא תומך בזה.</div>
+<div class="notes">חיבור בין הטבלה למקרה מעשי. תנו לכיתה לנמק.</div></section>
+
+<section class="slide"><h2>סיכום פרק 3</h2><ul>
+<li class="fragment">AAA = <b>מי אתה · מה מותר · מה עשית</b></li>
+<li class="fragment"><code>aaa new-model</code> מפעיל (זהירות מנעילה!)</li>
+<li class="fragment"><b>RADIUS</b> = UDP, סיסמה מוצפנת, גישת משתמשים</li>
+<li class="fragment"><b>TACACS+</b> = TCP 49, הכול מוצפן, ניהול ציוד</li>
+<li class="fragment">תמיד <code>local</code> בסוף כגיבוי</li>
+</ul><div class="notes">חזרה. מעבדה: הגדרת שרת AAA ב-Packet Tracer, השוואת RADIUS ל-TACACS+ ב-Simulation.</div></section>

@@ -1,0 +1,169 @@
+<h1>תזכורת רשתות תקשורת <small>רענון לקראת חלק א' של הבגרות · אינו מחליף את קורס הרשתות</small></h1>
+<div class="meta"><span><b>מטרה:</b> לרענן את מושגי הרשתות הנדרשים לחלק א' של שאלון 735001 (50 נק')</span><span><b>הערה:</b> החומר נלמד בהרחבה אצל מורה הרשתות; זהו דף עזר מרוכז לחזרה</span></div>
+
+<h2>1. מודל OSI ו-TCP/IP – היכן יושב כל דבר</h2>
+<table>
+<tr><th>שכבה OSI</th><th>#</th><th>יחידה</th><th>פרוטוקולים / התקנים</th></tr>
+<tr><td>Application / Presentation / Session</td><td>7–5</td><td>Data</td><td>HTTP, HTTPS, DNS, DHCP, FTP, SMTP, IMAP, SSH, Telnet, SNMP</td></tr>
+<tr><td>Transport</td><td>4</td><td>Segment</td><td><b>TCP</b> (אמין, מספרי רצף, לחיצת יד), <b>UDP</b> (מהיר, ללא חיבור)</td></tr>
+<tr><td>Network</td><td>3</td><td>Packet</td><td>IP, ICMP, OSPF; <b>נתב (Router)</b></td></tr>
+<tr><td>Data Link</td><td>2</td><td>Frame</td><td>Ethernet, ARP, STP; <b>מתג (Switch)</b>, כתובות MAC</td></tr>
+<tr><td>Physical</td><td>1</td><td>Bits</td><td>כבלים, חשמל</td></tr>
+</table>
+<div class="box exam"><span class="t">נשאל בבגרות (נכון/לא נכון)</span>
+TCP פועל בשכבה 4 (לא 3!) · IMAP מקבל דוא"ל (נכון) · UDP <u>אינו</u> יוצר תקשורת אמינה (לא נכון – זה TCP).</div>
+
+<h2>2. בסיסי ספירה: בינארי · הקסדצימלי · אוקטלי</h2>
+<ul>
+<li>1 ספרה הקסדצימלית = 4 ביטים; 1 ספרה אוקטלית = 3 ביטים.</li>
+<li>המרה: הקס → בינארי (כל ספרה ל-4 ביט), ואז לקבץ ל-3 לאוקטלי.</li>
+</ul>
+<div class="box exam"><span class="t">דוגמה (כמו בבגרות): BA3F בהקס</span>
+B=1011, A=1010, 3=0011, F=1111 ⇒ <b>בינארי:</b> 1011 1010 0011 1111<br>
+לאוקטלי מקבצים 3 ביטים מימין: 1&nbsp;011&nbsp;101&nbsp;000&nbsp;111&nbsp;111 ⇒ <b>אוקטלי:</b> 135077</div>
+
+<h2>3. כתובות IPv4, סאבנטים ו-Wildcard</h2>
+<table class="kv">
+<tr><td>כתובות פרטיות</td><td>10.0.0.0/8 · 172.16.0.0/12 · 192.168.0.0/16</td></tr>
+<tr><td>מספר מארחים שמישים</td><td>2<sup>(32−prefix)</sup> − 2 &nbsp;(פחות כתובת רשת ו-broadcast)</td></tr>
+<tr><td>Wildcard</td><td>255.255.255.255 − subnet mask</td></tr>
+</table>
+<h3>טבלת ייחוס מהירה</h3>
+<table>
+<tr><th>Prefix</th><th>Subnet mask</th><th>גודל בלוק</th><th>מארחים שמישים</th><th>Wildcard</th></tr>
+<tr><td>/24</td><td>255.255.255.0</td><td>256</td><td>254</td><td>0.0.0.255</td></tr>
+<tr><td>/25</td><td>255.255.255.128</td><td>128</td><td>126</td><td>0.0.0.127</td></tr>
+<tr><td>/26</td><td>255.255.255.192</td><td>64</td><td>62</td><td>0.0.0.63</td></tr>
+<tr><td>/27</td><td>255.255.255.224</td><td>32</td><td>30</td><td>0.0.0.31</td></tr>
+<tr><td>/28</td><td>255.255.255.240</td><td>16</td><td>14</td><td>0.0.0.15</td></tr>
+<tr><td>/30</td><td>255.255.255.252</td><td>4</td><td>2</td><td>0.0.0.3</td></tr>
+</table>
+<div class="box exam"><span class="t">דוגמאות מהבגרות</span>
+• מספר מארחים שמישים ב-<code>172.16.16.16/28</code> ⇒ 2<sup>4</sup>−2 = <b>14</b>.<br>
+• <code>135.8.x/26</code> ⇒ Subnet mask = <b>255.255.255.192</b> · Wildcard = <b>0.0.0.63</b>.<br>
+• מציאת הרשת: לכתובת עם /30, הבלוקים הם 0,4,8… ⇒ <code>10.10.2.20/30</code> ⟵ רשת .20, מארחים שמישים .21–.22, broadcast .23.</div>
+
+<h2>4. IPv6 – קיצור וסוגי כתובות</h2>
+<h3>כללי קיצור</h3>
+<ul>
+<li>משמיטים אפסים מובילים בכל בלוק (<code>130F</code> נשאר, <code>0000</code>→<code>0</code>).</li>
+<li><code>::</code> מחליף רצף אחד של בלוקי אפסים (פעם אחת בלבד בכתובת).</li>
+</ul>
+<div class="box exam"><span class="t">דוגמה מהבגרות</span>
+<code>3001:0000:130F:0000:0000:0000:0001:133B</code> ⇒ <b><code>3001:0:130F::1:133B</code></b></div>
+<table>
+<tr><th>סוג כתובת</th><th>תחילית</th><th>תפקיד</th></tr>
+<tr><td><b>Global Unicast</b></td><td>2000::/3</td><td>ניתובה באינטרנט (כמו כתובת ציבורית)</td></tr>
+<tr><td><b>Link-Local</b></td><td>FE80::/10</td><td>תקשורת בקו/רשת מקומית בלבד; לא עוברת נתב</td></tr>
+<tr><td><b>Unique Local (ULA)</b></td><td>FC00::/7 (FD00::/8)</td><td><b>תקשורת בין תתי-רשתות פנימיות, לא ניתובה באינטרנט</b> (מקביל לכתובת פרטית)</td></tr>
+<tr><td><b>Multicast</b></td><td>FF00::/8</td><td>שידור לקבוצה</td></tr>
+</table>
+<div class="box exam"><span class="t">נשאל בבגרות</span>
+"סוג כתובת המספק תקשורת בין תתי-רשתות אך שאינו ניתוב באינטרנט" ⇒ <b>Unique Local</b>.</div>
+
+<h2>5. פרוטוקולים ופורטים חשובים</h2>
+<table>
+<tr><th>פרוטוקול</th><th>פורט</th><th>TCP/UDP</th><th>תפקיד</th></tr>
+<tr><td>FTP</td><td>20/21</td><td>TCP</td><td>העברת קבצים</td></tr>
+<tr><td>SSH</td><td>22</td><td>TCP</td><td>ניהול מרחוק מוצפן</td></tr>
+<tr><td>Telnet</td><td>23</td><td>TCP</td><td>ניהול מרחוק (לא מוצפן!)</td></tr>
+<tr><td>SMTP</td><td>25</td><td>TCP</td><td>שליחת דוא"ל</td></tr>
+<tr><td>DNS</td><td>53</td><td>UDP/TCP</td><td>תרגום שם ⇄ כתובת</td></tr>
+<tr><td>DHCP</td><td>67/68</td><td>UDP</td><td>הקצאת כתובות אוטומטית</td></tr>
+<tr><td>HTTP / HTTPS</td><td>80 / 443</td><td>TCP</td><td>גלישה</td></tr>
+<tr><td>IMAP / POP3</td><td>143 / 110</td><td>TCP</td><td>קבלת דוא"ל</td></tr>
+<tr><td>SNMP</td><td>161</td><td>UDP</td><td>ניטור ציוד</td></tr>
+<tr><td>Syslog</td><td>514</td><td>UDP</td><td>יומן אירועים</td></tr>
+</table>
+
+<h2>6. ניתוב: מרחק ניהולי, ניתוב סטטי ו-DHCP Relay</h2>
+<h3>מרחק ניהולי (Administrative Distance) – "עד כמה סומכים על מקור המידע" (נמוך = עדיף)</h3>
+<table>
+<tr><th>מקור</th><th>AD</th></tr>
+<tr><td>Connected (מחובר ישירות)</td><td>0</td></tr>
+<tr><td>ניתוב סטטי (Static)</td><td>1</td></tr>
+<tr><td>External BGP</td><td>20</td></tr>
+<tr><td>Internal EIGRP</td><td>90</td></tr>
+<tr><td>OSPF</td><td>110</td></tr>
+<tr><td>RIP</td><td>120</td></tr>
+</table>
+<pre><span class="c">! ניתוב סטטי: אל רשת היעד, דרך ה-next-hop</span>
+R1(config)# <b>ip route 10.10.2.20 255.255.255.252 10.10.255.1</b>
+<span class="c">! ניתוב ברירת מחדל (לאינטרנט / כגיבוי)</span>
+R1(config)# <b>ip route 0.0.0.0 0.0.0.0 200.1.1.1</b>
+<span class="c">! גיבוי (floating static) – AD גבוה מ-OSPF כדי שלא יבטל את הניתוב הדינמי</span>
+R1(config)# ip route 10.0.0.0 255.0.0.0 200.1.1.2 <b>120</b></pre>
+<div class="box exam"><span class="t">DHCP Relay – כשהשרת ברשת אחרת</span>
+בקשת DHCP היא broadcast ואינה עוברת נתב. מגדירים על הממשק של הלקוח את כתובת שרת ה-DHCP:
+<pre>R1(config)# interface g0/0
+R1(config-if)# <b>ip helper-address 192.50.100.100</b>   <span class="c">! כתובת שרת ה-DHCP</span></pre></div>
+
+<h2>7. מיתוג: VLAN, Trunk ו-Router-on-a-Stick</h2>
+<ul>
+<li><b>VLAN</b> – מפצל מתג לרשתות לוגיות מבודדות. מעבר בין VLANים דורש ניתוב.</li>
+<li><b>Trunk (802.1Q)</b> – קישור שנושא כמה VLANים בין מתגים; מוסיף תג של מספר ה-VLAN.</li>
+<li><b>Router-on-a-Stick</b> – נתב עם תת-ממשקים (subinterfaces), אחד לכל VLAN, לניתוב ביניהם.</li>
+</ul>
+<pre><span class="c">! ניתוב בין VLANים על ממשק פיזי אחד</span>
+R1(config)# interface g0/0/1.10
+R1(config-subif)# <b>encapsulation dot1Q 10</b>
+R1(config-subif)# <b>ip address 172.18.1.254 255.255.0.0</b>
+R1(config)# interface g0/0/1.20
+R1(config-subif)# encapsulation dot1Q 20
+R1(config-subif)# ip address 172.18.2.254 255.255.0.0
+<span class="c">! בדיקת טבלת ה-MAC של המתג</span>
+S1# <b>show mac address-table</b></pre>
+
+<h2>8. STP ו-OSPF – כללי הבחירה (נשאלים כמעט תמיד)</h2>
+<div class="cols">
+<div><div class="box def"><span class="t">STP – בחירת Root Bridge</span>
+Bridge ID = <b>Priority</b> (ברירת מחדל 32768) + <b>MAC</b>.<br>
+מנצח: ה-Priority <u>הנמוך</u>; בתיקו – ה-<b>MAC הנמוך</b>.<br>
+STP פועל בשכבה <b>2</b> ומונע לולאות ע"י <b>חסימת יציאות</b> (port blocking).</div></div>
+<div><div class="box def"><span class="t">OSPF – בחירת DR / BDR</span>
+מנצח: ה-<b>Priority הגבוה</b>; בתיקו – ה-<b>Router-ID הגבוה</b>.<br>
+<u>שימו לב – הפוך מ-STP:</u> ב-STP נמוך מנצח, ב-OSPF גבוה מנצח.</div></div>
+</div>
+<div class="box exam"><span class="t">דוגמאות מהבגרות</span>
+• 4 מתגים, priority זהה, MAC הנמוך ⇒ אותו מתג הופך ל-root.<br>
+• OSPF: R1(pri 2, RID 1.1.1.1), R3(pri 2, RID 3.3.3.3) ⇒ בין בעלי priority 2 מנצח R3 (RID גבוה) כ-<b>DR</b>, ו-R1 כ-<b>BDR</b>.</div>
+
+<h2>9. פקודות CLI ואבחון תקלות</h2>
+<table>
+<tr><th>מצב</th><th>הנחיה</th></tr>
+<tr><td>User EXEC</td><td><code>Router&gt;</code> – פקודות show בסיסיות, ping</td></tr>
+<tr><td>Privileged EXEC</td><td><code>Router#</code> – <code>enable</code></td></tr>
+<tr><td>Global config</td><td><code>Router(config)#</code> – <code>configure terminal</code></td></tr>
+<tr><td>Interface</td><td><code>Router(config-if)#</code></td></tr>
+</table>
+<pre>Switch(config)# <b>hostname R1</b>
+R1(config)# interface g0/1
+R1(config-if)# <b>no switchport</b>          <span class="c">! הופך פורט מתג L3 לפורט מנותב</span>
+R1(config-if)# ip address 10.100.20.42 255.255.255.0
+R1(config-if)# no shutdown
+<span class="c">! בדיקות נפוצות</span>
+R1# show ip interface brief
+R1# show ip route
+R1# show running-config</pre>
+<h3>אבחון תקלות – שיטת Top-Down</h3>
+<p>בודקים מהשכבה העליונה כלפי מטה: גישה לאפליקציה/שירות ⟶ הגדרות רשת (IP/gateway/DNS) ⟶ חיבור פיזי (כבל, נורית). דוגמה: בדיקת גישה לנתב החברה ⟶ בדיקת הגדרות ⟶ בדיקת כבל רשת.</p>
+<div class="box exam"><span class="t">פקודות אבחון בתחנת קצה (Windows)</span>
+• <code>ipconfig /all</code> – IP, MAC, gateway, DNS.<br>
+• <code>ipconfig /displaydns</code> – <b>הצגת זיכרון המטמון (cache) של ה-DNS</b> במחשב.<br>
+• <code>ipconfig /flushdns</code> – איפוס המטמון. &nbsp; • <code>nslookup</code>, <code>ping</code>, <code>tracert</code>, <code>arp -a</code>.</div>
+<div class="box exam"><span class="t">CDP</span>
+פרוטוקול <b>CDP</b> מאפשר לזהות התקנים סמוכים של סיסקו ברשת המקומית (<code>show cdp neighbors</code>). מטעמי אבטחה מכבים אותו על פורטי קצה (<code>no cdp enable</code>).</div>
+
+<h2>10. תרגילי חזרה מהירים</h2>
+<div class="box ex"><span class="t">תרגיל 1</span>
+א. כמה מארחים שמישים ב-<code>/27</code>? ב. מהי ה-wildcard של <code>10.20.0.0/16</code>? ג. באיזו שכבה פועל TCP?
+<div class="ans">א. 30 &nbsp; ב. 0.0.255.255 &nbsp; ג. שכבה 4 (Transport)</div></div>
+<div class="box ex"><span class="t">תרגיל 2</span>
+קצרו: <code>2001:0DB8:0000:0000:0000:00FF:0000:0001</code>
+<div class="ans"><code>2001:DB8::FF:0:1</code></div></div>
+<div class="box ex"><span class="t">תרגיל 3</span>
+לנתב יש מסלול OSPF (AD 110) ומסלול סטטי (AD 1) לאותה רשת. איזה ייבחר ולמה?
+<div class="ans">הסטטי – ה-AD הנמוך יותר מעיד על מקור מהימן/מועדף.</div></div>
+<div class="box ex"><span class="t">תרגיל 4</span>
+מנהל רוצה ששרת DHCP ברשת אחרת יקצה כתובות ללקוחות ברשת של R1. איזו פקודה נדרשת ועל איזה ממשק?
+<div class="ans"><code>ip helper-address &lt;IP של שרת ה-DHCP&gt;</code> על הממשק של R1 הפונה ללקוחות.</div></div>

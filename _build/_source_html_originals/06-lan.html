@@ -1,0 +1,268 @@
+<h1>פרק 6 – אבטחת הרשת המקומית (LAN Security) <small>11 שעות עיוני + 2 מעשי · שבועות 17–19</small></h1>
+<div class="meta"><span><b>מטרות:</b> התקפות שכבה 2 · port security · STP/VLAN · DHCP/ARP · storm control · SPAN · NAC · VoIP/SAN</span><span><b>בבגרות:</b> MAC overflow→port security, DTP→VLAN hopping, BPDU Guard, Evil Twin, root bridge</span></div>
+<div class="box def"><span class="t">לפני שמתחילים – מה קורה ב"שכבה 2"? (למי שאין רקע)</span>
+עד עכשיו דיברנו על כתובות IP (שכבה 3). אבל בתוך רשת מקומית, המכשירים מדברים ביניהם דרך <b>מתג</b> לפי <b>כתובות MAC</b> (שכבה 2). כמה מושגים:
+<ul>
+<li><b>מתג (Switch)</b> – מחבר את כל המחשבים ברשת המקומית. הוא לומד איזו כתובת MAC נמצאת באיזה פורט, ושומר זאת ב<b>טבלת MAC</b>.</li>
+<li><b>VLAN</b> – "רשת וירטואלית". מפצל מתג פיזי אחד לכמה רשתות נפרדות ומבודדות (למשל VLAN למחלקת כספים ו-VLAN לאורחים) בלי לקנות עוד מתגים.</li>
+<li><b>Trunk</b> – קישור בין מתגים שנושא כמה VLANים יחד.</li>
+<li><b>Broadcast</b> – הודעה שנשלחת ל<u>כל</u> המכשירים ברשת בבת אחת ("שידור").</li>
+<li><b>STP</b> – פרוטוקול שמונע "לולאות" בין מתגים (נסביר בהמשך למה לולאה מפילה רשת).</li>
+</ul>
+<b>למה זה קריטי לאבטחה?</b> אם תוקף כבר מחובר לרשת המקומית (חיבר מחשב לשקע, פרץ ל-Wi-Fi), הוא פועל בשכבה 2 – <u>מתחת</u> לכל ההגנות של שכבה 3 (חומת אש, IP). לכן צריך להגן גם כאן.</div>
+
+
+<h2>6.1 למה שכבה 2 היא "הבטן הרכה"</h2>
+<p>כל מנגנוני האבטחה שלמדנו עד כה עובדים בשכבה 3 ומעלה (ACL, IPS, VPN). אבל אם התוקף כבר <b>ברשת המקומית</b> – חיבר לפטופ לשקע, פרץ ל-Wi-Fi, או השתלט על מחשב עובד – הוא פועל בשכבה 2, מתחת לכל ההגנות האלה. עיקרון קריטי: <b>מודל OSI הוא שרשרת – אם שכבה 2 נפרצת, כל השכבות מעליה נפגעות.</b> מתג "בוטח" בכל מה שמחובר אליו כברירת מחדל, וזו הבעיה.</p>
+<div class="box story"><span class="t">סיפור מהחיים: השקע בחדר הישיבות</span>
+בבדיקת חדירה נפוצה, הבודק מגיע כ"טכניקאי", מבקש להמתין בחדר ישיבות, ומחבר מכשיר קטן (Raspberry Pi) לשקע רשת מתחת לשולחן. המכשיר מבצע ARP spoofing ומקליט תעבורה, או מריץ Responder לגניבת hashes של סיסמאות. הוא יוצא אחרי חצי שעה, והמכשיר ממשיך לשדר דרך LTE. אף חומת אש לא ראתה כלום – הכול קרה בשכבה 2, בתוך ה-VLAN. ההגנות בפרק הזה (port security, DHCP snooping, DAI, 802.1X) הן בדיוק מה שהיה עוצר אותו.</p></div>
+
+<h2>6.2 מפת ההתקפות וההגנות בשכבה 2</h2>
+<table>
+<tr><th>התקפה</th><th>מה מנצלת</th><th>הגנה עיקרית</th></tr>
+<tr><td>MAC table overflow (CAM flooding)</td><td>גודל מוגבל של טבלת ה-MAC</td><td><b>Port Security</b></td></tr>
+<tr><td>VLAN hopping (switch spoofing)</td><td>DTP – משא-ומתן trunk אוטומטי</td><td>כיבוי DTP, <code>switchport mode access</code></td></tr>
+<tr><td>VLAN hopping (double tagging)</td><td>Native VLAN</td><td>Native VLAN ייעודי ולא בשימוש</td></tr>
+<tr><td>STP manipulation</td><td>בחירת root bridge לפי priority</td><td><b>BPDU Guard, Root Guard</b></td></tr>
+<tr><td>DHCP starvation / spoofing (rogue DHCP)</td><td>אין אימות ל-DHCP</td><td><b>DHCP Snooping</b></td></tr>
+<tr><td>ARP spoofing / poisoning (MITM)</td><td>ARP חסר אימות</td><td><b>Dynamic ARP Inspection (DAI)</b> (מסתמך על DHCP snooping)</td></tr>
+<tr><td>MAC/IP spoofing</td><td>אין קשירת כתובת לפורט</td><td>IP Source Guard</td></tr>
+<tr><td>CDP reconnaissance</td><td>CDP משדר דגם, IOS, IP</td><td><code>no cdp enable</code> על פורטי קצה</td></tr>
+</table>
+
+<h2>6.3 MAC Table Overflow ו-Port Security</h2>
+<p>מתג לומד כתובות MAC ורושם אותן בטבלת CAM (Content Addressable Memory) יחד עם הפורט. הטבלה מוגבלת (למשל 8,000 רשומות). כלי כמו <code>macof</code> מציף את המתג באלפי כתובות MAC מזויפות בשנייה; הטבלה מתמלאת, והמתג עובר ל<b>fail-open</b> – מתחיל לשדר <i>כל</i> מסגרת לכל הפורטים (כמו hub). עכשיו התוקף רואה את תעבורת כולם. זהו "MAC flooding".</p>
+<h3>Port Security – ההגנה</h3>
+<pre>S1(config)# interface f0/1
+S1(config-if)# <b>switchport mode access</b>              <span class="c">! חובה – port security לא עובד על trunk דינמי</span>
+S1(config-if)# <b>switchport port-security</b>
+S1(config-if)# <b>switchport port-security maximum 2</b>    <span class="c">! עד 2 MAC (מחשב + טלפון IP)</span>
+S1(config-if)# <b>switchport port-security mac-address sticky</b>  <span class="c">! לומד את הכתובת ושומר בקונפיג</span>
+S1(config-if)# <b>switchport port-security violation shutdown</b>
+S1(config-if)# switchport port-security aging time 60
+<span class="c">! וריפיקציה</span>
+S1# <b>show port-security</b>
+S1# <b>show port-security interface f0/1</b>
+S1# show port-security address</pre>
+<h3>שלושה מצבי הפרה (violation)</h3>
+<table>
+<tr><th>מצב</th><th>מה קורה בהפרה</th><th>התראה</th><th>מונה</th></tr>
+<tr><td><b>protect</b></td><td>מפיל מסגרות מ-MAC לא מוכרות; הפורט נשאר up</td><td>לא</td><td>לא</td></tr>
+<tr><td><b>restrict</b></td><td>מפיל מסגרות; הפורט up</td><td>כן (syslog/SNMP)</td><td>כן</td></tr>
+<tr><td><b>shutdown</b> (ברירת מחדל)</td><td>הפורט עובר ל-<b>err-disabled</b> – מושבת לגמרי</td><td>כן</td><td>כן</td></tr>
+</table>
+<div class="box faq"><span class="t">שאלת תלמיד: "הפורט נכבה (err-disabled). איך מחזירים אותו?"</span>
+ידנית: <code>shutdown</code> ואז <code>no shutdown</code> על הממשק. אוטומטית אחרי זמן: <code>errdisable recovery cause psecure-violation</code> + <code>errdisable recovery interval 300</code>. בדקו סיבה: <code>show interfaces status err-disabled</code>. הערה: <code>sticky</code> נדבק ל-running-config – אל תשכחו <code>write</code> אחרת הכתובת תיעלם ב-reload.</div>
+<div class="box mistake"><span class="t">טעות נפוצה</span>
+מגדירים port security ושוכחים <code>switchport mode access</code>. אם הפורט במצב dynamic, port security לא נכנס לתוקף כראוי. וגם: maximum 1 עם טלפון IP + מחשב מאחוריו ⇒ הפרות מיידיות; להגדיר maximum 2 או להשתמש ב-voice VLAN.</div>
+
+<h2>6.4 VLAN – והתקפת VLAN Hopping</h2>
+<p><b>VLAN</b> מפצל מתג פיזי אחד לכמה רשתות לוגיות מבודדות. מעבר בין VLANים דורש ניתוב (router / L3 switch). קישור בין מתגים שנושא כמה VLANים נקרא <b>trunk</b> ומשתמש בתיוג <b>802.1Q</b> (מוסיף תג של 4 בתים עם מספר ה-VLAN לכל מסגרת). <b>Native VLAN</b> – ה-VLAN היחיד שעובר ב-trunk <i>בלי</i> תג (ברירת מחדל VLAN 1).</p>
+<h3>התקפה א': Switch Spoofing (ניצול DTP)</h3>
+<p><b>DTP</b> (Dynamic Trunking Protocol) מאפשר לשני מתגים "לסכם" אוטומטית אם הקישור ביניהם יהיה trunk. הבעיה: פורט קצה במצב ברירת מחדל (<code>dynamic auto</code> / <code>dynamic desirable</code>) יסכים להפוך ל-trunk גם מול <i>מחשב של תוקף</i> שמתחזה למתג ושולח DTP. ברגע שהקישור trunk – התוקף מקבל גישה לכל ה-VLANים. זו התשובה בבגרות: "השבתת DTP מונעת VLAN hopping".</p>
+<h3>התקפה ב': Double Tagging</h3>
+<p>התוקף (ב-VLAN של ה-native) שולח מסגרת עם <i>שני</i> תגים: החיצוני = native VLAN (המתג הראשון מסיר אותו), הפנימי = ה-VLAN של הקורבן. המתג השני רואה את התג הפנימי ומעביר ל-VLAN הקורבן. חד-כיווני, אך מסוכן. הגנה: native VLAN שאינו בשימוש ואינו VLAN 1.</p>
+<h3>ההגנה על פורטים</h3>
+<pre><span class="c">! פורט קצה (למחשב) – מפורש access, כיבוי DTP</span>
+S1(config)# interface range f0/1 - 20
+S1(config-if-range)# <b>switchport mode access</b>
+S1(config-if-range)# <b>switchport access vlan 10</b>
+S1(config-if-range)# <b>switchport nonegotiate</b>          <span class="c">! לא לשלוח DTP</span>
+S1(config-if-range)# <b>spanning-tree portfast</b>
+S1(config-if-range)# <b>spanning-tree bpduguard enable</b>
+<span class="c">! פורט trunk – מפורש trunk, native ייעודי</span>
+S1(config)# interface g0/1
+S1(config-if)# <b>switchport mode trunk</b>
+S1(config-if)# <b>switchport nonegotiate</b>
+S1(config-if)# <b>switchport trunk native vlan 999</b>       <span class="c">! VLAN "חור שחור", לא בשימוש</span>
+S1(config-if)# switchport trunk allowed vlan 10,20,30      <span class="c">! רק מה שצריך</span>
+<span class="c">! פורטים לא בשימוש – לכבות ולשים ב-VLAN מבודד</span>
+S1(config)# interface range f0/21 - 24
+S1(config-if-range)# switchport access vlan 999
+S1(config-if-range)# shutdown</pre>
+
+<h2>6.5 STP והתקפות עליו</h2>
+<p><b>STP</b> (Spanning Tree Protocol, 802.1D) מונע <b>לולאות</b> בשכבה 2. למה לולאות מסוכנות? למסגרת שכבה 2 <b>אין TTL</b> (בניגוד ל-IP). אם יש לולאה פיזית בין מתגים, מסגרת broadcast תסתובב <i>לנצח</i>, תשוכפל בכל סיבוב, ותייצר <b>broadcast storm</b> שמשתק את הרשת תוך שניות. STP חוסם באופן לוגי פורטים כדי להשאיר מסלול יחיד, ופותח אותם אם קישור נופל.</p>
+<div class="box exam"><span class="t">בבגרות (שאלה 3ו)</span>
+"פרוטוקול STP מונע לולאות מיתוג במודל ה-OSI בשכבה מספר ___" – <b>2</b> (Data Link). "הפעולה של מניעת הלולאות נעשית על ידי ___" – <b>Port blocking (חסימת יציאות)</b>.</div>
+<h3>איך נבחר ה-Root Bridge (נשאל בבגרות!)</h3>
+<p>המתג עם <b>Bridge ID הנמוך ביותר</b> הופך ל-root. Bridge ID = <b>Priority (2 בתים) + MAC address</b>. ברירת מחדל priority = 32768 לכולם. אם ה-priority שווה – מכריע ה-<b>MAC הנמוך ביותר</b>.</p>
+<div class="box exam"><span class="t">בבגרות (שאלה 3ז)</span>
+4 מתגים, priority ברירת מחדל זהה. MACים: SW1=0C:0E:15:22:05:97, SW2=0C:E0:38:00:36:75, SW3=0C:E0:18:A1:B3:19, SW4=0C:0E:15:1A:3C:9D. מי ה-root? משווים בית-בית: SW1 ו-SW4 מתחילים ב-0C:0E:15, השאר ב-0C:E0. הבית הרביעי: SW1=22, SW4=1A. 1A < 22 ⇒ <b>SW4 הוא ה-root bridge</b>. הסיבה: "כי כתובת ה-MAC שלו היא הנמוכה ביותר" (וה-priority זהה).</div>
+<h3>OSPF DR/BDR – רקע לשאלה 2ח (שכבה 3, אך נשאל)</h3>
+<p>בבחירת DR/BDR ב-OSPF: קודם <b>priority הגבוה ביותר</b>, ואם שווה – <b>Router-ID הגבוה ביותר</b>. בשאלת הבגרות R1(pri 2, RID 1.1.1.1), R2(pri 1), R3(pri 2, RID 3.3.3.3), R4(pri 1). בין בעלי priority 2: R3 (RID 3.3.3.3) > R1 ⇒ <b>R3 = DR</b>. ה-BDR הוא הבא: בין priority 2, R1; אבל אחרי DR משווים את השאר – R1 (RID 1.1.1.1) הוא הגבוה מבין הנותרים בעלי priority 2. תשובה: <b>R3 = DR, R1 = BDR</b>. (שימו לב: ההיגיון הפוך מ-STP – שם נמוך מנצח, כאן גבוה.)</p>
+<h3>הגנות STP</h3>
+<table>
+<tr><th>מנגנון</th><th>מה עושה</th><th>איפה</th></tr>
+<tr><td><b>PortFast</b></td><td>פורט קצה עובר מיד ל-forwarding (לא מחכה 30 שניות)</td><td>פורטי access למחשבים</td></tr>
+<tr><td><b>BPDU Guard</b></td><td>אם פורט PortFast מקבל BPDU (כלומר חובר אליו מתג/תוקף) – err-disable מיידי</td><td>פורטי קצה</td></tr>
+<tr><td><b>Root Guard</b></td><td>מונע ממתג בפורט זה להפוך ל-root (אם ישלח BPDU עדיף – הפורט נחסם)</td><td>פורטים למתגי גישה מתחת</td></tr>
+<tr><td><b>Loop Guard</b></td><td>מגן מלולאה כשפורט מפסיק לקבל BPDU</td><td>קישורים redundant</td></tr>
+</table>
+<pre><span class="c">! פר-ממשק</span>
+S1(config-if)# spanning-tree portfast
+S1(config-if)# <b>spanning-tree bpduguard enable</b>
+<span class="c">! גלובלי – על כל פורטי PortFast (זו התשובה בבגרות שאלה 7ד)</span>
+S1(config)# <b>spanning-tree portfast default</b>
+S1(config)# <b>spanning-tree portfast bpduguard default</b>
+<span class="c">! שהמתג שלנו יהיה root בוודאות</span>
+S1(config)# <b>spanning-tree vlan 10 root primary</b>       <span class="c">! מוריד priority ל-24576</span>
+S1(config)# spanning-tree vlan 10 priority 4096            <span class="c">! ידני – חייב כפולה של 4096</span>
+S1# <b>show spanning-tree</b></pre>
+
+<h2>6.6 DHCP – Starvation, Spoofing ו-DHCP Snooping</h2>
+<p><b>DHCP starvation:</b> תוקף מבקש את כל הכתובות ב-pool (עם MACים מזויפים) – משתמשים אמיתיים לא מקבלים כתובת (DoS). <b>DHCP spoofing (rogue server):</b> התוקף מקים שרת DHCP משלו שעונה מהר יותר, ומחלק לקורבנות <b>default gateway = הכתובת שלו</b> ו-<b>DNS שלו</b> ⇒ MITM על כל התעבורה.</p>
+<h3>DHCP Snooping – ההגנה</h3>
+<p>המתג מסמן פורטים כ-<b>trusted</b> (לכיוון שרת ה-DHCP הלגיטימי / uplink) או <b>untrusted</b> (פורטי קצה, ברירת מחדל). הודעות שרת (OFFER, ACK) מפורט untrusted – נחסמות. המתג בונה <b>DHCP Snooping Binding Table</b> (MAC↔IP↔פורט↔VLAN) – בסיס ל-DAI ו-IP Source Guard.</p>
+<pre>S1(config)# <b>ip dhcp snooping</b>
+S1(config)# <b>ip dhcp snooping vlan 10,20</b>
+S1(config)# interface g0/1                    <span class="c">! לכיוון שרת DHCP הלגיטימי</span>
+S1(config-if)# <b>ip dhcp snooping trust</b>
+S1(config)# interface range f0/1 - 20         <span class="c">! פורטי קצה</span>
+S1(config-if-range)# <b>ip dhcp snooping limit rate 6</b>   <span class="c">! נגד starvation</span>
+S1# <b>show ip dhcp snooping binding</b></pre>
+
+<h2>6.7 ARP Spoofing ו-Dynamic ARP Inspection (DAI)</h2>
+<p><b>ARP</b> ממפה IP ל-MAC, וחסר כל אימות: כל מחשב יכול לשלוח "Gratuitous ARP" שאומר "אני ה-gateway" – והקורבנות יעדכנו את הטבלה שלהם ויתחילו לשלוח את התעבורה לתוקף (MITM). <b>DAI</b> בודק כל הודעת ARP מול טבלת ה-DHCP Snooping: אם ה-IP↔MAC לא תואם לרשומה – ההודעה נזרקת.</p>
+<pre>S1(config)# <b>ip arp inspection vlan 10,20</b>
+S1(config)# interface g0/1
+S1(config-if)# <b>ip arp inspection trust</b>            <span class="c">! uplink מהימן</span>
+<span class="c">! לפורטים סטטיים בלי DHCP – מגדירים ACL של ARP ידני</span>
+S1(config)# arp access-list STATIC-HOSTS
+S1(config-arp-nacl)# permit ip host 10.0.0.5 mac host aaaa.bbbb.cccc
+S1# <b>show ip arp inspection</b></pre>
+<p>המשלים: <b>IP Source Guard</b> – מוודא שכתובת ה-IP במסגרת תואמת לפורט לפי טבלת ה-snooping (נגד IP spoofing).</p>
+
+<h2>6.8 Storm Control</h2>
+<p>מגביל את אחוז התעבורה מסוג broadcast / multicast / unknown-unicast על פורט; אם עוברים סף – המתג מפיל את העודף (ומתריע). מגן מ-broadcast storms (גם מלולאה וגם מתקלה/התקפה). התכנית מציינת "Storm Control (SC)".</p>
+<pre>S1(config-if)# <b>storm-control broadcast level 5.00</b>       <span class="c">! מעל 5% מרוחב הפס – הגבל</span>
+S1(config-if)# <b>storm-control multicast level pps 1k</b>
+S1(config-if)# <b>storm-control action shutdown</b>            <span class="c">! או trap</span>
+S1# <b>show storm-control</b></pre>
+
+<h2>6.9 SPAN – שיקוף פורטים (הבסיס ל-IDS)</h2>
+<p><b>SPAN</b> (Switched Port Analyzer, "port mirroring") מעתיק את כל התעבורה מפורט/VLAN מקור לפורט יעד – שאליו מחובר Wireshark או <b>IDS</b>. זה החיבור לפרק 5: IDS "מחוץ לנתיב" מקבל את התעבורה דווקא דרך SPAN. <b>RSPAN</b> – שיקוף בין מתגים דרך VLAN ייעודי; <b>ERSPAN</b> – מעל IP (GRE).</p>
+<pre>S1(config)# <b>monitor session 1 source interface f0/1 - 10 both</b>
+S1(config)# <b>monitor session 1 destination interface f0/24</b>   <span class="c">! כאן ה-IDS/Wireshark</span>
+S1# <b>show monitor session 1</b></pre>
+<div class="box faq"><span class="t">שאלת תלמיד: "אם ה-IDS רק מקבל עותק דרך SPAN, למה שלא נחבר אותו inline ונחסום?"</span>
+כי אז הוא IPS, לא IDS – והוא מוסיף השהיה ונקודת כשל בנתיב. SPAN מאפשר לנטר בלי לגעת בזרימה: הפורט המשקף יכול אפילו ליפול בלי להשפיע על הרשת. זה בדיוק ה-trade-off מפרק 5.</div>
+
+<h2>6.10 NAC ו-802.1X</h2>
+<p><b>NAC</b> (Network Access Control) – "בקרת בריאות": לפני שמחשב מקבל גישה מלאה, בודקים שהוא עומד בתנאים (אנטי-וירוס מעודכן, patch, אין תוכנות אסורות). מחשב שנכשל מועבר ל-VLAN "הסגר" (quarantine) לתיקון. הבסיס הטכני: <b>802.1X</b> (פרק 3) – המתג/AP חוסם את הפורט עד אימות מול RADIUS. שילוב: 802.1X מאמת <i>מי</i>, NAC בודק <i>באיזה מצב</i> המכשיר.</p>
+
+<h2>6.11 מערכות קצה: IronPort, CSA, ומיילים/אתרים</h2>
+<ul>
+<li><b>Cisco IronPort</b> – משפחת מכשירים ל<b>אבטחת תוכן</b> בקצה: <b>ESA</b> (Email Security Appliance) – סינון spam, phishing ווירוסים במייל; <b>WSA</b> (Web Security Appliance) – proxy שמסנן אתרים זדוניים, URL filtering, בדיקת הורדות. סיסקו רכשה את IronPort ב-2007.</li>
+<li><b>CSA</b> (Cisco Security Agent) – HIPS על התחנה (פרק 5).</li>
+<li>היום התחום נקרא <b>Secure Email / Secure Web / SWG / CASB</b>, ולרוב בענן (Cisco Umbrella).</li>
+</ul>
+
+<h2>6.12 אבטחת VoIP ו-SAN</h2>
+<h3>VoIP (טלפוניה על IP)</h3>
+<p>איומים: האזנה לשיחות (sniffing), <b>toll fraud</b> (שימוש לא מורשה בקווים לחיוב יקר), התחזות (caller-ID spoofing), DoS על ה-PBX, SPIT (spam קולי). הגנות: <b>Voice VLAN נפרד</b> (הפרדה מתעבורת הנתונים), הצפנה (<b>SRTP</b> למדיה, <b>TLS/SIP-TLS</b> לאיתות), אימות מכשירי טלפון, ACL בין voice ל-data.</p>
+<pre>S1(config-if)# switchport access vlan 10        <span class="c">! נתונים</span>
+S1(config-if)# <b>switchport voice vlan 20</b>       <span class="c">! קול – מתויג בנפרד</span></pre>
+<h3>SAN (רשת אחסון)</h3>
+<p>SAN מחברת שרתים לאחסון בלוקים (Fibre Channel / iSCSI). איומים: גישה לא מורשית ל-LUN, WWN spoofing. הגנות: <b>Zoning</b> (מי מדבר עם מי ב-fabric – מקביל ל-VLAN), <b>LUN masking</b> (איזה שרת רואה איזה נפח), <b>VSAN</b> (בידוד לוגי), אימות (FC-SP / CHAP ל-iSCSI), והצפנת נתונים במנוחה. חשיבות: כל הנתונים הקריטיים של הארגון נמצאים שם.</p>
+
+<h2>6.13 Wi-Fi ו-Evil Twin</h2>
+<p><b>Evil Twin:</b> התוקף מקים Access Point עם <b>אותו SSID</b> כמו הרשת החוקית, בעוצמה חזקה יותר. מכשירים מתחברים אליו אוטומטית (הם זוכרים את השם), והתוקף מבצע MITM – רואה הכול, מציג דף התחברות מזויף (captive portal) לגניבת סיסמה. הגנות: WPA2/WPA3-Enterprise (802.1X – המכשיר מאמת את השרת, לא רק להיפך), WIPS (Wireless IPS שמזהה AP מתחזים), אימות הדדי.</p>
+<div class="box exam"><span class="t">בבגרות (שאלה 6ה)</span>
+"מהם מתכנני התקפת Evil Twin?" – <b>לשתול נקודת גישה זדונית, בעלת SSID זהה לנקודת גישה חוקית, לצורך גניבת מידע.</b></div>
+
+<h2>6.14 מדריך פקודות מרוכז – פרק 6</h2>
+<table>
+<tr><th>פקודה</th><th>הגנה מפני</th></tr>
+<tr><td><code>switchport port-security</code> + <code>maximum</code> + <code>violation</code> + <code>mac-address sticky</code></td><td>MAC overflow</td></tr>
+<tr><td><code>switchport mode access</code> + <code>switchport nonegotiate</code></td><td>VLAN hopping (DTP)</td></tr>
+<tr><td><code>switchport trunk native vlan 999</code></td><td>double tagging</td></tr>
+<tr><td><code>spanning-tree portfast</code> + <code>bpduguard enable</code> / <code>… default</code></td><td>STP manipulation</td></tr>
+<tr><td><code>spanning-tree vlan N root primary</code> / <code>priority</code></td><td>קיבוע root</td></tr>
+<tr><td><code>ip dhcp snooping</code> + <code>trust</code> + <code>limit rate</code></td><td>DHCP spoofing/starvation</td></tr>
+<tr><td><code>ip arp inspection vlan</code> + <code>trust</code></td><td>ARP poisoning</td></tr>
+<tr><td><code>storm-control broadcast level</code></td><td>broadcast storm</td></tr>
+<tr><td><code>monitor session</code></td><td>SPAN ל-IDS</td></tr>
+<tr><td><code>switchport voice vlan</code></td><td>הפרדת VoIP</td></tr>
+<tr><td><code>show port-security</code>, <code>show spanning-tree</code>, <code>show ip dhcp snooping binding</code></td><td>וריפיקציה</td></tr>
+</table>
+
+<h2>6.15 תרגילים לתלמידים</h2>
+<div class="box ex"><span class="t">תרגיל 1 – התאמת התקפה להגנה</span>
+חברו: (1) MAC flooding (2) rogue DHCP (3) ARP poisoning (4) מחשב שמתחזה למתג ומקבל את כל ה-VLANים (5) מתג מזויף שמנסה להיות root. הגנות: DAI / port security / BPDU Guard+Root Guard / switchport nonegotiate / DHCP snooping.
+<div class="ans">1→port security · 2→DHCP snooping · 3→DAI · 4→switchport nonegotiate (access) · 5→BPDU Guard/Root Guard</div></div>
+<div class="box ex"><span class="t">תרגיל 2 – מי ה-root?</span>
+4 מתגים, priority: SW1=32768, SW2=32768, SW3=<b>4096</b>, SW4=32768. MACים עולים בסדר SW1<SW2<SW3<SW4. מי ה-root ולמה?
+<div class="ans">SW3 – ה-priority נבדק ראשון והוא הנמוך (4096). ה-MAC נבדק רק בתיקו. לו כולם היו 32768 – SW1 (MAC נמוך).</div></div>
+<div class="box ex"><span class="t">תרגיל 3 – ניתוח קונפיג</span>
+פורט f0/5 הוגדר: <code>switchport port-security</code>, <code>maximum 1</code>, <code>violation shutdown</code>. עובד חיבר אליו מתג קטן (switch) עם 3 מחשבים. מה יקרה, ומה ההודעה בלוג?
+<div class="ans">המתג הקטן יעביר מסגרות מ-3 MACים ⇒ בהפרה הראשונה (MAC שני) הפורט עובר ל-err-disabled ונכבה. בלוג: <code>%PM-4-ERR_DISABLE: psecure-violation ... Fa0/5</code>. שחזור: shut/no shut.</div></div>
+<div class="box ex"><span class="t">תרגיל 4 – תכנון הקשחת מתג גישה</span>
+כתבו 8 פקודות הקשחה שתחילו על מתג גישה של קומה בבניין (24 פורטים למשתמשים, uplink אחד).
+<div class="ans">דוגמה: על פורטי הקצה: mode access, access vlan 10, nonegotiate, port-security max 2 sticky violation restrict, portfast, bpduguard enable, ip dhcp snooping (untrusted, limit rate), no cdp enable. על ה-uplink: mode trunk, nonegotiate, native vlan 999, allowed vlan list, dhcp snooping trust, arp inspection trust. גלובלי: ip dhcp snooping + vlan, ip arp inspection vlan, portfast bpduguard default. כיבוי פורטים לא בשימוש ל-vlan 999 + shutdown.</div></div>
+
+<h2>6.16 שאלות בסגנון בגרות</h2>
+<div class="box exam"><span class="t">שאלה 1</span>
+מה הדרך למנוע מתקפת MAC Table overflow במתג?
+<div class="ans">Port security על כל הפורטים שאינם trunk, עם הגבלת מספר כתובות MAC.</div></div>
+<div class="box exam"><span class="t">שאלה 2</span>
+איזו התקפת שכבה 2 אפשר לסכל על ידי השבתת פרוטוקול DTP? 1. DHCP spoofing 2. ARP spoofing 3. VLAN hopping 4. ARP poisoning
+<div class="ans"><b>3. VLAN hopping</b> (switch spoofing).</div></div>
+<div class="box exam"><span class="t">שאלה 3</span>
+באיזו פקודה מפעילים BPDU Guard על כל פורטי ה-PortFast במתג?
+<div class="ans"><code>spanning-tree portfast bpduguard default</code> (במצב config גלובלי).</div></div>
+<div class="box exam"><span class="t">שאלה 4</span>
+STP פועל בשכבה ___ של OSI ומונע ___ על ידי ___.
+<div class="ans">2 (Data Link) · לולאות (broadcast storm) · חסימת פורטים (port blocking).</div></div>
+<div class="box exam"><span class="t">שאלה 5</span>
+מהי מתקפת Evil Twin ואיזו טכנולוגיית Wi-Fi מסייעת למנוע אותה?
+<div class="ans">נקודת גישה זדונית עם SSID זהה לחוקית לצורך MITM/גניבת מידע. מניעה: WPA2/WPA3-Enterprise עם 802.1X (אימות הדדי – המכשיר מוודא את זהות השרת) ו-WIPS.</div></div>
+<div class="box exam"><span class="t">שאלה 6</span>
+מהו תפקיד DHCP Snooping ואיזה מנגנון אבטחה נוסף מסתמך על הטבלה שהוא בונה?
+<div class="ans">חוסם הודעות שרת DHCP מפורטים לא-מהימנים (rogue server) ומגביל קצב (starvation). Dynamic ARP Inspection (ו-IP Source Guard) מסתמכים על טבלת ה-binding שלו.</div></div>
+
+<h2>6.17 מעבדה (2 שעות) – הקשחת מתג ב-Packet Tracer</h2>
+<ol>
+<li>Port security: 2 מחשבים על פורט אחד (דרך hub/מתג קטן), maximum 1, violation shutdown. הוסיפו מחשב שני ⇒ err-disabled. שחזרו עם shut/no shut והעלו ל-maximum 2.</li>
+<li>BPDU Guard: הגדירו portfast+bpduguard על פורט קצה; חברו אליו מתג נוסף ⇒ err-disabled.</li>
+<li>Root bridge: 3 מתגים בטבעת; הגדירו את המרכזי כ-<code>root primary</code>; <code>show spanning-tree</code> – ודאו מי root ואיזה פורט blocking.</li>
+<li>DTP: הגדירו trunk מפורש + nonegotiate בין המתגים; פורטי קצה access + nonegotiate.</li>
+<li>DHCP snooping: הפעילו, סמנו את פורט השרת trusted; הוסיפו "שרת DHCP" תוקף על פורט untrusted וראו שההצעות שלו נחסמות.</li>
+</ol>
+
+<h2>בנק שאלות שתלמידים שואלים – ותשובות מוכנות</h2>
+<p>שאלות נפוצות בפרק אבטחת הרשת המקומית, עם תשובות מוכנות.</p>
+<p><b>ש: "אם יש חומת אש בכניסה לרשת, למה בכלל צריך להגן על המתגים בפנים?"</b><br>ת: כי חומת האש מגנה מפני האינטרנט (מבחוץ), אבל אם תוקף כבר <u>בפנים</u> (חיבר מחשב לשקע, פרץ ל-Wi-Fi, השתלט על מחשב עובד) – הוא פועל בשכבה 2, מתחת לחומת האש. שם צריך port security, DHCP snooping וכו'.</p>
+<p><b>ש: "הפורט עבר ל-err-disabled ונכבה. איך מחזירים אותו?"</b><br>ת: ידנית: <code>shutdown</code> ואז <code>no shutdown</code> על הממשק. אוטומטית אחרי זמן: <code>errdisable recovery cause psecure-violation</code>. בודקים סיבה עם <code>show interfaces status err-disabled</code>.</p>
+<p><b>ש: "למה לולאה בין מתגים כל כך מסוכנת?"</b><br>ת: כי למסגרת בשכבה 2 <u>אין TTL</u> (בניגוד ל-IP). אם יש לולאה פיזית, הודעת broadcast מסתובבת לנצח ומשוכפלת בכל סיבוב – "סופת broadcast" שמשתקת את הרשת תוך שניות. STP מונע זאת על ידי חסימת פורט.</p>
+<p><b>ש: "איך בוחרים את ה-root bridge ב-STP?"</b><br>ת: לפי ה-Bridge ID הנמוך ביותר = Priority (ברירת מחדל 32768) ואז כתובת MAC. אם ה-priority זהה אצל כולם – מנצח ה-<u>MAC הנמוך</u>. שימו לב: ב-STP נמוך מנצח, ב-OSPF (פרק רשתות) גבוה מנצח – הפוך!</p>
+<p><b>ש: "מה זה VLAN hopping ואיך DTP קשור?"</b><br>ת: DTP הוא פרוטוקול שמנהל אוטומטית אם קישור יהיה trunk. תוקף יכול להתחזות למתג, "לשכנע" את הפורט להפוך ל-trunk, ואז לקבל גישה לכל ה-VLANים. הפתרון: לכבות DTP (<code>switchport nonegotiate</code>) ולהגדיר פורטי קצה כ-access מפורש.</p>
+<p><b>ש: "מה זה rogue DHCP ולמה זה מסוכן?"</b><br>ת: תוקף מקים שרת DHCP משלו שעונה מהר יותר מהאמיתי, ומחלק לקורבנות default gateway ו-DNS <u>שלו</u> – וכך כל התעבורה שלהם עוברת דרכו (MITM). ההגנה: DHCP snooping, שמסמן פורטים "מהימנים" וחוסם הצעות משרתים לא מורשים.</p>
+<p><b>ש: "מה זה Evil Twin ואיך מתגוננים?"</b><br>ת: נקודת גישה זדונית עם <u>אותו שם רשת (SSID)</u> כמו החוקית, בעוצמה חזקה יותר – מכשירים מתחברים אליה אוטומטית והתוקף מבצע MITM. הגנה: WPA2/WPA3-Enterprise עם 802.1X (אימות הדדי – המכשיר מוודא שהשרת אמיתי) ו-WIPS.</p>
+<p><b>ש: "מה ההבדל בין port security ל-802.1X?"</b><br>ת: <b>port security</b> מגביל <u>כמה/אילו כתובות MAC</u> מותרות בפורט (הגנה מפני MAC flooding). <b>802.1X</b> דורש <u>אימות משתמש/מכשיר</u> מלא מול שרת RADIUS לפני שנותנים גישה. 802.1X חזק בהרבה אך דורש תשתית שרת.</p>
+
+<h2>מילון מונחים – הגדרות</h2>
+<p>הגדרות תמציתיות של המונחים המרכזיים בפרק. שימושי גם כדף עזר לבחינה.</p>
+<table>
+<tr><th>מונח</th><th>הגדרה</th></tr>
+<tr><td><b>שכבה 2 (Data Link)</b></td><td>שכבת הקישור; עובדת בכתובות MAC, מתגים ומסגרות (frames).</td></tr>
+<tr><td><b>מתג (Switch)</b></td><td>מכשיר שמחבר מכשירים ברשת מקומית ולומד כתובות MAC לכל פורט.</td></tr>
+<tr><td><b>טבלת MAC (CAM)</b></td><td>טבלה במתג הממפה כתובת MAC לפורט; מוגבלת בגודלה.</td></tr>
+<tr><td><b>MAC flooding / overflow</b></td><td>הצפת המתג בכתובות MAC מזויפות עד שהוא משדר לכולם (כמו hub).</td></tr>
+<tr><td><b>Port Security</b></td><td>הגבלת מספר/זהות כתובות MAC בפורט; הגנה מפני MAC flooding.</td></tr>
+<tr><td><b>violation (protect/restrict/shutdown)</b></td><td>תגובת port security להפרה: התעלמות, התראה, או כיבוי הפורט (err-disabled).</td></tr>
+<tr><td><b>VLAN</b></td><td>רשת לוגית מבודדת בתוך מתג פיזי; מעבר בין VLANים דורש ניתוב.</td></tr>
+<tr><td><b>Trunk (802.1Q)</b></td><td>קישור הנושא כמה VLANים בין מתגים, עם תיוג של מספר ה-VLAN.</td></tr>
+<tr><td><b>DTP</b></td><td>פרוטוקול שמנהל אוטומטית trunk; יש לכבותו כדי למנוע VLAN hopping.</td></tr>
+<tr><td><b>VLAN hopping</b></td><td>קבלת גישה ל-VLANים אחרים בניצול DTP או תיוג כפול.</td></tr>
+<tr><td><b>STP (Spanning Tree)</b></td><td>פרוטוקול שמונע לולאות בשכבה 2 על ידי חסימת פורטים.</td></tr>
+<tr><td><b>Root Bridge</b></td><td>המתג המרכזי ב-STP; נבחר לפי Bridge ID הנמוך (priority, ואז MAC).</td></tr>
+<tr><td><b>BPDU Guard</b></td><td>מכבה פורט קצה שמקבל BPDU (חובר אליו מתג/תוקף).</td></tr>
+<tr><td><b>DHCP starvation / spoofing</b></td><td>דלדול כתובות ה-DHCP, או הקמת שרת DHCP מזויף ל-MITM.</td></tr>
+<tr><td><b>DHCP Snooping</b></td><td>סימון פורטים מהימנים וחסימת הצעות DHCP מפורטים לא מורשים.</td></tr>
+<tr><td><b>ARP spoofing / poisoning</b></td><td>זיוף הודעות ARP כדי להפנות תעבורה לתוקף (MITM).</td></tr>
+<tr><td><b>DAI (Dynamic ARP Inspection)</b></td><td>בדיקת הודעות ARP מול טבלת ה-DHCP snooping; חוסם זיופים.</td></tr>
+<tr><td><b>Storm Control</b></td><td>הגבלת אחוז תעבורת broadcast/multicast בפורט; מונע סופות.</td></tr>
+<tr><td><b>NAC</b></td><td>בקרת גישה שבודקת 'בריאות' מכשיר לפני מתן גישה (מבוסס 802.1X).</td></tr>
+<tr><td><b>Evil Twin</b></td><td>נקודת גישה זדונית עם SSID זהה לחוקית, ל-MITM ברשת אלחוטית.</td></tr>
+</table>

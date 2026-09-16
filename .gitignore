@@ -1,0 +1,12 @@
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+# Python
+__pycache__/
+*.pyc
+# backups / temp
+*.bak
+.DS_Store
