@@ -13,8 +13,17 @@ BOX = {  # class -> (emoji, default label)
 
 def sp(s): return re.sub(r'\s+',' ',s)
 
+# Wrap each Latin/English run in Unicode bidi isolates (LRI ... PDI) so mixed
+# Hebrew/English lines render correctly (English stays a clean LTR unit and its
+# punctuation does not leak into the surrounding RTL text). The characters are
+# invisible, so the raw Markdown stays readable.
+_LRI='\u2066'; _PDI='\u2069'
+_LATIN=re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9 .,:;/()+\-_'\"%&#@|\[\]<>*=]*[A-Za-z0-9)\]'\"/>.])?")
+def iso(s):
+    return _LATIN.sub(lambda m: _LRI+m.group()+_PDI, s)
+
 def inline(n):
-    if isinstance(n,Text): return sp(n.s)
+    if isinstance(n,Text): return iso(sp(n.s))
     if isinstance(n,Node):
         inner=''.join(inline(k) for k in n.kids)
         raw=sp(''.join(_raw(k) for k in n.kids))
@@ -30,7 +39,7 @@ def inline(n):
         return inner
     return ''
 def _raw(n):
-    if isinstance(n,Text): return sp(n.s)
+    if isinstance(n,Text): return iso(sp(n.s))
     if isinstance(n,Node): return ''.join(_raw(k) for k in n.kids)
     return ''
 def inl(n): return ''.join(inline(k) for k in n.kids).strip()
