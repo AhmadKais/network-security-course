@@ -151,7 +151,10 @@ def convert(root):
     for k in root.kids:
         b=block(k)
         if b: parts.append(b)
-    return '\n\n'.join(parts)+'\n'
+    body='\n\n'.join(parts)
+    # Wrap in an RTL container so GitHub renders Hebrew right-to-left
+    # (paragraphs, lists and tables all flip correctly).
+    return '<div dir="rtl" align="right">\n\n'+body+'\n\n</div>\n'
 
 if __name__=='__main__':
     src,out=sys.argv[1],sys.argv[2]

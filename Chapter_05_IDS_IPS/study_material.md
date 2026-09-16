@@ -1,3 +1,5 @@
+<div dir="rtl" align="right">
+
 # פרק 5 – מניעת חדירה לרשת המקומית והרחבה (IDS / IPS)
 
 _11 שעות עיוני + 3 מעשי · שבועות 13–16_
@@ -335,3 +337,5 @@ R1# debug ip ips
 | **Action (פעולה)** | מה שה-IPS עושה בהתאמה: alert, deny-packet/connection/attacker, TCP reset. |
 | **SDEE** | פרוטוקול מאובטח (HTTPS/XML) שדרכו תחנת ניהול שולפת אירועי IPS. |
 | **SPAN** | שיקוף פורט – העתקת תעבורה לפורט שאליו מחובר IDS/מנתח. |
+
+</div>
