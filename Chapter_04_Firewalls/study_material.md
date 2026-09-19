@@ -186,6 +186,20 @@ R1(config-if)# ip access-group OUTBOUND out
 R1(config-if)# ip access-group INBOUND in
 ```
 
+### 📊 תרשים: איך ⁦ACL⁩ בודק חבילה (עד ההתאמה הראשונה)
+
+```mermaid
+flowchart TD
+    PKT["Packet arrives"] --> R1{"Line 1 match?"}
+    R1 -->|yes| ACT1["permit / deny -> DONE"]
+    R1 -->|no| R2{"Line 2 match?"}
+    R2 -->|yes| ACT2["permit / deny -> DONE"]
+    R2 -->|no| DOTS["... next lines ..."]
+    DOTS --> IMP["implicit DENY ANY<br/>(hidden at the end)"]
+```
+
+_ה-⁦ACL⁩ נבדק מלמעלה למטה ועוצר בהתאמה הראשונה. מה שלא הותר במפורש — נחסם על ידי ה-⁦deny⁩ הנסתר._
+
 ## ⁦4.5⁩ עצירת התקפות בעזרת ⁦ACL⁩
 
 ### ⁦Anti-spoofing⁩ – מה לחסום בכניסה מהאינטרנט (⁦ingress)⁩
@@ -308,6 +322,22 @@ R1# show class-map type inspect
 > ❓ **שאלת תלמיד: "אחרי שהגדרתי ⁦ZPF⁩, אני לא מצליח לעשות ⁦SSH⁩ לנתב מבחוץ / ⁦OSPF⁩ נפל"**
 >
 > תעבורה אל הנתב עצמו שייכת לאזור **⁦self**.⁩ ברירת המחדל ל-⁦self⁩ היא ⁦permit⁩, אז ⁦SSH⁩ אמור לעבוד. אם הגדרתם ⁦zone-pair⁩ שמערב ⁦self⁩ עם מדיניות – עכשיו רק מה שהוגדר עובר. יש להוסיף ⁦class⁩ ל-⁦SSH/OSPF⁩ עם ⁦pass/inspect.⁩ גם בדקו ש-⁦CBAC⁩ (`⁦ip inspect⁩`) לא מוגדרת על אותו ממשק – אסור לשלב.
+
+### 📊 תרשים: שלושת האזורים — ⁦Inside, DMZ, Outside⁩
+
+```mermaid
+flowchart LR
+    OUT["OUTSIDE<br/>Internet (untrusted)"]
+    FW{{"Firewall / ASA"}}
+    DMZ["DMZ<br/>Web, Mail, DNS<br/>(reachable from outside)"]
+    IN["INSIDE<br/>internal LAN<br/>(most trusted)"]
+    OUT --> FW
+    FW --> DMZ
+    FW --> IN
+    DMZ -. "if a DMZ server is hacked,<br/>the attacker is STILL not on the inside" .- IN
+```
+
+_שרתים נגישים מבחוץ יושבים ב-⁦DMZ⁩, מבודדים מהרשת הפנימית. פריצה ל-⁦DMZ⁩ ≠ פריצה לפנים._
 
 ## ⁦4.8⁩ תכנון חומת אש ברשת – שיטות עבודה
 

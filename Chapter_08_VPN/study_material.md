@@ -103,6 +103,23 @@ R1# show interfaces tunnel 0
 
 **⁦SA** (Security Association)⁩ – "הסכם" חד-כיווני שמגדיר איך לאבטח זרם תעבורה מסוים, עם מזהה **⁦SPI**. Phase 2⁩ מייצר ⁦PFS (Perfect Forward Secrecy)⁩ אם מפעילים ⁦DH⁩ מחדש – כך שדליפת מפתח אחד לא חושפת תעבורה עבר.
 
+### 📊 תרשים: ⁦IPsec / IKE⁩ — שני השלבים (⁦Sequence)⁩
+
+```mermaid
+sequenceDiagram
+    participant A as Router A
+    participant B as Router B
+    Note over A,B: Phase 1 - build a secure MANAGEMENT channel
+    A->>B: propose policy (encryption, hash, DH, auth)
+    B->>A: agree + Diffie-Hellman key exchange
+    Note over A,B: Phase 2 - build the DATA tunnel
+    A->>B: negotiate IPsec SA (ESP transform-set)
+    B->>A: agree
+    Note over A,B: Now encrypted user traffic flows through the tunnel
+```
+
+_⁦Phase 1⁩ מקים ערוץ ניהול מאובטח; ⁦Phase 2⁩ מקים את מנהרת הנתונים. שני הצדדים חייבים להסכים על המדיניות._
+
 ## ⁦8.6⁩ הגדרת ⁦Site-to-Site IPsec VPN⁩ ב-⁦CLI (5⁩ שלבים)
 
 ```

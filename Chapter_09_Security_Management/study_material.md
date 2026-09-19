@@ -43,6 +43,18 @@ _⁦11⁩ שעות עיוני + ⁦3⁩ מעשי · שבועות ⁦27⁩–⁦2
 | **קבלה** (⁦Accept)⁩ | הסיכון נמוך/עלות הטיפול גבוהה – חיים איתו במודע | לא מצפינים מסך פנימי בעל ערך נמוך |
 | **בידוד** (⁦Isolation)⁩ | מפרידים את המערכת המסוכנת | רשת נפרדת למערכת ⁦legacy; DMZ; air-gap⁩ |
 
+### 📊 תרשים: ארבע דרכי הטיפול בסיכון
+
+```mermaid
+flowchart TD
+    RISK["Identified risk"] --> AV["AVOID<br/>stop the risky activity"]
+    RISK --> MI["MITIGATE<br/>add controls to reduce it"]
+    RISK --> TR["TRANSFER<br/>insurance / outsource"]
+    RISK --> AC["ACCEPT<br/>low risk - live with it"]
+```
+
+_לא כל סיכון מטפלים בו באותה דרך. בוחרים לפי ההסתברות והנזק מול העלות._
+
 ## ⁦9.3⁩ עקרונות עיצוב רשת מאובטחת
 
 - **הגנה לעומק** (⁦Defense in Depth)⁩ – שכבות עצמאיות; כשל באחת לא מפיל הכול.
@@ -123,6 +135,20 @@ nmap -sS -p 1-1000 192.168.1.10  # SYN scan
 `[⁦Preparation]⁩ → [⁦Identification]⁩ → [⁦Containment]⁩ → [⁦Eradication]⁩ → [⁦Recovery]⁩ → [⁦Lessons Learned]⁩`
 
 הכנה (נהלים, כלים) → זיהוי (⁦SIEM, IDS)⁩ → בלימה (ניתוק מהרשת) → מיגור (הסרת הנוזקה) → שחזור (החזרה לפעילות) → הפקת לקחים. הצוות: **⁦CSIRT/CERT**.⁩
+
+### 📊 תרשים: מחזור התגובה לאירוע (⁦Incident Response)⁩
+
+```mermaid
+flowchart LR
+    P["Preparation"] --> D["Detection<br/>& Analysis"]
+    D --> C["Containment"]
+    C --> E["Eradication"]
+    E --> R["Recovery"]
+    R --> L["Lessons<br/>Learned"]
+    L -.->|feeds back into| P
+```
+
+_ההכנה קובעת אם הארגון יתמודד או יקרוס. הלקחים חוזרים ומשפרים את ההכנה לפעם הבאה._
 
 ## ⁦9.8⁩ המשכיות עסקית והתאוששות מאסון
 

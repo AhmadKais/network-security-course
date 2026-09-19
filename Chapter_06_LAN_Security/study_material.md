@@ -178,6 +178,18 @@ S1(config-if-range)# ip dhcp snooping limit rate 6   ! נגד starvation
 S1# show ip dhcp snooping binding
 ```
 
+### 📊 תרשים: ⁦DHCP Snooping⁩ — החלטה לפי אמון הפורט (הגנה)
+
+```mermaid
+flowchart TD
+    MSG["A DHCP server message<br/>(OFFER / ACK) arrives on a port"] --> Q{"Is the port TRUSTED?<br/>(uplink to the real server)"}
+    Q -->|yes| FWD["Forward - legitimate server"]
+    Q -->|no| DROP["DROP - a rogue server<br/>is not allowed to answer"]
+    FWD --> BIND["Add to the Binding Table<br/>MAC + IP + port + VLAN"]
+```
+
+_רק פורט מהימן רשאי לשלוח תשובות ⁦DHCP.⁩ הטבלה שנבנית היא הבסיס ל-⁦DAI⁩ ול-⁦IP Source Guard.⁩_
+
 ## ⁦6.7 ARP Spoofing⁩ ו-⁦Dynamic ARP Inspection (DAI)⁩
 
 **⁦ARP⁩** ממפה ⁦IP⁩ ל-⁦MAC⁩, וחסר כל אימות: כל מחשב יכול לשלוח "⁦Gratuitous ARP"⁩ שאומר "אני ה-⁦gateway"⁩ – והקורבנות יעדכנו את הטבלה שלהם ויתחילו לשלוח את התעבורה לתוקף (⁦MITM). **DAI⁩** בודק כל הודעת ⁦ARP⁩ מול טבלת ה-⁦DHCP Snooping⁩: אם ה-⁦IP⁩↔⁦MAC⁩ לא תואם לרשומה – ההודעה נזרקת.
@@ -193,6 +205,17 @@ S1# show ip arp inspection
 ```
 
 המשלים: **⁦IP Source Guard⁩** – מוודא שכתובת ה-⁦IP⁩ במסגרת תואמת לפורט לפי טבלת ה-⁦snooping⁩ (נגד ⁦IP spoofing).⁩
+
+### 📊 תרשים: ⁦Dynamic ARP Inspection⁩ — אימות מול טבלת ה-⁦Binding⁩ (הגנה)
+
+```mermaid
+flowchart TD
+    ARP["An ARP message arrives"] --> Q{"Does IP-to-MAC match<br/>the DHCP Snooping table?"}
+    Q -->|yes| OK["Allow - genuine"]
+    Q -->|no| DROP["DROP - forged ARP<br/>(this is what stops ARP spoofing)"]
+```
+
+_⁦DAI⁩ מוסיף ל-⁦ARP⁩ את האימות שחסר לו מלכתחילה: הודעה שלא תואמת לטבלה נזרקת._
 
 ## ⁦6.8 Storm Control⁩
 

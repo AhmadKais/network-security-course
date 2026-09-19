@@ -50,6 +50,22 @@ _⁦11⁩ שעות עיוני + ⁦3⁩ מעשי · שבועות ⁦7⁩–⁦9�
 >
 > בחברת שירותי אינטרנט פיטרו מנהל רשת. המנכ"ל ביקש מה-⁦IT "⁩לבטל לו את הגישה", וה-⁦IT⁩ מחק את חשבון ה-⁦Windows⁩ שלו. אבל ב-⁦40⁩ הנתבים והמתגים היו חשבונות **מקומיים** שהמנהל עצמו יצר. שלושה ימים אחר כך, ב-⁦2⁩ בלילה, כל הנתבים "איבדו" את ההגדרות שלהם – ואף אחד לא ידע מי עשה זאת, כי לא היה רישום (⁦Accounting)⁩ וכל החשבונות נראו כמו "⁦admin".⁩ עם ⁦AAA⁩ מבוסס-שרת, לחיצה אחת הייתה מנתקת אותו מכל הציוד, והרישום היה מראה שם מלא, שעה ופקודה. זה בדיוק ה"למה" של הפרק.
 
+### 📊 תרשים: זרימת ⁦AAA⁩ מול שרת (⁦Sequence)⁩
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant N as Switch / Router (NAS)
+    participant S as AAA Server (RADIUS/TACACS+)
+    U->>N: username + password
+    N->>S: Access-Request (forward credentials)
+    S->>N: Access-Accept + authorization (what is allowed)
+    N->>U: access granted
+    Note over N,S: Accounting: the NAS logs what the user did<br/>(the third A)
+```
+
+_ההתקן לא מחליט לבד — הוא שואל את שרת ה-⁦AAA.⁩ ניהול מרכזי: מבטלים חשבון במקום אחד, לא ב-⁦200⁩ מכשירים._
+
 ## ⁦3.4 RADIUS⁩ מול ⁦TACACS⁩+ – שני הפרוטוקולים
 
 כשהנתב פונה לשרת המרכזי, הוא מדבר איתו באחד משני פרוטוקולים (שפות). שניהם עושים ⁦AAA⁩, אבל יש ביניהם הבדלים חשובים שנשאלים כמעט תמיד בבגרות. נכיר כל אחד, ואז נשווה.

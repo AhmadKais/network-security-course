@@ -152,6 +152,24 @@ _⁦11⁩ שעות עיוני + ⁦3⁩ מעשי · שבועות ⁦20⁩–⁦2
 >
 > "איזה אלגוריתם מאפשר לצדדים להסכים על מפתח פרטי על גבי ערוץ ציבורי?" – **⁦2. Diffie-Hellman**. (NOBLE, Dijkstra, Caesar⁩ – מסיחים; ⁦Dijkstra⁩ הוא אלגוריתם מסלולים, לא הצפנה.)
 
+### 📊 תרשים: הצפנה סימטרית לעומת א-סימטרית
+
+```mermaid
+flowchart TB
+    subgraph SYM["Symmetric - ONE shared key"]
+        direction LR
+        P1["Plaintext"] -->|"encrypt (key K)"| C1["Ciphertext"]
+        C1 -->|"decrypt (same key K)"| P1b["Plaintext"]
+    end
+    subgraph ASYM["Asymmetric - a KEY PAIR"]
+        direction LR
+        P2["Plaintext"] -->|"encrypt with PUBLIC key"| C2["Ciphertext"]
+        C2 -->|"decrypt with PRIVATE key"| P2b["Plaintext"]
+    end
+```
+
+_סימטרי: מהיר, אך בעיית הפצת המפתח. א-סימטרי: פותר הפצה, אך איטי. ⁦TLS⁩ משלב את שניהם ↓_
+
 ## ⁦7.7⁩ הצפנה היברידית – איך זה באמת עובד (⁦TLS/HTTPS)⁩
 
 המערכות האמיתיות משלבות: א-סימטרי לפתיחה, סימטרי לתעבורה – "טוב משני העולמות".
@@ -159,6 +177,24 @@ _⁦11⁩ שעות עיוני + ⁦3⁩ מעשי · שבועות ⁦20⁩–⁦2
 > 📘 **⁦HTTPS⁩ – מה קורה כשנכנסים לאתר בנק**
 >
 > ⁦1.⁩ הדפדפן והשרת מבצעים **⁦DH⁩** (או שהדפדפן מצפין מפתח ב-⁦RSA⁩ הציבורי של השרת) כדי להסכים על **מפתח סימטרי (⁦session key)**. 2.⁩ השרת מציג **תעודה** חתומה על ידי ⁦CA⁩ שמוכיחה שהוא באמת הבנק (⁦7.9). 3.⁩ מכאן כל התעבורה מוצפנת ב-**⁦AES⁩** (מהיר) עם ה-⁦session key.⁩ הא-סימטרי שימש רק לשנייה הראשונה. זו הסיבה שרואים 🔒.
+
+### 📊 תרשים: לחיצת יד היברידית ב-⁦TLS/HTTPS (Sequence)⁩
+
+```mermaid
+sequenceDiagram
+    participant C as Browser
+    participant S as Server
+    C->>S: Hello + supported ciphers
+    S->>C: Certificate (contains the server PUBLIC key)
+    Note over C: verify the certificate via the CA
+    C->>S: a session key, encrypted with the server PUBLIC key
+    Note over C,S: only the PRIVATE key can open it (asymmetric)
+    Note over C,S: from here on: fast SYMMETRIC encryption with the session key
+    C->>S: encrypted data
+    S->>C: encrypted data
+```
+
+_א-סימטרי (איטי) רק כדי להעביר מפתח סימטרי בבטחה, ואז סימטרי (מהיר) לכל הנתונים._
 
 ## ⁦7.8 HMAC⁩ וחתימה דיגיטלית
 
