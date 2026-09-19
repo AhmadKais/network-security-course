@@ -26,8 +26,8 @@
 |---|---|---|---|
 | ⁦1⁩ | [איך רשת בכלל עובדת](01_How_Networks_Work/study_material.md) | ✅ מלא | שכבות · מסגרת לעומת חבילה · מה מתג עושה · ⁦ARP⁩ · שער ברירת מחדל · מסע של פינג |
 | ⁦2⁩ | [כתובות ⁦IP⁩, בינארי וחלוקה לרשתות משנה](02_Addressing_and_Subnetting/study_material.md) | ✅ מלא | בינארי · מסכה · ⁦CIDR⁩ · ⁦Subnetting⁩ · ⁦VLSM⁩ · סיכום · ⁦Wildcard⁩ · פרטי/ציבורי · ⁦IPv6⁩ |
-| ⁦3⁩ | [מיתוג, ⁦VLAN⁩-ים ו-⁦Trunk⁩](03_Switching_and_VLANs/study_material.md) | 🔜 בכתיבה | ⁦VLAN⁩ · ⁦802.1Q⁩ · ⁦Native VLAN⁩ · ⁦VTP⁩ · ⁦EtherChannel⁩ |
-| ⁦4 | [Spanning Tree⁩](04_Spanning_Tree/study_material.md) | 🔜 בכתיבה | סערת שידורים · ⁦Root Bridge⁩ · תפקידי פורטים · ⁦PVST⁩+ · ⁦PortFast⁩ |
+| ⁦3⁩ | [מיתוג, ⁦VLAN⁩-ים ו-⁦Trunk⁩](03_Switching_and_VLANs/study_material.md) | ✅ מלא | ⁦VLAN⁩ · ⁦802.1Q⁩ · ⁦Native VLAN⁩ · ⁦VTP⁩ · ⁦EtherChannel⁩ |
+| ⁦4 | [Spanning Tree⁩](04_Spanning_Tree/study_material.md) | ✅ מלא | סערת שידורים · ⁦Root Bridge⁩ · תפקידי פורטים · ⁦PVST⁩+ · ⁦PortFast⁩ |
 | ⁦5⁩ | [ניתוב בתוך הרשת המקומית](05_Routing_Inside_the_LAN/study_material.md) | 🔜 בכתיבה | ⁦Router-on-a-Stick⁩ · ⁦SVI⁩ · ⁦DHCP⁩ · ⁦ip helper-address⁩ · ⁦HSRP⁩ |
 | ⁦6⁩ | [פרוטוקולי ניתוב](06_Routing_Protocols/study_material.md) | 🔜 בכתיבה | סטטי · ⁦AD⁩ · ⁦OSPF⁩ רב-אזורי · ⁦Virtual Link⁩ · ⁦EIGRP⁩ · סיכום |
 | ⁦7⁩ | [החיבור לעולם](07_WAN_NAT_and_Internet/study_material.md) | 🔜 בכתיבה | ⁦NAT⁩ · ⁦BGP⁩ · ⁦ISP⁩ · ⁦DNS⁩ |
