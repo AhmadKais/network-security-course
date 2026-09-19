@@ -143,6 +143,21 @@ Switch(config-if)# no shutdown
 
 **העובדה שמסבירה את כל הסעיף הבא:** ללקוח **אין כתובת ⁦IP**.⁩ הוא לא יכול לשלוח לאף אחד ספציפי. לכן ההודעה הראשונה **חייבת** להיות שידור. ושידור – כפי שלמדנו – **לא יוצא מה-⁦VLAN**.⁩
 
+### 📊 תרשים: תהליך ⁦DHCP⁩ — ⁦DORA (Sequence)⁩
+
+```mermaid
+sequenceDiagram
+    participant C as Client (no IP yet)
+    participant S as DHCP Server
+    C->>S: DISCOVER (broadcast - "any server?")
+    S->>C: OFFER (address, mask, gateway, DNS)
+    C->>S: REQUEST (broadcast - "I accept")
+    S->>C: ACK (lease starts)
+    Note over C,S: The first message MUST be broadcast<br/>because the client has no address yet.
+```
+
+_ההודעה הראשונה היא שידור, ושידור לא עובר נתב — לכן צריך ⁦ip helper-address⁩ כשהשרת ב-⁦VLAN⁩ אחר._
+
 ## ⁦5.7⁩ למה ⁦DHCP⁩ צריך "עוזר" – ⁦ip helper-address⁩
 
 אם שרת ה-⁦DHCP⁩ באותו ⁦VLAN⁩ כמו הלקוח – ה-⁦Discover⁩ מגיע אליו והכול עובד. אבל אם השרת ב-⁦VLAN 100⁩ והלקוח ב-⁦VLAN 11⁩? ה-⁦Discover⁩ הוא שידור. הנתב מקבל אותו, רואה שידור, ו-**זורק אותו** – כי נתבים לא מעבירים שידורים. זו ההתנהגות הנכונה. בלי עזרה, צריך שרת ⁦DHCP⁩ **בכל ⁦VLAN**.⁩
@@ -295,6 +310,22 @@ HSRP version 1:   0000.0C07.ACxx      (only 2 hex digits -> groups 0-255 only)
 | ⁦MAC⁩ וירטואלי | ⁦0000.0C07.AC**xx** | 0000.0C9F.F**xxx⁩** |
 | ⁦Multicast | 224.0.0.2 | 224.0.0.102⁩ |
 | ⁦IPv6⁩ | לא | כן |
+
+### 📊 תרשים: ⁦HSRP⁩ — כשל ה-⁦Active⁩ שקוף למחשב
+
+```mermaid
+flowchart TD
+    PC["PC<br/>gateway = 10.1.16.1 (virtual)"]
+    A["DIST1 · ACTIVE<br/>priority 110"]
+    S["DIST2 · STANDBY<br/>priority 100"]
+    PC -->|"sends to virtual IP+MAC"| A
+    A -. "hello every 3s" .- S
+    A -->|"if DIST1 DIES..."| X["Standby takes the SAME<br/>virtual IP and virtual MAC"]
+    X --> S
+    note["The PC's ARP cache never changes.<br/>Failover is invisible."]
+```
+
+_הכתובת הווירטואלית וה-⁦MAC⁩ הווירטואלי עוברים ל-⁦Standby.⁩ המחשב לא מרגיש כלום._
 
 ## ⁦5.11⁩ מצבים, טיימרים ובחירה
 

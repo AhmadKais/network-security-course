@@ -137,6 +137,23 @@ tcp  200.100.3.1:51001     10.1.16.41:51000      142.250.1.1:443       142.250.1
 
 `⁦show ip nat statistics⁩` – כמה תרגומים, אילו ממשקים ⁦inside/outside.⁩ `⁦debug ip nat⁩` – לראות תרגום בזמן אמת (בזהירות).
 
+### 📊 תרשים: ⁦NAT⁩ מחליף כתובת פרטית בציבורית (⁦Sequence)⁩
+
+```mermaid
+sequenceDiagram
+    participant PC as PC 10.1.16.40 (private)
+    participant NAT as Edge Router (NAT)
+    participant NET as Server on Internet
+    PC->>NAT: src=10.1.16.40 dst=142.250.1.1
+    Note over NAT: swap source to a PUBLIC address<br/>store 10.1.16.40 <-> 200.100.3.1 in the table
+    NAT->>NET: src=200.100.3.1 dst=142.250.1.1
+    NET-->>NAT: src=142.250.1.1 dst=200.100.3.1
+    Note over NAT: look up the table, swap back
+    NAT-->>PC: src=142.250.1.1 dst=10.1.16.40
+```
+
+_החבילה הפרטית לא הייתה חוזרת לעולם. הנתב מחליף לציבורי ובחזרה לפי הטבלה._
+
 ## ⁦7.3⁩ מה זה ⁦ISP⁩, ומה זה ⁦AS⁩
 
 **ספק אינטרנט (⁦ISP⁩ – ⁦Internet Service Provider)⁩** הוא מי שמחבר אתכם לעולם. בפרויקט בונים ⁦ISP⁩ משלנו: נתב, שרת ⁦DNS⁩, שני שרתי ⁦WEB⁩, וחיבור לכל הסניפים דרך מודם ⁦DSL.⁩
@@ -279,6 +296,26 @@ You type:  www.nimbus.local
 > 🔐 **מבט קדימה**
 >
 > ⁦DNS⁩ הוא יעד תקיפה קלאסי: **⁦DNS Spoofing / Cache Poisoning⁩** – תוקף מזריק תשובה שקרית ("⁦google.com⁩ זה ⁦6.6.6.6")⁩ והדפדפן מגיע לאתר מזויף. **⁦DNS Tunneling⁩** – הברחת מידע החוצה בתוך שאילתות ⁦DNS⁩, כי פורט ⁦53⁩ כמעט תמיד פתוח. שניהם בחלק ⁦2⁩, פרק ⁦1.⁩
+
+### 📊 תרשים: פתרון שם ב-⁦DNS (Sequence)⁩
+
+```mermaid
+sequenceDiagram
+    participant PC as PC
+    participant DNS as Local DNS Server
+    participant ISP as ISP / Root / .com
+    PC->>DNS: who is www.nimbus.local ?
+    alt name is known locally
+        DNS->>PC: A record = 10.1.200.80
+    else must ask upward (recursion)
+        DNS->>ISP: who is google.com ?
+        ISP->>DNS: 142.250.x.x
+        DNS->>PC: 142.250.x.x (and caches it)
+    end
+    Note over PC: only NOW does the PC send the HTTP request
+```
+
+_הפעולה הראשונה בגלישה היא שאלת ⁦DNS.⁩ אם השרת לא יודע — הוא שואל למעלה (רקורסיה)._
 
 ## ⁦7.8⁩ איך הכול מתחבר – הרשת המלאה
 

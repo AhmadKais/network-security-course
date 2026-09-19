@@ -163,6 +163,21 @@ Lowest total cost wins  ->  Gi0/1 is the ROOT PORT (forwarding)
 
 אם שתי דרכים שוות בעלות, שוברים את התיקו לפי: (⁦1) Bridge ID⁩ הנמוך של המתג ששלח את ה-⁦BPDU⁩, ואז (⁦2)⁩ מספר הפורט הנמוך אצל השולח. בפועל תיקו נדיר; העלות מכריעה כמעט תמיד.
 
+### 📊 תרשים: העץ שנבנה — פורט אחד חסום שובר את הלולאה
+
+```mermaid
+flowchart TD
+    ROOT["DIST1 · ROOT BRIDGE<br/>lowest Bridge ID"]
+    D2[DIST2]
+    ACC[ACC1]
+    ROOT ---|Designated| D2
+    ROOT ===|"Root Port<br/>FORWARDING"| ACC
+    D2 -. "Alternate<br/>BLOCKING" .- ACC
+    note["The blocked link is the redundancy.<br/>If the forwarding path dies, it opens."]
+```
+
+_הקו המקווקו חסום — זו היתירות שממתינה. אם הקו הפעיל נופל, החסום נפתח תוך פחות משנייה (⁦Rapid PVST+).⁩_
+
 ## ⁦4.5⁩ שלב ⁦3⁩ – תפקידי פורטים
 
 | תפקיד | מה זה | מעביר? |
@@ -216,6 +231,18 @@ Switch(config)# spanning-tree mode rapid-pvst
 ```
 
 חובה בכל המתגים. מתג אחד שנשאר ב-`⁦pvst⁩` הישן מתכנס ב-⁦30⁩–⁦50⁩ שניות בזמן שכל השאר תוך שנייה – והוא הופך לצוואר בקבוק בכל תקלה.
+
+### 📊 תרשים: מצבי הפורט ב-⁦STP⁩ קלאסי (⁦30⁩ שניות עד העברה)
+
+```mermaid
+flowchart LR
+    B["Blocking<br/>20s"] --> L["Listening<br/>15s"]
+    L --> LE["Learning<br/>15s"]
+    LE --> F["Forwarding<br/>traffic flows"]
+    PF["PortFast:<br/>skip straight to Forwarding<br/>(edge ports only)"] -.-> F
+```
+
+_מחשב שמחובר מחכה ⁦30⁩ שניות — נראה כמו תקלת ⁦DHCP. PortFast⁩ מדלג על ההשהיה בפורטי קצה._
 
 ## ⁦4.7⁩ לבחור את השורש בכוונה – ואיזון עומסים
 

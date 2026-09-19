@@ -97,6 +97,19 @@ Layer 1  NIC sends:           010011010101110...                   [Bits]
 >
 > לא, ולהבין את זה זו חצי מהפרק. כתובת **⁦IP⁩** אומרת *לאן בעולם* המידע צריך להגיע – היא נשארת אותו דבר מההתחלה עד הסוף, כמו הכתובת על המעטפה. כתובת **⁦MAC⁩** אומרת *למי למסור אותה בקפיצה הבאה* – היא משתנה בכל נתב בדרך, כמו שהמעטפה עוברת מיד ליד: מהשולח לדוור, מהדוור למיון, מהמיון לדוור אחר. הסעיף הבא מסביר בדיוק.
 
+### 📊 תרשים: כימוס — כל שכבה עוטפת את זו שמעליה
+
+```mermaid
+flowchart TD
+    L7["Layer 7 · Application<br/>HTTP GET /index.html"] --> L4
+    L4["Layer 4 · Transport<br/>TCP + src/dst PORT = SEGMENT"] --> L3
+    L3["Layer 3 · Network<br/>IP + src/dst IP = PACKET"] --> L2
+    L2["Layer 2 · Data Link<br/>Ethernet + src/dst MAC = FRAME"] --> L1
+    L1["Layer 1 · Physical<br/>0101110... = BITS on the wire"]
+```
+
+_כל שכבה מוסיפה כותרת משלה (⁦Header)⁩ לפני שהיא מוסרת למטה. בצד המקבל התהליך הפוך: כל שכבה מסירה את הכותרת שלה. שימו לב: מ-⁦Layer 3⁩ והלמטה נוצרת חבילה, ומ-⁦Layer 2⁩ מסגרת._
+
 ## ⁦1.3⁩ מסגרת (⁦Frame)⁩ לעומת חבילה (⁦Packet)⁩ – ההבדל שכולם מבלבלים
 
 שתי המילים האלה נשמעות דומות, ותלמידים משתמשים בהן לסירוגין. בבחינה ובפרויקט מצפים מכם לדייק. הנה ההבדל בטבלה אחת:
@@ -365,6 +378,24 @@ FRAME:   dst MAC bbbb | src MAC r222 | PACKET: src IP 10.1.1.10, dst IP 10.2.2.2
 
 - **⁦DHCP (Dynamic Host Configuration Protocol)⁩** – נותן למחשב אוטומטית את הכתובת שלו, המסכה, שער ברירת המחדל וכתובת שרת ה-⁦DNS.⁩ בלי ⁦DHCP⁩ צריך להקליד את כל זה ביד בכל מחשב. נלמד בפרק ⁦5.⁩
 - **⁦DNS (Domain Name System)⁩** – מתרגם שמות (⁦google.com)⁩ לכתובות ⁦IP (142.250.x.x).⁩ כשאתם מקלידים שם בדפדפן, הפעולה הראשונה היא שאלת ⁦DNS.⁩ נלמד בפרק ⁦7.⁩
+
+### 📊 תרשים: מסע של פינג בין שתי רשתות (⁦Sequence)⁩
+
+```mermaid
+sequenceDiagram
+    participant A as PC-A 10.1.1.10
+    participant R as Router
+    participant B as PC-B 10.2.2.20
+    Note over A: Destination is in ANOTHER network<br/>so ARP for the GATEWAY, not for B
+    A->>R: FRAME dst=MAC(Router) | PACKET dst IP=10.2.2.20
+    Note over R: Strip frame, read IP, look up route,<br/>build a BRAND NEW frame
+    R->>B: FRAME dst=MAC(PC-B) | PACKET dst IP=10.2.2.20
+    Note over A,B: The PACKET (IP) never changed.<br/>The FRAME (MAC) was rebuilt at the router.
+    B-->>R: ICMP reply
+    R-->>A: ICMP reply
+```
+
+_שתי מסגרות שונות, חבילה אחת זהה. הנתב בנה מסגרת חדשה; כתובות ה-⁦IP⁩ לא השתנו._
 
 ## ⁦1.10⁩ סיכום – עשרת המשפטים של הפרק
 

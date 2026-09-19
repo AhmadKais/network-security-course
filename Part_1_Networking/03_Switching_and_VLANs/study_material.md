@@ -141,6 +141,19 @@ Switch(config-if)# switchport trunk native vlan 999
 >
 > ⁦Trunk⁩ בלי `⁦allowed vlan⁩` מעביר את כל ⁦4094⁩ ה-⁦VLAN⁩-ים. זה עובד – ולכן אף אחד לא שם לב. אבל זה אומר ש-⁦VLAN⁩ שנוצר בטעות במתג אחד מיד "זולג" לכל הרשת. רשימה מפורשת הופכת הוספת ⁦VLAN⁩ לפעולה מכוונת. בפרויקט, בוחן שרואה ⁦Trunk⁩ בלי רשימה מבין שלא חשבתם על זה.
 
+### 📊 תרשים: פורט ⁦Access⁩ לעומת ⁦Trunk⁩
+
+```mermaid
+flowchart LR
+    PCA["PC in VLAN 11<br/>untagged"] -->|access port| SW1[Switch A]
+    PCB["PC in VLAN 12<br/>untagged"] -->|access port| SW1
+    SW1 ==>|"TRUNK 802.1Q<br/>tag 11 / tag 12"| SW2[Switch B]
+    SW2 -->|access, untagged| PCC["PC in VLAN 11"]
+    SW2 -->|access, untagged| PCD["PC in VLAN 12"]
+```
+
+_התווית קיימת רק על ה-⁦Trunk.⁩ המתג מוסיף אותה ביציאה ומסיר אותה בכניסה; המחשבים לא רואים תוויות._
+
 ## ⁦3.4 Native VLAN⁩ – ה-⁦VLAN⁩ שנוסע בלי תווית
 
 ב-⁦802.1Q⁩ יש חריג אחד: ⁦VLAN⁩ אחד על כל ⁦Trunk⁩ עובר **בלי תווית** – ה-**⁦Native VLAN**.⁩ כברירת מחדל זה ⁦VLAN 1.⁩ הסיבה היסטורית (תאימות לציוד ישן), אבל התוצאה היא **חור אבטחה**:
@@ -236,6 +249,18 @@ Switch(config)# vtp mode client          <- now safe to join
 > 🔐 **מבט קדימה לאבטחה**
 >
 > הרבה רשתות ייצור היום מריצות ⁦VTP⁩ במצב ⁦Transparent⁩ בכולם, או מבטלות אותו לגמרי – בדיוק בגלל סעיף ⁦2.⁩ הדרישה בפרויקט היא להגדיר ⁦VTP⁩, אז מגדירים. אבל תלמיד שיכול להסביר למה רשת אמיתית אולי **תוותר** עליו – מפגין בדיוק את שיקול הדעת שפרק "בחירות וחלופות" בספר הפרויקט מבקש.
+
+### 📊 תרשים: ⁦VTP⁩ — שרת מפיץ ⁦VLAN⁩-ים ללקוחות
+
+```mermaid
+flowchart TD
+    SRV["DIST1 · VTP SERVER<br/>creates VLANs 11,12,13,99..."] -->|trunk| C1["ACC1 · VTP client<br/>learns the VLANs"]
+    SRV -->|trunk| C2["ACC2 · VTP client"]
+    SRV -->|trunk| C3["DIST2 · VTP client"]
+    note["A client CANNOT create a VLAN.<br/>A switch with a HIGHER revision number<br/>OVERWRITES everyone - reset with transparent mode first."]
+```
+
+_יוצרים ⁦VLAN⁩ במקום אחד (השרת), וכולם לומדים. הסיכון: מספר גרסה גבוה דורס את כולם._
 
 ## ⁦3.7 EtherChannel⁩ – למה ארבעה כבלים נותנים מהירות של אחד
 
