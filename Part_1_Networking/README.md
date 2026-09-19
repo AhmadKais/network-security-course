@@ -30,8 +30,8 @@
 | ⁦4 | [Spanning Tree⁩](04_Spanning_Tree/study_material.md) | ✅ מלא | סערת שידורים · ⁦Root Bridge⁩ · תפקידי פורטים · ⁦PVST⁩+ · ⁦PortFast⁩ |
 | ⁦5⁩ | [ניתוב בתוך הרשת המקומית](05_Routing_Inside_the_LAN/study_material.md) | ✅ מלא | ⁦Router-on-a-Stick⁩ · ⁦SVI⁩ · ⁦DHCP⁩ · ⁦ip helper-address⁩ · ⁦HSRP⁩ |
 | ⁦6⁩ | [פרוטוקולי ניתוב](06_Routing_Protocols/study_material.md) | ✅ מלא | סטטי · ⁦AD⁩ · ⁦OSPF⁩ רב-אזורי · ⁦Virtual Link⁩ · ⁦EIGRP⁩ · סיכום |
-| ⁦7⁩ | [החיבור לעולם](07_WAN_NAT_and_Internet/study_material.md) | 🔜 בכתיבה | ⁦NAT⁩ · ⁦BGP⁩ · ⁦ISP⁩ · ⁦DNS⁩ |
-| ⁦8⁩ | [שורת הפקודה ואבחון תקלות](08_CLI_and_Troubleshooting/study_material.md) | 🔜 בכתיבה | מצבי ⁦IOS⁩ · ⁦running/startup⁩ · שיטת אבחון · בנק תקלות |
+| ⁦7⁩ | [החיבור לעולם](07_WAN_NAT_and_Internet/study_material.md) | ✅ מלא | ⁦NAT⁩ · ⁦BGP⁩ · ⁦ISP⁩ · ⁦DNS⁩ |
+| ⁦8⁩ | [שורת הפקודה ואבחון תקלות](08_CLI_and_Troubleshooting/study_material.md) | ✅ מלא | מצבי ⁦IOS⁩ · ⁦running/startup⁩ · שיטת אבחון · בנק תקלות |
 
 📎 **דף תזכורת מרוכז** (סיכום של כל חלק ⁦1⁩ בעמוד אחד, לחזרה לפני בחינה): [תזכורת רשתות תקשורת](../Chapter_00b_Networking_Reminder/study_material.md)
 
