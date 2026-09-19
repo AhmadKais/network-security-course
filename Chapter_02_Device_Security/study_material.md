@@ -114,6 +114,24 @@ R1(config-line)# transport input ssh              ! רק SSH – חוסם Telnet
 >
 > `⁦login⁩` (לבד) מבקש רק סיסמה אחת משותפת של הקו, בלי שם משתמש. `⁦login local⁩` מבקש גם שם משתמש וגם סיסמה, ומאמת אותם מול מסד המשתמשים המקומי (`⁦username ... secret⁩`). מכיוון ש-⁦SSH⁩ דורש שם משתמש, הוא חייב `⁦login local⁩` – ולכן זו התשובה הנכונה בשאלות בגרות על התחברות מאובטחת.
 
+### 🖼️ איור: ⁦Telnet⁩ כמו גלויה, ⁦SSH⁩ כמו מכתב חתום
+
+```mermaid
+flowchart TB
+    subgraph TEL["❌ Telnet"]
+        direction LR
+        U1["👤 You"] -->|"📬 postcard -<br/>password readable by anyone"| D1["🖧 Device"]
+        EVE1["🦹 Eavesdropper"] -.->|reads it| U1
+    end
+    subgraph SSH["✅ SSH"]
+        direction LR
+        U2["👤 You"] -->|"🔒✉️ sealed & encrypted"| D2["🖧 Device"]
+        EVE2["🦹 Eavesdropper"] -.->|"sees only 🔀 gibberish"| U2
+    end
+```
+
+_⁦Telnet⁩ שולח הכול, כולל הסיסמה, בטקסט גלוי. ⁦SSH⁩ מצפין את כל השיחה._
+
 ## ⁦2.5⁩ עוד כלי הקשחה: רמות הרשאה ו-⁦Banner⁩
 
 **רמות הרשאה (⁦Privilege Levels)⁩:** לפעמים רוצים לתת למישהו גישה חלקית – למשל למתמחה שיוכל רק לצפות, בלי לשנות. ל-⁦IOS⁩ יש ⁦16⁩ רמות הרשאה (⁦0⁩ עד ⁦15).⁩ רמה ⁦1⁩ היא ברירת המחדל (רק צפייה), רמה ⁦15⁩ היא הרשאת מנהל מלאה, ואת הרמות שביניהן אפשר להתאים אישית ולהעביר אליהן פקודות מסוימות. כך אפשר לתת לכל תפקיד בדיוק את מה שהוא צריך – עיקרון שנקרא "מינימום הרשאות".
