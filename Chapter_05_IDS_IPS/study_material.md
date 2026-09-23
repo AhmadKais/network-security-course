@@ -10,7 +10,10 @@ _⁦11⁩ שעות עיוני + ⁦3⁩ מעשי · שבועות ⁦13⁩–⁦1
 > 📘 **לפני שמתחילים – במה זה שונה מחומת אש? (למי שאין רקע)**
 >
 > - **חומת אש** (פרק ⁦4)⁩ בודקת **כתובות ופורטים** – "מי מדבר עם מי ובאיזו דלת". היא לא מסתכלת מה *בתוך* החבילה.
-> - **⁦IDS/IPS⁩** מסתכלות על **התוכן** של החבילה ועל **ההתנהגות** – ומחפשות סימנים של התקפה, גם אם הפורט מותר. **אנלוגיה:** חומת אש = שומר שבודק תעודת זהות בכניסה. ⁦IDS/IPS⁩ = מצלמות אבטחה + מאבטח בתוך הבניין שמזהים התנהגות חשודה גם של מי שנכנס חוקית. 
+> - **⁦IDS/IPS⁩** מסתכלות על **התוכן** של החבילה ועל **ההתנהגות** – ומחפשות סימנים של התקפה, גם אם הפורט מותר.
+>
+> **אנלוגיה:** חומת אש = שומר שבודק תעודת זהות בכניסה. ⁦IDS/IPS⁩ = מצלמות אבטחה + מאבטח בתוך הבניין שמזהים התנהגות חשודה גם של מי שנכנס חוקית.
+>
 > - **⁦IDS⁩** (⁦Detection)⁩ = מצלמה ש**מתריעה** אם רואה משהו חשוד (אבל לא עוצרת).
 > - **⁦IPS⁩** (⁦Prevention)⁩ = מאבטח ש**גם עוצר** את החשוד במקום.
 > - **חתימה (⁦Signature)⁩** = "תמונת מבוקש" – תבנית ידועה של התקפה שהמערכת מחפשת.
@@ -122,7 +125,7 @@ _⁦11⁩ שעות עיוני + ⁦3⁩ מעשי · שבועות ⁦13⁩–⁦1
 4. הגדרת ⁦IPS⁩: שם, מיקום, התראות, קטגוריות.
 5. החלה על ממשק וטעינת החבילה.
 
-```
+<pre dir="ltr" align="left">
 ! Step 2 - config-location directory
 R1# mkdir ipsdir
 ! Step 3 - Cisco's public key (copied from the file; excerpt)
@@ -150,11 +153,11 @@ R1(config)# interface g0/0
 R1(config-if)# ip ips MYIPS in
 ! load the signature package (from TFTP/USB) - this step doesn't exist in Packet Tracer
 R1# copy tftp://10.0.0.5/IOS-S416-CLI.pkg idconf
-```
+</pre>
 
 ### שינוי חתימה בודדת – הדוגמה הקלאסית: התראה + חסימה על ⁦ping⁩
 
-```
+<pre dir="ltr" align="left">
 R1(config)# ip ips signature-definition
 R1(config-sigdef)# signature 2004 0           ! 2004/0 = ICMP Echo Request
 R1(config-sigdef-sig)# status
@@ -168,7 +171,7 @@ R1(config-sigdef-sig-engine)# exit
 R1(config-sigdef-sig)# exit
 R1(config-sigdef)# exit
 Do you want to accept these changes? [confirm]
-```
+</pre>
 
 > 💡 **טיפ: מה עובד ב-⁦Packet Tracer⁩**
 >
@@ -176,7 +179,7 @@ Do you want to accept these changes? [confirm]
 
 ## ⁦5.9⁩ וריפיקציה ופתרון תקלות
 
-```
+<pre dir="ltr" align="left">
 R1# show ip ips all                   ! summary: name, interfaces, categories, number of loaded signatures
 R1# show ip ips configuration
 R1# show ip ips interfaces
@@ -185,7 +188,7 @@ R1# show ip ips statistics            ! how many packets were inspected, how man
 R1# clear ip ips statistics
 R1# show ip ips sessions
 R1# debug ip ips
-```
+</pre>
 
 | **תסמין** | **סיבה נפוצה ופתרון** |
 | --- | --- |

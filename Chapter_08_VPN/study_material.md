@@ -12,7 +12,9 @@ _⁦10⁩ שעות עיוני + ⁦3⁩ מעשי · שבועות ⁦24⁩–⁦2
 > - **הבעיה:** כשמידע עובר באינטרנט, הוא עובר דרך נתבים רבים של חברות שונות. כל אחד בדרך יכול, עקרונית, לראות אותו. זה מסוכן למידע רגיש.
 > - **⁦VPN⁩** (⁦Virtual Private Network) = "⁩רשת פרטית וירטואלית". הוא יוצר **מנהרה מוצפנת** דרך האינטרנט הציבורי: המידע מוצפן בצד אחד, עובר את האינטרנט כג'יבריש, ומפוענח רק בצד השני.
 > - **אנלוגיה:** במקום לשלוח גלויה שכל דוור קורא (אינטרנט רגיל), שולחים מזוודה נעולה שרק לשולח ולנמען יש מפתח אליה (⁦VPN).⁩
-> - **שני שימושים:** חיבור **סניף לסניף** (⁦Site-to-Site⁩, כמו לחבר שני משרדים), וחיבור **עובד מהבית** (⁦Remote Access).⁩ **חשוב:** פרק זה מסתמך ישירות על פרק ⁦7⁩ (הצפנה). כל מה שנלמד שם – מפתח סימטרי, מפתח ציבורי/פרטי, גיבוב – חוזר כאן בפעולה. אם משהו לא ברור, חזרו לפרק ⁦7.⁩
+> - **שני שימושים:** חיבור **סניף לסניף** (⁦Site-to-Site⁩, כמו לחבר שני משרדים), וחיבור **עובד מהבית** (⁦Remote Access).⁩
+>
+> **חשוב:** פרק זה מסתמך ישירות על פרק ⁦7⁩ (הצפנה). כל מה שנלמד שם – מפתח סימטרי, מפתח ציבורי/פרטי, גיבוב – חוזר כאן בפעולה. אם משהו לא ברור, חזרו לפרק ⁦7.⁩
 
 ## ⁦8.1⁩ מהו ⁦VPN⁩ ולמה הוא נחוץ
 
@@ -42,7 +44,7 @@ _⁦10⁩ שעות עיוני + ⁦3⁩ מעשי · שבועות ⁦24⁩–⁦2
 
 **⁦GRE⁩** (⁦Generic Routing Encapsulation)⁩ הוא פרוטוקול מנהור של סיסקו שעוטף חבילה בתוך חבילת ⁦IP⁩ חדשה. יתרון: יכול לשאת **⁦multicast⁩ ו-⁦broadcast⁩** (ולכן פרוטוקולי ניתוב כמו ⁦OSPF/EIGRP⁩ רצים דרכו) וגם תעבורה שאינה ⁦IP.⁩ חיסרון קריטי: **⁦GRE⁩ אינו מצפין כלום** – הוא רק עוטף. לכן בפועל: **⁦GRE over IPsec⁩** – ⁦GRE⁩ נותן את הגמישות (⁦multicast, routing), IPsec⁩ נותן את ההצפנה.
 
-```
+<pre dir="ltr" align="left">
 ! GRE tunnel between R1 and R2
 R1(config)# interface tunnel 0
 R1(config-if)# ip address 172.16.1.1 255.255.255.252    ! the tunnel's internal address
@@ -53,7 +55,7 @@ R1(config-if)# tunnel mode gre ip                            ! default
 R1(config)# ip route 10.2.2.0 255.255.255.0 172.16.1.2
 R1# show ip interface brief | include Tunnel
 R1# show interfaces tunnel 0
-```
+</pre>
 
 ## ⁦8.4 IPsec⁩ – לב הפרק
 
@@ -105,7 +107,7 @@ R1# show interfaces tunnel 0
 
 ## ⁦8.6⁩ הגדרת ⁦Site-to-Site IPsec VPN⁩ ב-⁦CLI (5⁩ שלבים)
 
-```
+<pre dir="ltr" align="left">
 ! ===== Step 0: the "interesting" ACL - which traffic to encrypt =====
 R1(config)# access-list 100 permit ip 10.1.1.0 0.0.0.255 10.2.2.0 0.0.0.255
 
@@ -136,8 +138,8 @@ R1(config-crypto-map)# exit
 ! ===== Step 4: apply on the outside interface =====
 R1(config)# interface g0/0
 R1(config-if)# crypto map CMAP
-! (R2 is mirror-configured: reversed addresses & ACL, same policy & PSK)
-```
+! (R2 is mirror-configured: reversed addresses &amp; ACL, same policy &amp; PSK)
+</pre>
 
 > ⚠️ **טעויות נפוצות ב-⁦IPsec⁩**
 >
@@ -150,14 +152,14 @@ R1(config-if)# crypto map CMAP
 
 ### וריפיקציה ופתרון תקלות
 
-```
+<pre dir="ltr" align="left">
 R1# show crypto isakmp sa          ! Phase 1 - state QM_IDLE = success
 R1# show crypto ipsec sa           ! Phase 2 - count of encrypted/decrypted packets
 R1# show crypto map
 R1# show crypto session
 R1# debug crypto isakmp
 R1# debug crypto ipsec
-```
+</pre>
 
 > ❓ **שאלת תלמיד: "איך אני יודע שהמנהרה עובדת ולא סתם ה-⁦ping⁩ עובר רגיל?"**
 >

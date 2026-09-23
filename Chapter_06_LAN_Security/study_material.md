@@ -9,12 +9,15 @@ _⁦11⁩ שעות עיוני + ⁦2⁩ מעשי · שבועות ⁦17⁩–⁦1
 
 > 📘 **לפני שמתחילים – מה קורה ב"שכבה ⁦2"⁩? (למי שאין רקע)**
 >
-> עד עכשיו דיברנו על כתובות ⁦IP⁩ (שכבה ⁦3).⁩ אבל בתוך רשת מקומית, המכשירים מדברים ביניהם דרך **מתג** לפי **כתובות ⁦MAC⁩** (שכבה ⁦2).⁩ כמה מושגים: 
+> עד עכשיו דיברנו על כתובות ⁦IP⁩ (שכבה ⁦3).⁩ אבל בתוך רשת מקומית, המכשירים מדברים ביניהם דרך **מתג** לפי **כתובות ⁦MAC⁩** (שכבה ⁦2).⁩ כמה מושגים:
+>
 > - **מתג (⁦Switch)⁩** – מחבר את כל המחשבים ברשת המקומית. הוא לומד איזו כתובת ⁦MAC⁩ נמצאת באיזה פורט, ושומר זאת ב**טבלת ⁦MAC⁩**.
 > - **⁦VLAN⁩** – "רשת וירטואלית". מפצל מתג פיזי אחד לכמה רשתות נפרדות ומבודדות (למשל ⁦VLAN⁩ למחלקת כספים ו-⁦VLAN⁩ לאורחים) בלי לקנות עוד מתגים.
 > - **⁦Trunk⁩** – קישור בין מתגים שנושא כמה ⁦VLAN⁩ים יחד.
 > - **⁦Broadcast⁩** – הודעה שנשלחת ל**כל** המכשירים ברשת בבת אחת ("שידור").
-> - **⁦STP⁩** – פרוטוקול שמונע "לולאות" בין מתגים (נסביר בהמשך למה לולאה מפילה רשת). **למה זה קריטי לאבטחה?** אם תוקף כבר מחובר לרשת המקומית (חיבר מחשב לשקע, פרץ ל-⁦Wi-Fi)⁩, הוא פועל בשכבה ⁦2⁩ – **מתחת** לכל ההגנות של שכבה ⁦3⁩ (חומת אש, ⁦IP).⁩ לכן צריך להגן גם כאן.
+> - **⁦STP⁩** – פרוטוקול שמונע "לולאות" בין מתגים (נסביר בהמשך למה לולאה מפילה רשת).
+>
+> **למה זה קריטי לאבטחה?** אם תוקף כבר מחובר לרשת המקומית (חיבר מחשב לשקע, פרץ ל-⁦Wi-Fi)⁩, הוא פועל בשכבה ⁦2⁩ – **מתחת** לכל ההגנות של שכבה ⁦3⁩ (חומת אש, ⁦IP).⁩ לכן צריך להגן גם כאן.
 
 כדי להבין את ההתקפות בפרק, צריך קודם לראות איך מתג *אמור* לעבוד. מתג מחבר כמה מכשירים, ומנהל **טבלת ⁦MAC⁩** שממפה כל כתובת ⁦MAC⁩ לפורט שאליו היא מחוברת:
 
@@ -66,7 +69,7 @@ graph LR
 
 ### ⁦Port Security⁩ – ההגנה
 
-```
+<pre dir="ltr" align="left">
 S1(config)# interface f0/1
 S1(config-if)# switchport mode access              ! required - port security does not work on a dynamic trunk
 S1(config-if)# switchport port-security
@@ -78,7 +81,7 @@ S1(config-if)# switchport port-security aging time 60
 S1# show port-security
 S1# show port-security interface f0/1
 S1# show port-security address
-```
+</pre>
 
 ### שלושה מצבי הפרה (⁦violation)⁩
 
@@ -110,7 +113,7 @@ S1# show port-security address
 
 ### ההגנה על פורטים
 
-```
+<pre dir="ltr" align="left">
 ! edge port (to a PC) - explicit access, DTP off
 S1(config)# interface range f0/1 - 20
 S1(config-if-range)# switchport mode access
@@ -128,7 +131,7 @@ S1(config-if)# switchport trunk allowed vlan 10,20,30      ! only what's needed
 S1(config)# interface range f0/21 - 24
 S1(config-if-range)# switchport access vlan 999
 S1(config-if-range)# shutdown
-```
+</pre>
 
 ## ⁦6.5 STP⁩ והתקפות עליו
 
@@ -159,7 +162,7 @@ S1(config-if-range)# shutdown
 | **⁦Root Guard⁩** | מונע ממתג בפורט זה להפוך ל-⁦root⁩ (אם ישלח ⁦BPDU⁩ עדיף – הפורט נחסם) | פורטים למתגי גישה מתחת |
 | **⁦Loop Guard⁩** | מגן מלולאה כשפורט מפסיק לקבל ⁦BPDU⁩ | קישורים ⁦redundant⁩ |
 
-```
+<pre dir="ltr" align="left">
 ! per-interface
 S1(config-if)# spanning-tree portfast
 S1(config-if)# spanning-tree bpduguard enable
@@ -170,7 +173,7 @@ S1(config)# spanning-tree portfast bpduguard default
 S1(config)# spanning-tree vlan 10 root primary       ! lowers priority to 24576
 S1(config)# spanning-tree vlan 10 priority 4096            ! manual - must be a multiple of 4096
 S1# show spanning-tree
-```
+</pre>
 
 ## ⁦6.6 DHCP⁩ – ⁦Starvation, Spoofing⁩ ו-⁦DHCP Snooping⁩
 
@@ -180,7 +183,7 @@ S1# show spanning-tree
 
 המתג מסמן פורטים כ-**⁦trusted⁩** (לכיוון שרת ה-⁦DHCP⁩ הלגיטימי / ⁦uplink)⁩ או **⁦untrusted⁩** (פורטי קצה, ברירת מחדל). הודעות שרת (⁦OFFER, ACK)⁩ מפורט ⁦untrusted⁩ – נחסמות. המתג בונה **⁦DHCP Snooping Binding Table⁩** (⁦MAC⁩↔⁦IP⁩↔פורט↔⁦VLAN)⁩ – בסיס ל-⁦DAI⁩ ו-⁦IP Source Guard.⁩
 
-```
+<pre dir="ltr" align="left">
 S1(config)# ip dhcp snooping
 S1(config)# ip dhcp snooping vlan 10,20
 S1(config)# interface g0/1                    ! toward the legitimate DHCP server
@@ -188,13 +191,13 @@ S1(config-if)# ip dhcp snooping trust
 S1(config)# interface range f0/1 - 20         ! edge ports
 S1(config-if-range)# ip dhcp snooping limit rate 6   ! against starvation
 S1# show ip dhcp snooping binding
-```
+</pre>
 
 ## ⁦6.7 ARP Spoofing⁩ ו-⁦Dynamic ARP Inspection (DAI)⁩
 
 **⁦ARP⁩** ממפה ⁦IP⁩ ל-⁦MAC⁩, וחסר כל אימות: כל מחשב יכול לשלוח "⁦Gratuitous ARP"⁩ שאומר "אני ה-⁦gateway"⁩ – והקורבנות יעדכנו את הטבלה שלהם ויתחילו לשלוח את התעבורה לתוקף (⁦MITM).⁩ **⁦DAI⁩** בודק כל הודעת ⁦ARP⁩ מול טבלת ה-⁦DHCP Snooping⁩: אם ה-⁦IP⁩↔⁦MAC⁩ לא תואם לרשומה – ההודעה נזרקת.
 
-```
+<pre dir="ltr" align="left">
 S1(config)# ip arp inspection vlan 10,20
 S1(config)# interface g0/1
 S1(config-if)# ip arp inspection trust            ! trusted uplink
@@ -202,7 +205,7 @@ S1(config-if)# ip arp inspection trust            ! trusted uplink
 S1(config)# arp access-list STATIC-HOSTS
 S1(config-arp-nacl)# permit ip host 10.0.0.5 mac host aaaa.bbbb.cccc
 S1# show ip arp inspection
-```
+</pre>
 
 המשלים: **⁦IP Source Guard⁩** – מוודא שכתובת ה-⁦IP⁩ במסגרת תואמת לפורט לפי טבלת ה-⁦snooping⁩ (נגד ⁦IP spoofing).⁩
 
@@ -210,22 +213,22 @@ S1# show ip arp inspection
 
 מגביל את אחוז התעבורה מסוג ⁦broadcast / multicast / unknown-unicast⁩ על פורט; אם עוברים סף – המתג מפיל את העודף (ומתריע). מגן מ-⁦broadcast storms⁩ (גם מלולאה וגם מתקלה/התקפה). התכנית מציינת "⁦Storm Control (SC)".⁩
 
-```
+<pre dir="ltr" align="left">
 S1(config-if)# storm-control broadcast level 5.00       ! above 5% of bandwidth - throttle
 S1(config-if)# storm-control multicast level pps 1k
 S1(config-if)# storm-control action shutdown            ! or trap
 S1# show storm-control
-```
+</pre>
 
 ## ⁦6.9 SPAN⁩ – שיקוף פורטים (הבסיס ל-⁦IDS)⁩
 
 **⁦SPAN⁩** (⁦Switched Port Analyzer, "port mirroring")⁩ מעתיק את כל התעבורה מפורט/⁦VLAN⁩ מקור לפורט יעד – שאליו מחובר ⁦Wireshark⁩ או **⁦IDS⁩**. זה החיבור לפרק ⁦5: IDS "⁩מחוץ לנתיב" מקבל את התעבורה דווקא דרך ⁦SPAN.⁩ **⁦RSPAN⁩** – שיקוף בין מתגים דרך ⁦VLAN⁩ ייעודי; **⁦ERSPAN⁩** – מעל ⁦IP (GRE).⁩
 
-```
+<pre dir="ltr" align="left">
 S1(config)# monitor session 1 source interface f0/1 - 10 both
 S1(config)# monitor session 1 destination interface f0/24   ! here sit the IDS / Wireshark
 S1# show monitor session 1
-```
+</pre>
 
 > ❓ **שאלת תלמיד: "אם ה-⁦IDS⁩ רק מקבל עותק דרך ⁦SPAN⁩, למה שלא נחבר אותו ⁦inline⁩ ונחסום?"**
 >
@@ -247,10 +250,10 @@ S1# show monitor session 1
 
 איומים: האזנה לשיחות (⁦sniffing)⁩, **⁦toll fraud⁩** (שימוש לא מורשה בקווים לחיוב יקר), התחזות (⁦caller-ID spoofing), DoS⁩ על ה-⁦PBX, SPIT (spam⁩ קולי). הגנות: **⁦Voice VLAN⁩ נפרד** (הפרדה מתעבורת הנתונים), הצפנה (**⁦SRTP⁩** למדיה, **⁦TLS/SIP-TLS⁩** לאיתות), אימות מכשירי טלפון, ⁦ACL⁩ בין ⁦voice⁩ ל-⁦data.⁩
 
-```
+<pre dir="ltr" align="left">
 S1(config-if)# switchport access vlan 10        ! data
 S1(config-if)# switchport voice vlan 20       ! voice - tagged separately
-```
+</pre>
 
 ### ⁦SAN⁩ (רשת אחסון)
 

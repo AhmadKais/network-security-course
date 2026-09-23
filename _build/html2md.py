@@ -72,9 +72,15 @@ def table(tbl):
 
 def codeblock(pre):
     # plain text, strip inline styling but keep text (incl. comments)
-    txt=''.join(_raw_code(k) for k in pre.kids)
-    lang='mermaid' if 'mermaid' in pre.cls() else ''
-    return '```'+lang+'\n'+txt.strip('\n')+'\n```'
+    txt=''.join(_raw_code(k) for k in pre.kids).strip('\n')
+    if 'mermaid' in pre.cls():
+        return '```mermaid\n'+txt+'\n```'
+    # Force left-to-right: the whole page is wrapped in <div dir="rtl">, and a
+    # fenced ``` block inherits that direction on GitHub (right-aligned / flipped).
+    # A raw <pre dir="ltr"> is a type-1 HTML block (immune to blank lines) so it
+    # stays LTR both at top level AND when prefixed inside a box/blockquote.
+    esc=txt.replace('&','&amp;').replace('<','&lt;').replace('>','&gt;')
+    return '<pre dir="ltr" align="left">\n'+esc+'\n</pre>'
 def _raw_code(n):
     if isinstance(n,Text): return n.s
     if isinstance(n,Node): return ''.join(_raw_code(k) for k in n.kids)
@@ -89,24 +95,34 @@ def lst(node,ordered):
     return '\n'.join(out)
 
 def box(div):
-    cls=div.cls(); emoji,label='ℹ️','' 
+    cls=div.cls(); emoji,label='ℹ️',''
     for c in cls:
         if c in BOX: emoji,label=BOX[c]
-    title=None; body=[]; ans=None
+    title=None; segs=[]; cur=['']
+    def flush():
+        if cur[0].strip(): segs.append(cur[0].strip())
+        cur[0]=''
+    def emit(node, prefix=''):
+        # inline text (with optional label prefix), then block children as their
+        # own segments so <pre>/lists/tables are separated by blank lines
+        acc=prefix; blocks=[]
+        for kk in node.kids:
+            if isinstance(kk,Node) and kk.tag in ('ul','ol','pre','table'):
+                blocks.append(block(kk))
+            else:
+                acc+=inline(kk)
+        if acc.strip(): segs.append(acc.strip())
+        segs.extend(blocks)
     for k in div.kids:
         if isinstance(k,Node) and k.tag=='span' and 't' in k.cls(): title=inl(k)
-        elif isinstance(k,Node) and 'ans' in k.cls(): ans=inl(k)
-        else:
-            b=inline(k) if not (isinstance(k,Node) and k.tag in ('ul','ol','pre','table')) else '\n'+block(k)
-            body.append(b)
+        elif isinstance(k,Node) and 'ans' in k.cls(): flush(); emit(k, prefix='**תשובה:** ')
+        elif isinstance(k,Node) and k.tag in ('ul','ol','pre','table'): flush(); segs.append(block(k))
+        else: cur[0]+=inline(k)
+    flush()
     head=f'{emoji} **{title or label}**'
-    txt=(''.join(body)).strip()
-    lines=[head]
-    if txt: lines.append(''); lines.append(txt)
-    if ans: lines.append(''); lines.append(f'**תשובה:** {ans}')
-    # blockquote-prefix every line
-    q='\n'.join('> '+l if l else '>' for l in '\n'.join(lines).split('\n'))
-    return q
+    content='\n\n'.join([head]+[s for s in segs if s])
+    # blockquote-prefix every line (blank lines become a bare '>')
+    return '\n'.join('> '+l if l else '>' for l in content.split('\n'))
 
 def meta(div):
     items=[inl(s) for s in div.kids if isinstance(s,Node) and s.tag=='span']

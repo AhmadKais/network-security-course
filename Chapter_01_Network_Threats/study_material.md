@@ -182,10 +182,10 @@ graph LR
 
 כדי לחבר את התיאוריה למעשה, הנה הצצה קטנה קדימה. גם בציוד רשת של סיסקו יש הגנה מובנית מפני ניחוש סיסמאות, שנלמד לעומק בפרק ⁦2⁩:
 
-```
+<pre dir="ltr" align="left">
 R1(config)# login block-for 120 attempts 3 within 60
 ! if there were 3 failed attempts within 60s - block logins for 120s
-```
+</pre>
 
 ## ⁦1.11⁩ ניהול אבטחה: מדיניות, תקנים ותפקידים
 

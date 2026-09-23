@@ -10,7 +10,8 @@ _סיפור, דוגמאות, והרבה ידיים על המקלדת (⁦Kali Li
 
 > 📘 **איך בנוי הפרק הזה – קראו לפני שמתחילים**
 >
-> הרבה תלמידים חושבים שרשתות זה נושא "יבש" ומלא ראשי תיבות. זו טעות – רשת היא אחד הדברים הכי מגניבים שיש, ואתם מוקפים בה כל שנייה. לכן חילקנו את המבוא לשניים: 
+> הרבה תלמידים חושבים שרשתות זה נושא "יבש" ומלא ראשי תיבות. זו טעות – רשת היא אחד הדברים הכי מגניבים שיש, ואתם מוקפים בה כל שנייה. לכן חילקנו את המבוא לשניים:
+>
 > - **שיעור ⁦1⁩ – המסע של הודעה אחת:** מה קורה מהרגע שאתם לוחצים "שלח" ועד שהחבר מקבל את ההודעה בצד השני של העולם.
 > - **שיעור ⁦2⁩ – בואו נהיה האינטרנט:** תבנו במו ידיכם צ'אט קטן ותדברו עם אתר אינטרנט "בעל פה", בלי דפדפן.
 
@@ -36,12 +37,12 @@ _סיפור, דוגמאות, והרבה ידיים על המקלדת (⁦Kali Li
 >
 > פתחו טרמינל ב-⁦Kali⁩ ובקשו מהמחשב להציג את הכתובות של עצמו. הפקודה `⁦ip addr⁩` מראה כל כרטיס רשת שיש לכם:
 
-```
+<pre dir="ltr" align="left">
 $ ip addr
-2: eth0: <BROADCAST,MULTICAST,UP> mtu 1500 ...
+2: eth0: &lt;BROADCAST,MULTICAST,UP&gt; mtu 1500 ...
     link/ether 08:00:27:ab:cd:ef          # your MAC address (the device ID)
     inet 10.0.2.15/24 ...                  # your IP address (the delivery address)
-```
+</pre>
 
 רואים את שתי הכתובות? ה-`⁦link/ether⁩` היא ה-⁦MAC⁩, וה-`⁦inet⁩` היא ה-⁦IP.⁩ הרגע גיליתם מי אתם ברשת. אגב, ה-`/⁦24⁩` שבסוף אומר "כמה מהכתובת שייך לרשת שלי" – על זה נדבר בתמצית לבגרות.
 
@@ -53,12 +54,12 @@ $ ip addr
 >
 > נשלח שלוש דפיקות לשרת של גוגל (הכתובת `⁦8.8.8.8⁩` קלה לזכירה – זה שרת ה-⁦DNS⁩ הציבורי של גוגל):
 
-```
+<pre dir="ltr" align="left">
 $ ping -c 3 8.8.8.8
 64 bytes from 8.8.8.8: icmp_seq=1 ttl=115 time=12.3 ms
 64 bytes from 8.8.8.8: icmp_seq=2 ttl=115 time=11.8 ms
 64 bytes from 8.8.8.8: icmp_seq=3 ttl=115 time=12.1 ms
-```
+</pre>
 
 ה-`⁦time=12.3 ms⁩` הוא הזמן שלקח לאות ללכת עד גוגל ולחזור – ⁦12⁩ אלפיות השנייה. בזמן הזה האור עשה מסע של אלפי קילומטרים דרך כבלים. תנסו לעשות `⁦ping⁩` לאתר בחו"ל ולאתר בישראל ותראו את ההבדל בזמנים. זה כבר לא ספר לימוד – זה קורה עכשיו.
 
@@ -74,13 +75,13 @@ $ ping -c 3 8.8.8.8
 >
 > הכלי `⁦dig⁩` שואל את שרת ה-⁦DNS "⁩מה הכתובת של השם הזה?". ה-`+⁦short⁩` מבקש רק את התשובה הקצרה:
 
-```
+<pre dir="ltr" align="left">
 $ dig +short google.com
 142.250.185.78
 
 $ dig +short wikipedia.org
 198.35.26.96
-```
+</pre>
 
 הרגע ראיתם איך שם הופך למספר. כשאתם מקלידים כתובת בדפדפן, הדבר הראשון שקורה מאחורי הקלעים הוא בדיוק השאילתה הזו. אין ⁦DNS⁩ – אין אינטרנט שאפשר לזכור.
 
@@ -102,14 +103,14 @@ graph LR
 >
 > הריצו ⁦traceroute⁩ ליעד כלשהו. כל שורה שתחזור היא נתב אחד בדרך – תחנה במסע:
 
-```
+<pre dir="ltr" align="left">
 $ traceroute google.com
  1  10.0.2.2        0.4 ms      # the home / classroom router
  2  62.90.x.x       8 ms        # entry into your ISP
  3  212.143.x.x     9 ms        # deep inside the ISP's network
  6  108.170.x.x     22 ms       # already inside Google's network
  9  142.250.185.78  30 ms       # arrived! Google's server
-```
+</pre>
 
 כל שורה היא מכשיר אמיתי, בבניין אמיתי, אולי במדינה אחרת. ההודעה שלכם עברה דרך כולם ב-⁦30⁩ אלפיות השנייה. תריצו את זה לאתר יפני או אוסטרלי – תראו יותר תחנות וזמנים גדולים יותר, ותוכלו ממש "לראות" את המרחק הפיזי בעולם. זה לא קסם. זו רשת.
 
@@ -124,13 +125,13 @@ $ traceroute google.com
 >
 > נציץ בשני הפנקסים:
 
-```
+<pre dir="ltr" align="left">
 $ ip route
 default via 10.0.2.2 dev eth0        # default route - the gateway for any remote destination
 
 $ ip neigh
 10.0.2.2 dev eth0 lladdr 52:54:00:12:35:02 REACHABLE   # ARP table - maps an IP address to a MAC address
-```
+</pre>
 
 שימו לב: כדי לדבר עם השער, המחשב חייב לדעת גם את ה-⁦IP⁩ שלו (מטבלת הניתוב) וגם את ה-⁦MAC⁩ שלו (מטבלת ה-⁦ARP).⁩ שתי הכתובות עובדות יחד – וזה בדיוק המקום שבו, בפרק ⁦6⁩, נראה איך תוקף יכול "לשקר" בטבלת ה-⁦ARP⁩ ולהאזין לכל התעבורה.
 
@@ -174,17 +175,17 @@ graph TB
 >
 > **תלמיד א' (השרת)** פותח דלת מספר ⁦4444⁩ ומקשיב. הדגל `-⁦l⁩` = ⁦listen⁩ (הקשב), `-⁦v⁩` = ⁦verbose⁩ (הסבר), `-⁦n⁩` = בלי ⁦DNS⁩, `-⁦p⁩` = הפורט:
 
-```
+<pre dir="ltr" align="left">
 # student A - the server, listens and waits for a connection
 $ nc -lvnp 4444
 listening on [any] 4444 ...
-```
+</pre>
 
-```
+<pre dir="ltr" align="left">
 # student B - the client, connects to student A's address
 $ nc 10.0.2.15 4444
 hey! my first message over the network :)
-```
+</pre>
 
 ברגע שתלמיד ב' מקליד שורה ולוחץ ⁦Enter⁩ – היא מופיעה מיד על המסך של תלמיד א', ולהפך. בניתם ערוץ תקשורת דו-כיווני בין שני מחשבים, בשורה אחת. זה כל מה שיש מתחת ל"קסם" של כל אפליקציית צ'אט בעולם: לקוח, שרת, ודלת.
 
@@ -200,35 +201,35 @@ hey! my first message over the network :)
 >
 > בטרמינל אחד נפתח "שרת" שמקשיב, ובשני נשלח אליו בקשה עם ⁦curl⁩:
 
-```
+<pre dir="ltr" align="left">
 # terminal 1 - a mock server listening on port 8080
 $ nc -lvnp 8080
-```
+</pre>
 
-```
+<pre dir="ltr" align="left">
 # terminal 2 - the client knocks on that port
 $ curl http://localhost:8080/hello
-```
+</pre>
 
 ברגע ש-⁦curl⁩ רץ, בטרמינל של השרת יופיע הטקסט הבא – זו הבקשה, בשפת ⁦HTTP⁩, מילה במילה:
 
-```
+<pre dir="ltr" align="left">
 GET /hello HTTP/1.1          # request - give me the hello page
 Host: localhost:8080
 User-Agent: curl/8.5.0        # who sends the request (here, curl)
 Accept: */*
-```
+</pre>
 
 זהו זה. אין שום קסם. אתר אינטרנט זה בסך הכול לקוח ששולח `⁦GET⁩` ושרת שמחזיר טקסט. עכשיו נעשה את זה מול אתר אמיתי:
 
-```
+<pre dir="ltr" align="left">
 $ curl -v https://example.com
-> GET / HTTP/2                 # what we (the client) send
-> host: example.com
-< HTTP/2 200                   # server's reply - code 200 means success
-< content-type: text/html
-<!doctype html> ...            # this is the content page, exactly as the browser would draw it
-```
+&gt; GET / HTTP/2                 # what we (the client) send
+&gt; host: example.com
+&lt; HTTP/2 200                   # server's reply - code 200 means success
+&lt; content-type: text/html
+&lt;!doctype html&gt; ...            # this is the content page, exactly as the browser would draw it
+</pre>
 
 ה-`⁦200⁩` הזה הוא "קוד תשובה" מפורסם. פגשתם פעם `⁦404⁩`? זה פשוט השרת שאומר "לא מצאתי את הדף". עכשיו אתם יודעים מאיפה זה בא.
 
@@ -360,22 +361,23 @@ $ curl -v https://example.com
 | ⁦OSPF⁩ | ⁦110⁩ |
 | ⁦RIP⁩ | ⁦120⁩ |
 
-```
+<pre dir="ltr" align="left">
 ! static route: to the destination network, via the next-hop
 R1(config)# ip route 10.10.2.20 255.255.255.252 10.10.255.1
 ! default route (to the internet / as a backup)
 R1(config)# ip route 0.0.0.0 0.0.0.0 200.1.1.1
 ! backup (floating static) - AD higher than OSPF so it won't override the dynamic route
 R1(config)# ip route 10.0.0.0 255.0.0.0 200.1.1.2 120
-```
+</pre>
 
 > 📝 **⁦DHCP Relay⁩ – כשהשרת ברשת אחרת**
 >
-> בקשת ⁦DHCP⁩ היא ⁦broadcast⁩ ואינה עוברת נתב. מגדירים על הממשק של הלקוח את כתובת שרת ה-⁦DHCP⁩: 
-> ```
+> בקשת ⁦DHCP⁩ היא ⁦broadcast⁩ ואינה עוברת נתב. מגדירים על הממשק של הלקוח את כתובת שרת ה-⁦DHCP⁩:
+>
+> <pre dir="ltr" align="left">
 > R1(config)# interface g0/0
 > R1(config-if)# ip helper-address 192.50.100.100   ! DHCP server address
-> ```
+> </pre>
 
 ### ז. מיתוג: ⁦VLAN, Trunk⁩ ו-⁦Router-on-a-Stick⁩
 
@@ -383,7 +385,7 @@ R1(config)# ip route 10.0.0.0 255.0.0.0 200.1.1.2 120
 - **⁦Trunk (802.1Q)⁩** – קישור שנושא כמה ⁦VLAN⁩ים בין מתגים; מוסיף תג של מספר ה-⁦VLAN.⁩
 - **⁦Router-on-a-Stick⁩** – נתב עם תת-ממשקים (⁦subinterfaces)⁩, אחד לכל ⁦VLAN⁩, לניתוב ביניהם.
 
-```
+<pre dir="ltr" align="left">
 ! inter-VLAN routing on a single physical interface
 R1(config)# interface g0/0/1.10
 R1(config-subif)# encapsulation dot1Q 10
@@ -393,7 +395,7 @@ R1(config-subif)# encapsulation dot1Q 20
 R1(config-subif)# ip address 172.18.2.254 255.255.0.0
 ! check the switch MAC table
 S1# show mac address-table
-```
+</pre>
 
 ### ח. ⁦STP⁩ ו-⁦OSPF⁩ – כללי הבחירה (נשאלים כמעט תמיד)
 
@@ -422,7 +424,7 @@ S1# show mac address-table
 | ⁦Global config⁩ | `⁦Router(config)⁩#` – `⁦configure terminal⁩` |
 | ⁦Interface⁩ | `⁦Router(config-if)⁩#` |
 
-```
+<pre dir="ltr" align="left">
 Switch(config)# hostname R1
 R1(config)# interface g0/1
 R1(config-if)# no switchport          ! turns a switchport into L3 (a routed port)
@@ -432,20 +434,23 @@ R1(config-if)# no shutdown
 R1# show ip interface brief
 R1# show ip route
 R1# show running-config
-```
+</pre>
 
 **אבחון תקלות בשיטת ⁦Top-Down⁩:** בודקים מהשכבה העליונה כלפי מטה – גישה לאפליקציה/שירות ⟶ הגדרות רשת (⁦IP/gateway/DNS)⁩ ⟶ חיבור פיזי (כבל, נורית).
 
 > 💡 **גשר בין המעבדות לבגרות: אותן פקודות, שתי מערכות**
 >
-> בבגרות מופיעות פקודות ⁦Windows⁩, אבל ב-⁦Kali (Linux)⁩ עשיתם בדיוק את אותם דברים. שווה להכיר את שתי העמודות: 
+> בבגרות מופיעות פקודות ⁦Windows⁩, אבל ב-⁦Kali (Linux)⁩ עשיתם בדיוק את אותם דברים. שווה להכיר את שתי העמודות:
+>
 > | **מה בודקים** | **⁦Windows⁩ (בבגרות)** | **⁦Linux / Kali⁩ (במעבדה)** |
 > | --- | --- | --- |
 > | הכתובות שלי (⁦IP, MAC, gateway)⁩ | `⁦ipconfig /all⁩` | `⁦ip addr⁩` · `⁦ip route⁩` |
 > | לבדוק אם יעד חי | `⁦ping⁩` | `⁦ping⁩` |
 > | לעקוב אחרי המסלול | `⁦tracert⁩` | `⁦traceroute⁩` |
 > | לתרגם שם לכתובת (⁦DNS)⁩ | `⁦nslookup⁩` | `⁦dig⁩` |
-> | טבלת ⁦ARP (IP⁩ ↔ ⁦MAC)⁩ | `⁦arp -a⁩` | `⁦ip neigh⁩` | פקודות מטמון ה-⁦DNS⁩ ב-⁦Windows⁩: `⁦ipconfig /displaydns⁩` (הצגה) ו-`⁦ipconfig /flushdns⁩` (איפוס).
+> | טבלת ⁦ARP (IP⁩ ↔ ⁦MAC)⁩ | `⁦arp -a⁩` | `⁦ip neigh⁩` |
+>
+> פקודות מטמון ה-⁦DNS⁩ ב-⁦Windows⁩: `⁦ipconfig /displaydns⁩` (הצגה) ו-`⁦ipconfig /flushdns⁩` (איפוס).
 
 > 📝 **⁦CDP⁩**
 >

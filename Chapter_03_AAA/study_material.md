@@ -79,12 +79,12 @@ _⁦11⁩ שעות עיוני + ⁦3⁩ מעשי · שבועות ⁦7⁩–⁦9�
 
 עכשיו שהבנו את הרעיון, נראה איך מגדירים. הצעד הראשון תמיד: להפעיל את מנגנון ה-⁦AAA⁩ בפקודה `⁦aaa new-model⁩`. מרגע זה, כל קווי הגישה מתחילים להשתמש ב-⁦AAA⁩ במקום בשיטה הישנה.
 
-```
+<pre dir="ltr" align="left">
 R1(config)# username admin secret P@ss        ! local user - a backup, first of all!
 R1(config)# aaa new-model                    ! enables the AAA framework
 R1(config)# tacacs-server host 10.0.0.5 key Key123  ! TACACS+ server and the shared key
 R1(config)# aaa authentication login default group tacacs+ local
-```
+</pre>
 
 השורה האחרונה היא "רשימת שיטות" (⁦method list)⁩: היא אומרת "כדי לאמת התחברות, נסה קודם את שרת ה-⁦TACACS⁩+; ואם הוא **לא זמין** – השתמש במשתמש המקומי". הגיבוי המקומי (`⁦local⁩`) קריטי: בלעדיו, אם השרת נופל, אף אחד לא יוכל להיכנס.
 
@@ -96,24 +96,24 @@ R1(config)# aaa authentication login default group tacacs+ local
 
 הגדרת שרת ⁦RADIUS⁩ דומה מאוד, רק עם מילת המפתח `⁦radius⁩`:
 
-```
+<pre dir="ltr" align="left">
 R1(config)# radius-server host 10.0.0.6 key R@diusK3y
 R1(config)# aaa authentication login default group radius local
-```
+</pre>
 
 ### הרשאה ורישום
 
 עד כה עסקנו באימות (ה-⁦A⁩ הראשון). מוסיפים את שני האחרים בשתי שורות דומות. **הרשאה (⁦Authorization)⁩** קובעת מה מותר למשתמש לעשות אחרי שנכנס – למשל, האם הוא מקבל גישת מנהל (רמה ⁦15)⁩ ישירות:
 
-```
+<pre dir="ltr" align="left">
 R1(config)# aaa authorization exec default group tacacs+ local
-```
+</pre>
 
 **רישום (⁦Accounting)⁩** מתעד את הפעולות. למשל, לתעד כל פקודה ברמה ⁦15⁩ (מנהל) – כדי שתמיד נדע "מי הקליד ⁦reload⁩?":
 
-```
+<pre dir="ltr" align="left">
 R1(config)# aaa accounting commands 15 default start-stop group tacacs+
-```
+</pre>
 
 ## ⁦3.7 802.1X⁩ – ⁦AAA⁩ שמגן על שקע ברשת
 
@@ -127,11 +127,11 @@ R1(config)# aaa accounting commands 15 default start-stop group tacacs+
 
 אחרי שמגדירים, איך יודעים שהכול עובד – ואיך מאבחנים כשלא? הנה הכלים המרכזיים ותקלות נפוצות:
 
-```
+<pre dir="ltr" align="left">
 R1# show aaa sessions                       ! who is currently connected via AAA
 R1# test aaa group tacacs+ admin P@ss legacy  ! test authentication without actually logging in
 R1# debug aaa authentication                ! live trace of the authentication process
-```
+</pre>
 
 - **הנתב "נתקע" כמה שניות ואז מקבל את המשתמש המקומי:** סימן שהשרת אינו נגיש (בדקו כתובת, ⁦ACL⁩, ושהשירות פועל). הגיבוי ל-`⁦local⁩` עבד – זה תקין, אבל צריך לתקן את הקשר לשרת.
 - **"אימות נכשל" מיד, גם עם סיסמה נכונה:** לרוב המפתח המשותף (⁦key)⁩ אינו זהה בין הנתב לשרת, או שהשרת לא מכיר את כתובת הנתב כלקוח מורשה.

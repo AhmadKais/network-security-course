@@ -39,26 +39,26 @@ _⁦10⁩ שעות עיוני + ⁦2⁩ מעשי · שבועות ⁦4⁩–⁦6�
 
 הנה "סיפור" קצר של פקודות. קראו את הסימן בתחילת כל שורה כדי לעקוב איפה אנחנו נמצאים:
 
-```
-Router> enable                 ! from "look only" mode to "admin" mode
+<pre dir="ltr" align="left">
+Router&gt; enable                 ! from "look only" mode to "admin" mode
 Router# configure terminal     ! enter global configuration mode
 Router(config)# hostname R1    ! give the router a name - notice the prompt changes immediately
 R1(config)# interface g0/0     ! enter a specific interface
 R1(config-if)# no shutdown     ! bring the port up
 R1(config-if)# end             ! jump straight back to privileged mode
 R1# write                       ! save! (otherwise the config is lost on reboot)
-```
+</pre>
 
 ## ⁦2.3⁩ סיסמאות: מה חזק, מה חלש, ולמה
 
 הצעד הבסיסי בהקשחה הוא סיסמאות טובות. ב-⁦IOS⁩ יש כמה סוגים של סיסמאות, וההבדל ביניהן קריטי. הכלל הפשוט: תמיד להשתמש במילה `⁦secret⁩`, אף פעם לא במילה `⁦password⁩`.
 
-```
+<pre dir="ltr" align="left">
 R1(config)# enable secret Str0ng-P@ss   ! privileged-mode password - stored hashed (secure)
 R1(config)# enable password weak         ! stored in clear text - do not use!
 R1(config)# service password-encryption  ! hides the clear-text passwords in the config
 R1(config)# username admin secret P@ss   ! local user with a hashed password
-```
+</pre>
 
 למה `⁦secret⁩` עדיף? כי הוא נשמר כ**גיבוב (⁦hash)⁩** – טביעת אצבע חד-כיוונית של הסיסמה, שממנה אי אפשר לשחזר את הסיסמה המקורית (נרחיב על גיבוב בפרק ⁦7).⁩ לעומת זאת `⁦password⁩` נשמר בטקסט גלוי, וגם הפקודה `⁦service password-encryption⁩` שמסתירה אותו משתמשת בהצפנה חלשה מאוד (מה שנקרא "⁦type 7")⁩ שנשברת בשנייה באתרים חינמיים באינטרנט. לכן `⁦service password-encryption⁩` מגן רק מפני מישהו שמציץ מעבר לכתף בזמן שאתם צופים בקונפיג – לא מפני תוקף אמיתי. ההגנה האמיתית היא ה-`⁦secret⁩`.
 
@@ -66,18 +66,18 @@ R1(config)# username admin secret P@ss   ! local user with a hashed password
 
 סיסמה חזקה היא רק חצי מהסיפור – כדאי גם למנוע מתוקף לנסות **אינספור** ניחושים. ל-⁦IOS⁩ יש מנגנון מובנה לכך: אחרי מספר ניסיונות כושלים בפרק זמן נתון, הנתב "ננעל" לזמן מה ולא מקבל ניסיונות חדשים. זה הופך התקפת ברוט-פורס (ניחוש שיטתי) מבלתי-מעשית.
 
-```
-R1(config)# login block-for 120 attempts 3 within 60  ! 3 failures within 60s -> lock for 120s
+<pre dir="ltr" align="left">
+R1(config)# login block-for 120 attempts 3 within 60  ! 3 failures within 60s -&gt; lock for 120s
 R1(config)# login delay 2                              ! 2s delay between attempts
 R1(config)# login on-failure log                       ! log every failure
-```
+</pre>
 
 בנוסף, כדאי להגדיר **⁦exec-timeout⁩** על קווי הגישה – ניתוק אוטומטי אחרי כמה דקות של חוסר פעילות, כדי שמסך פתוח ונטוש לא יישאר גישה פתוחה למי שיעבור לידו:
 
-```
+<pre dir="ltr" align="left">
 R1(config)# line vty 0 4
 R1(config-line)# exec-timeout 5 0   ! disconnect after 5 minutes of inactivity
-```
+</pre>
 
 ## ⁦2.4 Telnet⁩ מול ⁦SSH⁩ – ההבדל שמציל אתכם
 
@@ -93,7 +93,7 @@ R1(config-line)# exec-timeout 5 0   ! disconnect after 5 minutes of inactivity
 
 כדי ש-⁦SSH⁩ יעבוד, הנתב צריך לייצר לעצמו **זוג מפתחות ⁦RSA⁩** – מפתח ציבורי ומפתח פרטי (נבין אותם לעומק בפרק ⁦7).⁩ המפתחות האלה הם מה שמצפין את החיבור. כדי לייצר אותם, הנתב חייב קודם שם מלא, שמורכב מהשם שלו (⁦hostname)⁩ ומשם דומיין. לכן שני אלה חייבים לבוא ראשונים:
 
-```
+<pre dir="ltr" align="left">
 R1(config)# hostname R1                       ! 1. Hostname
 R1(config)# ip domain-name school.local       ! 2. Domain name (required before generating keys)
 R1(config)# crypto key generate rsa modulus 2048  ! 3. Generate the RSA key pair
@@ -102,7 +102,7 @@ R1(config)# ip ssh version 2                         ! SSHv2 only
 R1(config)# line vty 0 4                          ! 5. Configure the remote-access (vty) lines
 R1(config-line)# login local                      ! authenticate against the local user
 R1(config-line)# transport input ssh              ! SSH only - blocks Telnet
-```
+</pre>
 
 > ⚠️ **הטעות הנפוצה ביותר**
 >
@@ -120,11 +120,11 @@ R1(config-line)# transport input ssh              ! SSH only - blocks Telnet
 
 **⁦Banner⁩:** זוהי הודעת אזהרה שמופיעה בכניסה לנתב. מטרתה משפטית – להבהיר שהגישה מיועדת למורשים בלבד ושהפעילות מנוטרת.
 
-```
+<pre dir="ltr" align="left">
 R1(config)# banner motd #
 *** Unauthorized access prohibited. Activity is monitored and logged. ***
 #
-```
+</pre>
 
 > ⚠️ **מה לא לכתוב בבאנר**
 >
@@ -138,11 +138,11 @@ R1(config)# banner motd #
 
 הרחבנו קודם שיש ⁦16⁩ רמות הרשאה. בפועל משתמשים בשלוש: רמה ⁦1⁩ (המשתמש הרגיל – רק צפייה), רמה ⁦15⁩ (מנהל מלא), ורמות ביניים שאליהן אפשר "להעביר" פקודות מסוימות. לדוגמה, אפשר ליצור רמה ⁦5⁩ שמותר לה גם לאתחל את הנתב ולצפות בהגדרות, ולתת אותה לצוות התמיכה:
 
-```
+<pre dir="ltr" align="left">
 R1(config)# privilege exec level 5 reload            ! level 5 can reload
 R1(config)# enable secret level 5 Lvl5-P@ss
 R1(config)# username helpdesk privilege 5 secret Help-P@ss
-```
+</pre>
 
 לרמות ההרשאה יש חיסרון: רמה גבוהה מקבלת אוטומטית גם את כל מה שמותר ברמות שמתחתיה, ואין שליטה מדויקת. פתרון מדויק יותר הוא **תצוגת תפקיד (⁦Role-Based CLI View)⁩** – "תצוגה" שמכילה רשימת פקודות מדויקת שהמשתמש רשאי להריץ, ותו לא. כך אפשר לתת לכל תפקיד בדיוק את מה שהוא צריך (עיקרון "מינימום הרשאות"). הגדרת תצוגות דורשת שמנגנון ה-⁦AAA⁩ יופעל (נלמד עליו בפרק ⁦3).⁩
 
@@ -150,10 +150,10 @@ R1(config)# username helpdesk privilege 5 secret Help-P@ss
 
 תוקף שהצליח להיכנס עלול למחוק את מערכת ההפעלה (⁦IOS)⁩ ואת קובץ ההגדרות כדי לשתק את הנתב לגמרי. תכונת **⁦IOS Resilient Configuration⁩** שומרת עותק מוגן שלא ניתן למחוק דרך שורת הפקודה – מעין "גיבוי חסין" בתוך הנתב עצמו:
 
-```
+<pre dir="ltr" align="left">
 R1(config)# secure boot-image    ! protects the OS (IOS) image file
 R1(config)# secure boot-config   ! protects the config file
-```
+</pre>
 
 בנוסף לגיבוי החסין, נהוג לגבות את ההגדרות באופן שוטף לשרת חיצוני (`⁦copy running-config tftp⁩:`) ולתעד מי שינה מה – מה שנקרא **ביקורת (⁦Auditing)⁩**. תיעוד כזה עונה על השאלה החשובה "מי הקליד את הפקודה הזו ומתי?", ומשלים את ה-⁦syslog⁩ שנכיר מיד.
 
@@ -165,10 +165,10 @@ R1(config)# secure boot-config   ! protects the config file
 
 הנתב מייצר כל הזמן הודעות על אירועים: ממשק שעלה או נפל, ניסיון כניסה כושל, חבילה שנחסמה. **⁦Syslog⁩** הוא המנגנון ששולח את ההודעות האלה ל**שרת מרכזי** (על פורט ⁦UDP 514).⁩ למה שרת מרכזי ולא רק בנתב עצמו? כי תוקף חכם שמצליח להיכנס לנתב ימחק את היומן המקומי כדי לטשטש עקבות – אבל אין לו גישה לשרת החיצוני, ושם הראיות נשמרות.
 
-```
+<pre dir="ltr" align="left">
 R1(config)# logging host 10.0.0.5       ! sends the log to the server
 R1(config)# logging trap warnings       ! sends levels 0 through 4
-```
+</pre>
 
 להודעות היומן יש **⁦8⁩ רמות חומרה**, מ-⁦0 (Emergency⁩, החמור ביותר) עד ⁦7 (Debug⁩, מידע פנימי מפורט). כשבוחרים רמה מקבלים אותה וכל מה שחמור ממנה – למשל אם בוחרים רמה ⁦4 (warnings)⁩ מקבלים את רמות ⁦0⁩ עד ⁦4.⁩
 
@@ -176,9 +176,9 @@ R1(config)# logging trap warnings       ! sends levels 0 through 4
 
 **⁦NTP (Network Time Protocol)⁩** מסנכרן את השעון של כל הציוד ברשת למקור זמן אחד. זה נשמע טכני ומשעמם, אבל הוא קריטי לאבטחה: בלי זמן מסונכרן, אי אפשר לשחזר את סדר האירועים בזמן חקירה. אם הנתב מראה שעה אחת והשרת שעה אחרת, לא תדעו אם הכניסה הכושלת לנתב קרתה לפני החדירה לשרת או אחריה. חוץ מזה, גם תעודות דיגיטליות ומפתחות ⁦VPN⁩ תלויים בשעון נכון.
 
-```
+<pre dir="ltr" align="left">
 R1(config)# ntp server 10.0.0.5
-```
+</pre>
 
 ### ⁦SNMP⁩ – ניטור מצב הציוד
 
@@ -200,16 +200,16 @@ R1(config)# ntp server 10.0.0.5
 
 נתב מגיע מהמפעל עם הרבה שירותים דלוקים שהיו שימושיים פעם והיום הם רק שטח תקיפה מיותר. עיקרון ההקשחה פשוט: **כל שירות שלא צריך – כבה אותו**. כל שירות פתוח הוא דלת אפשרית (זכרו את סיפור ⁦Cisco Smart Install⁩!).
 
-```
+<pre dir="ltr" align="left">
 R1(config)# no ip http server      ! unnecessary web management interface
 R1(config)# no cdp run             ! a protocol that exposes model and version to neighbors
-```
+</pre>
 
 כדי לחסוך זמן, קיימת פקודה אחת שמבצעת חלק גדול מההקשחה אוטומטית: **⁦AutoSecure⁩**. היא מכבה שירותים מסוכנים, מפעילה ניטור, ומקשיחה את הנתב בכמה שאלות פשוטות.
 
-```
+<pre dir="ltr" align="left">
 R1# auto secure
-```
+</pre>
 
 > ⚠️ **זהירות עם ⁦AutoSecure⁩**
 >
@@ -223,14 +223,14 @@ R1# auto secure
 
 > ✏️ **תרגיל ⁦1⁩ – מצאו את הבעיות בקונפיג**
 >
-> ```
+> <pre dir="ltr" align="left">
 > Router(config)# enable password cisco
 > Router(config)# line vty 0 4
 > Router(config-line)# password cisco
 > Router(config-line)# login
 > Router(config-line)# transport input telnet
 > Router(config)# banner motd # Welcome to ACME Corp! #
-> ```
+> </pre>
 >
 > **תשובה:** ⁦1.⁩ `⁦enable password⁩` (גלוי) במקום `⁦enable secret⁩`. ⁦2.⁩ הסיסמה "⁦cisco"⁩ חלשה מאוד. ⁦3.⁩ `⁦login⁩` בלי שם משתמש (צריך `⁦login local⁩` עם `⁦username⁩`). ⁦4.⁩ `⁦transport input telnet⁩` – לא מוצפן, צריך `⁦ssh⁩`. ⁦5.⁩ באנר "⁦Welcome"⁩ עם שם החברה. ⁦6.⁩ השם נשאר "⁦Router"⁩ ואין `⁦ip domain-name⁩` – כך שאי אפשר בכלל ליצור מפתחות ל-⁦SSH.⁩
 

@@ -9,10 +9,13 @@ _⁦11⁩ שעות עיוני + ⁦2⁩ מעשי · שבועות ⁦10⁩–⁦1
 
 > 📘 **לפני שמתחילים – איך תעבורה "עוברת" בנתב? (למי שאין רקע)**
 >
-> חומת אש מחליטה אילו חבילות לעבור. כדי להבין זאת צריך שני מושגים: 
+> חומת אש מחליטה אילו חבילות לעבור. כדי להבין זאת צריך שני מושגים:
+>
 > - **כיוון תעבורה** – לכל ממשק (פורט) בנתב יש שני כיוונים: **⁦in⁩** = חבילות שנכנסות לנתב דרך הפורט, **⁦out⁩** = חבילות שיוצאות מהנתב דרך הפורט. תמיד חושבים מנקודת המבט של **הנתב**, לא של המשתמש.
 > - **סינון לפי כותרת החבילה** – כל חבילה נושאת בכותרת שלה: כתובת מקור, כתובת יעד, סוג פרוטוקול (⁦TCP/UDP/ICMP)⁩, ופורט. חומת אש קוראת את הכותרת ומחליטה ⁦permit⁩ (לעבור) או ⁦deny⁩ (לחסום).
-> - **⁦Wildcard mask⁩** – דרך לומר "התאם רק חלק מהכתובת". נסביר לעומק בהמשך; רק דעו שזה ההפך ממסכת רשת רגילה: ⁦0 = "⁩בדוק את הביט הזה", ⁦1 = "⁩לא אכפת לי". **אנלוגיה:** חומת אש היא כמו שומר בכניסה לבניין עם רשימה. כל אדם (חבילה) שמגיע – השומר בודק ברשימה (⁦ACL)⁩ לפי הזהות שלו (כתובת/פורט), ומחליט להכניס או לא. הרשימה נבדקת **מלמעלה למטה**, והשומר עוצר בהתאמה הראשונה.
+> - **⁦Wildcard mask⁩** – דרך לומר "התאם רק חלק מהכתובת". נסביר לעומק בהמשך; רק דעו שזה ההפך ממסכת רשת רגילה: ⁦0 = "⁩בדוק את הביט הזה", ⁦1 = "⁩לא אכפת לי".
+>
+> **אנלוגיה:** חומת אש היא כמו שומר בכניסה לבניין עם רשימה. כל אדם (חבילה) שמגיע – השומר בודק ברשימה (⁦ACL)⁩ לפי הזהות שלו (כתובת/פורט), ומחליט להכניס או לא. הרשימה נבדקת **מלמעלה למטה**, והשומר עוצר בהתאמה הראשונה.
 
 ## ⁦4.1⁩ מהי חומת אש
 
@@ -63,18 +66,18 @@ _⁦11⁩ שעות עיוני + ⁦2⁩ מעשי · שבועות ⁦10⁩–⁦1
 
 מספרים **⁦1⁩–⁦99⁩** ו-⁦1300⁩–⁦1999.⁩ בודקת **רק את כתובת המקור**. לכן ממקמים אותה **קרוב ליעד** – אחרת היא תחסום את המקור מלהגיע גם ליעדים שלא התכוונו אליהם.
 
-```
+<pre dir="ltr" align="left">
 R1(config)# access-list 10 deny 20.20.20.0 0.0.0.255    ! Bagrut Q4d - blocking a /24 network
 R1(config)# access-list 10 permit any                 ! without this - everything is blocked (implicit deny)
 R1(config)# interface g0/1
 R1(config-if)# ip access-group 10 out
-```
+</pre>
 
 ### ⁦ACL⁩ מורחבת – מקור, יעד, פרוטוקול ופורט
 
 מספרים **⁦100⁩–⁦199⁩** ו-⁦2000⁩–⁦2699.⁩ תחביר: `⁦access-list N⁩ {⁦permit|deny⁩} ⁦PROTOCOL SRC SRC-WC [op PORT] DST DST-WC [op PORT] [established] [log]⁩`. ממקמים **קרוב למקור** – כדי לא להעביר תעבורה שתיחסם ממילא דרך כל הרשת.
 
-```
+<pre dir="ltr" align="left">
 ! IT network (172.18.1.0/24) may reach DNS and DHCP, but not web 10.0.0.190 - Bagrut part A Q3e
 R1(config)# access-list 101 deny ip 172.18.1.0 0.0.0.255 host 10.0.0.190
 R1(config)# access-list 101 permit ip any any
@@ -87,13 +90,13 @@ R1(config)# access-list 110 permit udp 192.168.1.0 0.0.0.255 host 8.8.8.8 eq 53
 R1(config)# access-list 110 deny icmp any any echo            ! block ping
 R1(config)# access-list 110 permit tcp any any established      ! replies only (ACK/RST set) - "poor man's stateful"
 R1(config)# access-list 110 deny ip any any log                 ! log what gets blocked (only at the end!)
-```
+</pre>
 
 אופרטורים: `⁦eq⁩` שווה, `⁦neq⁩`, `⁦gt⁩`, `⁦lt⁩`, `⁦range 20 21⁩`. פורטים ניתן לכתוב בשם (`⁦eq www⁩`, `⁦eq ftp⁩`, `⁦eq domain⁩`).
 
 ### ⁦ACL⁩ בשם (⁦Named)⁩ – הדרך המומלצת
 
-```
+<pre dir="ltr" align="left">
 R1(config)# ip access-list extended BLOCK-WEB
 R1(config-ext-nacl)# remark IT may not reach the web server
 R1(config-ext-nacl)# 10 deny tcp 172.18.1.0 0.0.0.255 host 10.0.0.190 eq 80
@@ -109,7 +112,7 @@ R1(config-ext-nacl)# 15 deny tcp 172.18.1.0 0.0.0.255 host 10.0.0.190 eq 443
 R1(config)# ip access-list standard BLOCK_LAN2
 R1(config-std-nacl)# deny 192.168.2.0 0.0.0.255
 R1(config-std-nacl)# permit any
-```
+</pre>
 
 ### כיוון: ⁦in⁩ או ⁦out⁩?
 
@@ -131,13 +134,13 @@ R1(config-std-nacl)# permit any
 
 ### וריפיקציה
 
-```
+<pre dir="ltr" align="left">
 R1# show access-lists                ! includes a match counter per line - the best debugging tool
 R1# show ip access-lists 101
 R1# show ip interface g0/1           ! which ACL is applied and in which direction
 R1# show running-config | section access-list
 R1# clear access-list counters
-```
+</pre>
 
 ## ⁦4.4 ACL⁩ מורכבות: מבוססות זמן, דינמיות ורפלקסיביות
 
@@ -145,20 +148,20 @@ R1# clear access-list counters
 
 מאפשרת כלל שתקף רק בזמנים מסוימים. דורש שעון נכון (⁦NTP⁩ – פרק ⁦2).⁩
 
-```
+<pre dir="ltr" align="left">
 R1(config)# time-range WORK-HOURS
 R1(config-time-range)# periodic weekdays 8:00 to 17:00
 R1(config-time-range)# exit
 R1(config)# access-list 120 permit tcp 192.168.1.0 0.0.0.255 any eq 80 time-range WORK-HOURS
 R1(config)# access-list 120 deny ip any any
 ! options: periodic Monday Wednesday 9:00 to 12:00 / absolute start 08:00 1 Jan 2026 end 17:00 31 Jan 2026
-```
+</pre>
 
 ### ⁦Dynamic ACL (Lock-and-Key)⁩
 
 המשתמש מבצע ⁦Telnet/SSH⁩ לנתב ומזדהה; רק אז נפתחת לו דלת זמנית דרך הנתב. "מנעול ומפתח".
 
-```
+<pre dir="ltr" align="left">
 R1(config)# username student password 0 pass
 R1(config)# access-list 101 permit tcp any host 10.0.0.1 eq telnet
 R1(config)# access-list 101 dynamic OPEN-DOOR timeout 15 permit ip any any
@@ -167,13 +170,13 @@ R1(config-if)# ip access-group 101 in
 R1(config)# line vty 0 4
 R1(config-line)# login local
 R1(config-line)# autocommand access-enable host timeout 5
-```
+</pre>
 
 ### ⁦Reflexive ACL⁩
 
 "מראה": כשתעבורה יוצאת החוצה, הנתב יוצר אוטומטית שורה זמנית שמאפשרת *רק את התשובה* (⁦IP/⁩פורט הפוכים) להיכנס. זה מנגנון ⁦stateful⁩ פשוט ב-⁦ACL⁩, ועדיף על `⁦established⁩` כי עובד גם ל-⁦UDP⁩ ו-⁦ICMP.⁩
 
-```
+<pre dir="ltr" align="left">
 R1(config)# ip access-list extended OUTBOUND
 R1(config-ext-nacl)# permit tcp any any reflect TCP-TRAFFIC
 R1(config-ext-nacl)# permit udp any any reflect UDP-TRAFFIC
@@ -184,13 +187,13 @@ R1(config-ext-nacl)# deny ip any any
 R1(config)# interface s0/0/0
 R1(config-if)# ip access-group OUTBOUND out
 R1(config-if)# ip access-group INBOUND in
-```
+</pre>
 
 ## ⁦4.5⁩ עצירת התקפות בעזרת ⁦ACL⁩
 
 ### ⁦Anti-spoofing⁩ – מה לחסום בכניסה מהאינטרנט (⁦ingress)⁩
 
-```
+<pre dir="ltr" align="left">
 R1(config)# ip access-list extended ANTI-SPOOF
 ! private addresses (RFC 1918) shouldn't arrive from the internet - someone is spoofing
 R1(config-ext-nacl)# deny ip 10.0.0.0 0.255.255.255 any
@@ -201,7 +204,7 @@ R1(config-ext-nacl)# deny ip 203.0.113.0 0.0.0.255 any
 R1(config-ext-nacl)# deny ip 127.0.0.0 0.255.255.255 any     ! loopback
 R1(config-ext-nacl)# deny ip 0.0.0.0 0.255.255.255 any
 R1(config-ext-nacl)# deny ip 224.0.0.0 15.255.255.255 any    ! multicast
-! ICMP - allow only what's needed, block echo from outside (anti ping-sweep & Smurf)
+! ICMP - allow only what's needed, block echo from outside (anti ping-sweep &amp; Smurf)
 R1(config-ext-nacl)# permit icmp any any echo-reply
 R1(config-ext-nacl)# permit icmp any any unreachable
 R1(config-ext-nacl)# permit icmp any any time-exceeded      ! traceroute
@@ -216,7 +219,7 @@ R1(config-ext-nacl)# permit tcp any host 203.0.113.10 eq 443
 R1(config-ext-nacl)# deny ip any any log
 R1(config)# interface g0/0
 R1(config-if)# ip access-group ANTI-SPOOF in
-```
+</pre>
 
 **⁦Egress filtering⁩** – גם ביציאה: לאפשר רק את כתובות המקור שלנו; כך הרשת שלנו לא תשמש ל-⁦DDoS⁩ עם כתובות מזויפות.
 
@@ -224,7 +227,7 @@ R1(config-if)# ip access-group ANTI-SPOOF in
 
 ⁦ACL⁩ היא ⁦stateless.⁩ **⁦CBAC⁩** (נקראת גם ⁦Classic Firewall)⁩ מוסיפה מצב: היא *בוחנת* (⁦inspect)⁩ תעבורה שיוצאת מהפנים, זוכרת את השיחה בטבלת ⁦state⁩, ופותחת **אוטומטית וזמנית** חור ב-⁦ACL⁩ הנכנסת לתשובות בלבד. היא גם מבינה פרוטוקולים עם פורטים דינמיים (⁦FTP active)⁩ ומגנה מ-⁦SYN flood (TCP intercept-like).⁩
 
-```
+<pre dir="ltr" align="left">
 ! 1. ACL that blocks everything from outside (replies opened by CBAC)
 R1(config)# ip access-list extended OUTSIDE-IN
 R1(config-ext-nacl)# permit icmp any any echo-reply
@@ -241,7 +244,7 @@ R1(config)# interface s0/0/0
 R1(config-if)# ip inspect FW out
 R1# show ip inspect sessions
 R1# show ip inspect config
-```
+</pre>
 
 ⁦CBAC⁩ היא "מבוססת ממשק": ככל שיש יותר ממשקים, ההגדרה מסתבכת. לכן סיסקו החליפה אותה ב-⁦ZPF.⁩
 
@@ -265,7 +268,7 @@ R1# show ip inspect config
 
 ### ההגדרה – ⁦C3PL (Cisco Common Classification Policy Language)⁩ בחמישה שלבים
 
-```
+<pre dir="ltr" align="left">
 ! 1. Zones
 R1(config)# zone security INSIDE
 R1(config)# zone security OUTSIDE
@@ -299,7 +302,7 @@ R1# show zone security
 R1# show zone-pair security
 R1# show policy-map type inspect zone-pair IN-OUT sessions
 R1# show class-map type inspect
-```
+</pre>
 
 > ❓ **שאלת תלמיד: "הגדרתי ⁦INSIDE⁩→⁦OUTSIDE⁩ עם ⁦inspect.⁩ איך התשובות חוזרות, הרי אין ⁦zone-pair OUTSIDE⁩→⁦INSIDE⁩?"**
 >
@@ -347,13 +350,15 @@ R1# show class-map type inspect
 
 > ✏️ **תרגיל ⁦2⁩ – מה עובר?**
 >
-> ```
+> <pre dir="ltr" align="left">
 > access-list 105 permit tcp 192.168.1.0 0.0.0.255 any eq 443
 > access-list 105 deny tcp 192.168.1.0 0.0.0.255 any eq 80
 > access-list 105 permit udp any host 8.8.8.8 eq 53
 > interface g0/0 (LAN 192.168.1.0/24)
 >  ip access-group 105 in
-> ``` עבור כל חבילה שנכנסת ב-⁦g0/0⁩ מ-⁦192.168.1.20⁩: א. ⁦HTTPS⁩ ל-⁦1.1.1.1⁩ ב. ⁦HTTP⁩ ל-⁦1.1.1.1⁩ ג. ⁦DNS⁩ ל-⁦8.8.8.8⁩ ד. ⁦DNS⁩ ל-⁦1.1.1.1⁩ ה. ⁦ping⁩ ל-⁦1.1.1.1⁩ ו. ⁦SSH⁩ לנתב עצמו
+> </pre>
+>
+> עבור כל חבילה שנכנסת ב-⁦g0/0⁩ מ-⁦192.168.1.20⁩: א. ⁦HTTPS⁩ ל-⁦1.1.1.1⁩ ב. ⁦HTTP⁩ ל-⁦1.1.1.1⁩ ג. ⁦DNS⁩ ל-⁦8.8.8.8⁩ ד. ⁦DNS⁩ ל-⁦1.1.1.1⁩ ה. ⁦ping⁩ ל-⁦1.1.1.1⁩ ו. ⁦SSH⁩ לנתב עצמו
 >
 > **תשובה:** א. עובר (שורה ⁦1).⁩ ב. נחסם (שורה ⁦2).⁩ ג. עובר (⁦3).⁩ ד. נחסם (⁦implicit deny).⁩ ה. נחסם (⁦implicit deny⁩ – אין שורה ל-⁦icmp).⁩ ו. נחסם – גם תעבורה אל הנתב עוברת דרך ⁦ACL⁩ נכנסת. תלמידים רבים חושבים שרק "מה שכתוב ⁦deny"⁩ נחסם – זו הנקודה.
 
@@ -361,7 +366,17 @@ R1# show class-map type inspect
 >
 > נתב עם ⁦G0/0⁩→רשת תלמידים ⁦10.1.0.0/16, G0/1⁩→רשת מורים ⁦10.2.0.0/16, G0/2⁩→שרתים ⁦10.3.0.0/24⁩ (שרת ציונים ⁦10.3.0.10⁩, שרת קבצים ⁦10.3.0.20).⁩ דרישות: תלמידים לא ניגשים לשרת הציונים אך כן לשרת הקבצים; מורים ניגשים להכול; תלמידים לא רשאים ל-⁦Telnet/SSH⁩ לשום מקום. כתבו ⁦ACL⁩ מורחבת בשם, ובחרו ממשק וכיוון.
 >
-> **תשובה:** ⁦ip access-list extended STUDENTS deny ip 10.1.0.0 0.0.255.255 host 10.3.0.10 deny tcp 10.1.0.0 0.0.255.255 any eq 22 deny tcp 10.1.0.0 0.0.255.255 any eq 23 permit ip any any interface g0/0 ip access-group STUDENTS in⁩מורחבת ⇒ קרוב למקור ⇒ ⁦G0/0 in.⁩ מורים לא מופיעים – ⁦permit any⁩ מכסה אותם (הם ממילא לא נכנסים ב-⁦G0/0).⁩
+> **תשובה:** מורחבת ⇒ קרוב למקור ⇒ ⁦G0/0 in.⁩ מורים לא מופיעים – ⁦permit any⁩ מכסה אותם (הם ממילא לא נכנסים ב-⁦G0/0).⁩
+>
+> <pre dir="ltr" align="left">
+> ip access-list extended STUDENTS
+>  deny ip 10.1.0.0 0.0.255.255 host 10.3.0.10
+>  deny tcp 10.1.0.0 0.0.255.255 any eq 22
+>  deny tcp 10.1.0.0 0.0.255.255 any eq 23
+>  permit ip any any
+> interface g0/0
+>  ip access-group STUDENTS in
+> </pre>
 
 > ✏️ **תרגיל ⁦4⁩ – ⁦ZPF⁩**
 >
