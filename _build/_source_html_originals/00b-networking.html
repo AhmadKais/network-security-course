@@ -26,8 +26,8 @@
 פתחו טרמינל ב-Kali ובקשו מהמחשב להציג את הכתובות של עצמו. הפקודה <code>ip addr</code> מראה כל כרטיס רשת שיש לכם:</div>
 <pre>$ <b>ip addr</b>
 2: eth0: &lt;BROADCAST,MULTICAST,UP&gt; mtu 1500 ...
-    link/ether <b>08:00:27:ab:cd:ef</b>          <span class="c"># ← זו כתובת ה-MAC שלכם (תעודת הזהות)</span>
-    inet <b>10.0.2.15</b>/24 ...                  <span class="c"># ← זו כתובת ה-IP שלכם (הכתובת למשלוח)</span></pre>
+    link/ether <b>08:00:27:ab:cd:ef</b>          <span class="c"># כתובת ה-MAC שלכם (תעודת הזהות)</span>
+    inet <b>10.0.2.15</b>/24 ...                  <span class="c"># כתובת ה-IP שלכם (הכתובת למשלוח)</span></pre>
 <p>רואים את שתי הכתובות? ה-<code>link/ether</code> היא ה-MAC, וה-<code>inet</code> היא ה-IP. הרגע גיליתם מי אתם ברשת. אגב, ה-<code>/24</code> שבסוף אומר "כמה מהכתובת שייך לרשת שלי" – על זה נדבר בתמצית לבגרות.</p>
 
 <h3>3. "האם החבר בבית?" – שולחים דפיקה ומחכים להד</h3>
@@ -70,7 +70,7 @@ graph LR
 <div class="box lab"><span class="t">מעבדה 4: לראות את ההודעה קופצת ברחבי העולם 🌍</span>
 הריצו traceroute ליעד כלשהו. כל שורה שתחזור היא נתב אחד בדרך – תחנה במסע:</div>
 <pre>$ <b>traceroute google.com</b>
- 1  10.0.2.2        0.4 ms      <span class="c"># הנתב שבבית / בכיתה</span>
+ 1  10.0.2.2        0.4 ms      <span class="c"># הנתב שבבית או בכיתה</span>
  2  62.90.x.x       8 ms        <span class="c"># הכניסה לספקית האינטרנט שלכם</span>
  3  212.143.x.x     9 ms        <span class="c"># עמוק בתוך רשת הספקית</span>
  6  108.170.x.x     22 ms       <span class="c"># כבר ברשת של גוגל</span>
@@ -87,10 +87,10 @@ graph LR
 <div class="box lab"><span class="t">מעבדה 5: הפנקסים הפנימיים של המחשב</span>
 נציץ בשני הפנקסים:</div>
 <pre>$ <b>ip route</b>
-default via <b>10.0.2.2</b> dev eth0        <span class="c"># "כל מה שלא מקומי → שלח לשער 10.0.2.2"</span>
+default via <b>10.0.2.2</b> dev eth0        <span class="c"># ברירת המחדל - השער לכל יעד מרוחק</span>
 
 $ <b>ip neigh</b>
-10.0.2.2 dev eth0 lladdr <b>52:54:00:12:35:02</b> REACHABLE   <span class="c"># טבלת ARP: IP ↔ MAC של השער</span></pre>
+10.0.2.2 dev eth0 lladdr <b>52:54:00:12:35:02</b> REACHABLE   <span class="c"># טבלת ARP - ממפה כתובת IP לכתובת MAC</span></pre>
 <p>שימו לב: כדי לדבר עם השער, המחשב חייב לדעת גם את ה-IP שלו (מטבלת הניתוב) וגם את ה-MAC שלו (מטבלת ה-ARP). שתי הכתובות עובדות יחד – וזה בדיוק המקום שבו, בפרק 6, נראה איך תוקף יכול "לשקר" בטבלת ה-ARP ולהאזין לכל התעבורה.</p>
 
 <h3>7. איך הודעה אחת "נארזת" למסע – שכבות ומעטפות</h3>
@@ -123,10 +123,10 @@ graph TB
 
 <div class="box lab"><span class="t">מעבדה 6: הצ'אט הראשון שלכם 💬</span>
 <b>תלמיד א' (השרת)</b> פותח דלת מספר 4444 ומקשיב. הדגל <code>-l</code> = listen (הקשב), <code>-v</code> = verbose (הסבר), <code>-n</code> = בלי DNS, <code>-p</code> = הפורט:</div>
-<pre><span class="c"># תלמיד א' — השרת (צריך לדעת את ה-IP של עצמו מ- ip addr)</span>
+<pre><span class="c"># תלמיד א' - השרת, מאזין ומחכה לחיבור</span>
 $ <b>nc -lvnp 4444</b>
 listening on [any] 4444 ...</pre>
-<pre><span class="c"># תלמיד ב' — הלקוח, מתחבר לכתובת של תלמיד א'</span>
+<pre><span class="c"># תלמיד ב' - הלקוח, מתחבר לכתובת של תלמיד א</span>
 $ <b>nc 10.0.2.15 4444</b>
 היי! זו ההודעה הראשונה שלי ברשת 🎉</pre>
 <p>ברגע שתלמיד ב' מקליד שורה ולוחץ Enter – היא מופיעה מיד על המסך של תלמיד א', ולהפך. בניתם ערוץ תקשורת דו-כיווני בין שני מחשבים, בשורה אחת. זה כל מה שיש מתחת ל"קסם" של כל אפליקציית צ'אט בעולם: לקוח, שרת, ודלת.</p>
@@ -139,22 +139,22 @@ $ <b>nc 10.0.2.15 4444</b>
 
 <div class="box lab"><span class="t">מעבדה 7: מה הדפדפן באמת אומר?</span>
 בטרמינל אחד נפתח "שרת" שמקשיב, ובשני נשלח אליו בקשה עם curl:</div>
-<pre><span class="c"># טרמינל 1 — שרת מדומה שמקשיב בדלת 8080</span>
+<pre><span class="c"># טרמינל 1 - שרת מדומה שמאזין בדלת 8080</span>
 $ <b>nc -lvnp 8080</b></pre>
-<pre><span class="c"># טרמינל 2 — curl "דופק" על אותה דלת</span>
+<pre><span class="c"># טרמינל 2 - הלקוח דופק על אותה דלת</span>
 $ <b>curl http://localhost:8080/hello</b></pre>
 <p>ברגע ש-curl רץ, בטרמינל של השרת יופיע הטקסט הבא – זו הבקשה, בשפת HTTP, מילה במילה:</p>
-<pre><b>GET</b> /hello HTTP/1.1          <span class="c"># "תן לי את הדף /hello"</span>
+<pre><b>GET</b> /hello HTTP/1.1          <span class="c"># בקשה - תן לי את הדף hello</span>
 Host: localhost:8080
-User-Agent: curl/8.5.0        <span class="c"># מי מבקש (כאן curl; בדפדפן יהיה Chrome/Firefox)</span>
+User-Agent: curl/8.5.0        <span class="c"># מי שולח את הבקשה (כאן curl)</span>
 Accept: */*</pre>
 <p>זהו זה. אין שום קסם. אתר אינטרנט זה בסך הכול לקוח ששולח <code>GET</code> ושרת שמחזיר טקסט. עכשיו נעשה את זה מול אתר אמיתי:</p>
 <pre>$ <b>curl -v https://example.com</b>
 &gt; GET / HTTP/2                 <span class="c"># מה שאנחנו (הלקוח) שולחים</span>
 &gt; host: example.com
-&lt; HTTP/2 200                   <span class="c"># מה שהשרת עונה: 200 = "בבקשה, הכול תקין"</span>
+&lt; HTTP/2 200                   <span class="c"># תשובת השרת - הקוד 200 פירושו הצלחה</span>
 &lt; content-type: text/html
-&lt;!doctype html&gt; ...            <span class="c"># דף ה-HTML עצמו – בדיוק מה שהדפדפן היה מצייר</span></pre>
+&lt;!doctype html&gt; ...            <span class="c"># זהו דף התוכן, כפי שהדפדפן היה מצייר</span></pre>
 <p>ה-<code>200</code> הזה הוא "קוד תשובה" מפורסם. פגשתם פעם <code>404</code>? זה פשוט השרת שאומר "לא מצאתי את הדף". עכשיו אתם יודעים מאיפה זה בא.</p>
 
 <h3>4. שתי שפות משלוח: שיחת טלפון מול גלויה (TCP ו-UDP)</h3>
