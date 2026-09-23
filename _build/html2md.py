@@ -72,7 +72,8 @@ def table(tbl):
 def codeblock(pre):
     # plain text, strip inline styling but keep text (incl. comments)
     txt=''.join(_raw_code(k) for k in pre.kids)
-    return '```\n'+txt.strip('\n')+'\n```'
+    lang='mermaid' if 'mermaid' in pre.cls() else ''
+    return '```'+lang+'\n'+txt.strip('\n')+'\n```'
 def _raw_code(n):
     if isinstance(n,Text): return n.s
     if isinstance(n,Node): return ''.join(_raw_code(k) for k in n.kids)

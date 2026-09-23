@@ -66,6 +66,8 @@ def inline_kids(node): return ''.join(inline(k) for k in node.kids)
 
 # ---------- code block ----------
 def codeblock(pre):
+    if 'mermaid' in pre.cls():
+        return r'\begin{center}\textit{'+esc('[תרשים – ראו את גרסת ה-Markdown]')+r'}\end{center}'
     segs=[]  # (style, text) style in normal/bold/comment
     def walk(n, style):
         if isinstance(n,Text): segs.append((style,n.s)); return

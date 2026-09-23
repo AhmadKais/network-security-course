@@ -10,22 +10,34 @@ _⁦11⁩ שעות עיוני + ⁦2⁩ מעשי · שבועות ⁦17⁩–⁦1
 > 📘 **לפני שמתחילים – מה קורה ב"שכבה ⁦2"⁩? (למי שאין רקע)**
 >
 > עד עכשיו דיברנו על כתובות ⁦IP⁩ (שכבה ⁦3).⁩ אבל בתוך רשת מקומית, המכשירים מדברים ביניהם דרך **מתג** לפי **כתובות ⁦MAC⁩** (שכבה ⁦2).⁩ כמה מושגים: 
-> - **מתג (⁦Switch)⁩** – מחבר את כל המחשבים ברשת המקומית. הוא לומד איזו כתובת ⁦MAC⁩ נמצאת באיזה פורט, ושומר זאת ב**טבלת ⁦MAC**.⁩
+> - **מתג (⁦Switch)⁩** – מחבר את כל המחשבים ברשת המקומית. הוא לומד איזו כתובת ⁦MAC⁩ נמצאת באיזה פורט, ושומר זאת ב**טבלת ⁦MAC⁩**.
 > - **⁦VLAN⁩** – "רשת וירטואלית". מפצל מתג פיזי אחד לכמה רשתות נפרדות ומבודדות (למשל ⁦VLAN⁩ למחלקת כספים ו-⁦VLAN⁩ לאורחים) בלי לקנות עוד מתגים.
 > - **⁦Trunk⁩** – קישור בין מתגים שנושא כמה ⁦VLAN⁩ים יחד.
 > - **⁦Broadcast⁩** – הודעה שנשלחת ל**כל** המכשירים ברשת בבת אחת ("שידור").
-
-> 🔗 **חזרה לחלק ⁦1⁩ – מה כדאי לרענן לפני הפרק**
->
-> כל התקפה בפרק הזה מנצלת מנגנון תקין שכבר למדתם בחלק ⁦1⁩ (רשתות). אם משהו לא ברור – עשר דקות שם חוסכות שעה כאן:
-> - איך מתג לומד ומציף מסגרות – [חלק ⁦1⁩, פרק ⁦1⁩](../Part_1_Networking/01_How_Networks_Work/study_material.md)
-> - מה זה ⁦ARP⁩ ועל מה המחשב שואל – [חלק ⁦1⁩, פרק ⁦1⁩](../Part_1_Networking/01_How_Networks_Work/study_material.md)
-> - ⁦VLAN, Trunk⁩, תיוג ⁦802.1Q⁩ ו-⁦Native VLAN⁩ – [חלק ⁦1⁩, פרק ⁦3⁩](../Part_1_Networking/03_Switching_and_VLANs/study_material.md)
-> - בחירת ⁦Root Bridge⁩ ב-⁦STP⁩ – [חלק ⁦1⁩, פרק ⁦4⁩](../Part_1_Networking/04_Spanning_Tree/study_material.md)
-> - ⁦DHCP (DORA)⁩ ו-⁦ip helper-address⁩ – [חלק ⁦1⁩, פרק ⁦5⁩](../Part_1_Networking/05_Routing_Inside_the_LAN/study_material.md)
->
-> **הרעיון המרכזי של הפרק:** התוקף לא שובר כלום. הוא משתמש ברשת בדיוק כפי שתוכננה – נגדכם. לכן ההגנה היא כמעט תמיד "לצמצם את האמון" שהמתג נותן כברירת מחדל.
 > - **⁦STP⁩** – פרוטוקול שמונע "לולאות" בין מתגים (נסביר בהמשך למה לולאה מפילה רשת). **למה זה קריטי לאבטחה?** אם תוקף כבר מחובר לרשת המקומית (חיבר מחשב לשקע, פרץ ל-⁦Wi-Fi)⁩, הוא פועל בשכבה ⁦2⁩ – **מתחת** לכל ההגנות של שכבה ⁦3⁩ (חומת אש, ⁦IP).⁩ לכן צריך להגן גם כאן.
+
+כדי להבין את ההתקפות בפרק, צריך קודם לראות איך מתג *אמור* לעבוד. מתג מחבר כמה מכשירים, ומנהל **טבלת ⁦MAC⁩** שממפה כל כתובת ⁦MAC⁩ לפורט שאליו היא מחוברת:
+
+```mermaid
+graph LR
+  A["PC-A · aa:aa"] --- SW["Switch"]
+  B["PC-B · bb:bb"] --- SW
+  C["PC-C · cc:cc"] --- SW
+```
+
+המתג מנהל **טבלת ⁦MAC⁩** שרושמת איזו כתובת יושבת באיזה פורט: `⁦aa:aa⁩ → ⁦Port 1⁩`, `⁦bb:bb⁩ → ⁦Port 2⁩`, `⁦cc:cc⁩ → ⁦Port 3⁩`. כש-⁦PC-A⁩ שולח מסגרת ל-⁦PC-B⁩, המתג מסתכל בטבלה, רואה ש-⁦bb:bb⁩ יושב ב-⁦Port 2⁩, ושולח את המסגרת **רק** לשם – שאר המכשירים לא רואים כלום. כך מתג שונה מ-⁦Hub⁩ ישן ששידר הכול לכולם. שתי חולשות נובעות ישירות מהמנגנון הזה, ושתיהן חוזרות בבגרות:
+
+- **הטבלה מוגבלת בגודל.** תוקף שמציף אותה באלפי כתובות ⁦MAC⁩ מזויפות (`⁦macof⁩`) גורם למתג "להתייאש" ולשדר הכול לכולם – ואז הוא רואה את תעבורת כולם. זהו **⁦MAC flooding⁩** (סעיף ⁦6.3).⁩
+- **המתג בוטח בכל תשובת ⁦ARP.⁩** תוקף יכול לשקר לגבי מי מחזיק כתובת ⁦IP⁩ מסוימת, ולגרום לתעבורה לעבור דרכו – **⁦ARP spoofing⁩**, מתקפת "אדם באמצע" (⁦MITM)⁩:
+
+```mermaid
+graph LR
+  V["Victim · 10.0.0.5"] -->|"תעבורה שאמורה ללכת לראוטר"| ATT["Attacker · מתחזה לראוטר"]
+  ATT -->|"מעביר הלאה כדי לא לעורר חשד"| GW["Gateway · 10.0.0.1"]
+  ATT -.->|"קורא ומשנה הכול בדרך"| ATT
+```
+
+הקורבן חושב שהוא מדבר עם הראוטר, אבל למעשה כל התעבורה עוברת דרך התוקף – שקורא, מקליט ואף משנה אותה, בלי שאף חומת אש תבחין. ההגנה (**⁦Dynamic ARP Inspection⁩**, סעיף ⁦6.2)⁩ בודקת כל תשובת ⁦ARP⁩ מול רשומות אמינות ומפילה זיופים.
 
 ## ⁦6.1⁩ למה שכבה ⁦2⁩ היא "הבטן הרכה"
 
@@ -39,14 +51,14 @@ _⁦11⁩ שעות עיוני + ⁦2⁩ מעשי · שבועות ⁦17⁩–⁦1
 
 | **התקפה** | **מה מנצלת** | **הגנה עיקרית** |
 | --- | --- | --- |
-| ⁦MAC table overflow (CAM flooding)⁩ | גודל מוגבל של טבלת ה-⁦MAC | **Port Security⁩** |
-| ⁦VLAN hopping (switch spoofing) | DTP⁩ – משא-ומתן ⁦trunk⁩ אוטומטי | כיבוי ⁦DTP⁩, `⁦switchport mode access⁩` |
-| ⁦VLAN hopping (double tagging) | Native VLAN | Native VLAN⁩ ייעודי ולא בשימוש |
-| ⁦STP manipulation⁩ | בחירת ⁦root bridge⁩ לפי ⁦priority | **BPDU Guard, Root Guard⁩** |
-| ⁦DHCP starvation / spoofing (rogue DHCP)⁩ | אין אימות ל-⁦DHCP | **DHCP Snooping⁩** |
-| ⁦ARP spoofing / poisoning (MITM) | ARP⁩ חסר אימות | **⁦Dynamic ARP Inspection (DAI)⁩** (מסתמך על ⁦DHCP snooping)⁩ |
+| ⁦MAC table overflow (CAM flooding)⁩ | גודל מוגבל של טבלת ה-⁦MAC⁩ | **⁦Port Security⁩** |
+| ⁦VLAN hopping (switch spoofing)⁩ | ⁦DTP⁩ – משא-ומתן ⁦trunk⁩ אוטומטי | כיבוי ⁦DTP⁩, `⁦switchport mode access⁩` |
+| ⁦VLAN hopping (double tagging)⁩ | ⁦Native VLAN⁩ | ⁦Native VLAN⁩ ייעודי ולא בשימוש |
+| ⁦STP manipulation⁩ | בחירת ⁦root bridge⁩ לפי ⁦priority⁩ | **⁦BPDU Guard, Root Guard⁩** |
+| ⁦DHCP starvation / spoofing (rogue DHCP)⁩ | אין אימות ל-⁦DHCP⁩ | **⁦DHCP Snooping⁩** |
+| ⁦ARP spoofing / poisoning (MITM)⁩ | ⁦ARP⁩ חסר אימות | **⁦Dynamic ARP Inspection (DAI)⁩** (מסתמך על ⁦DHCP snooping)⁩ |
 | ⁦MAC/IP spoofing⁩ | אין קשירת כתובת לפורט | ⁦IP Source Guard⁩ |
-| ⁦CDP reconnaissance | CDP⁩ משדר דגם, ⁦IOS, IP⁩ | `⁦no cdp enable⁩` על פורטי קצה |
+| ⁦CDP reconnaissance⁩ | ⁦CDP⁩ משדר דגם, ⁦IOS, IP⁩ | `⁦no cdp enable⁩` על פורטי קצה |
 
 ## ⁦6.3 MAC Table Overflow⁩ ו-⁦Port Security⁩
 
@@ -90,7 +102,7 @@ S1# show port-security address
 
 ### התקפה א': ⁦Switch Spoofing⁩ (ניצול ⁦DTP)⁩
 
-**⁦DTP** (Dynamic Trunking Protocol)⁩ מאפשר לשני מתגים "לסכם" אוטומטית אם הקישור ביניהם יהיה ⁦trunk.⁩ הבעיה: פורט קצה במצב ברירת מחדל (`⁦dynamic auto⁩` / `⁦dynamic desirable⁩`) יסכים להפוך ל-⁦trunk⁩ גם מול *מחשב של תוקף* שמתחזה למתג ושולח ⁦DTP.⁩ ברגע שהקישור ⁦trunk⁩ – התוקף מקבל גישה לכל ה-⁦VLAN⁩ים. זו התשובה בבגרות: "השבתת ⁦DTP⁩ מונעת ⁦VLAN hopping".⁩
+**⁦DTP⁩** (⁦Dynamic Trunking Protocol)⁩ מאפשר לשני מתגים "לסכם" אוטומטית אם הקישור ביניהם יהיה ⁦trunk.⁩ הבעיה: פורט קצה במצב ברירת מחדל (`⁦dynamic auto⁩` / `⁦dynamic desirable⁩`) יסכים להפוך ל-⁦trunk⁩ גם מול *מחשב של תוקף* שמתחזה למתג ושולח ⁦DTP.⁩ ברגע שהקישור ⁦trunk⁩ – התוקף מקבל גישה לכל ה-⁦VLAN⁩ים. זו התשובה בבגרות: "השבתת ⁦DTP⁩ מונעת ⁦VLAN hopping".⁩
 
 ### התקפה ב': ⁦Double Tagging⁩
 
@@ -120,23 +132,23 @@ S1(config-if-range)# shutdown
 
 ## ⁦6.5 STP⁩ והתקפות עליו
 
-**⁦STP** (Spanning Tree Protocol, 802.1D)⁩ מונע **לולאות** בשכבה ⁦2.⁩ למה לולאות מסוכנות? למסגרת שכבה ⁦2⁩ **אין ⁦TTL⁩** (בניגוד ל-⁦IP).⁩ אם יש לולאה פיזית בין מתגים, מסגרת ⁦broadcast⁩ תסתובב *לנצח*, תשוכפל בכל סיבוב, ותייצר **⁦broadcast storm⁩** שמשתק את הרשת תוך שניות. ⁦STP⁩ חוסם באופן לוגי פורטים כדי להשאיר מסלול יחיד, ופותח אותם אם קישור נופל.
+**⁦STP⁩** (⁦Spanning Tree Protocol, 802.1D)⁩ מונע **לולאות** בשכבה ⁦2.⁩ למה לולאות מסוכנות? למסגרת שכבה ⁦2⁩ **אין ⁦TTL⁩** (בניגוד ל-⁦IP).⁩ אם יש לולאה פיזית בין מתגים, מסגרת ⁦broadcast⁩ תסתובב *לנצח*, תשוכפל בכל סיבוב, ותייצר **⁦broadcast storm⁩** שמשתק את הרשת תוך שניות. ⁦STP⁩ חוסם באופן לוגי פורטים כדי להשאיר מסלול יחיד, ופותח אותם אם קישור נופל.
 
 > 📝 **בבגרות (שאלה ⁦3⁩ו)**
 >
-> "פרוטוקול ⁦STP⁩ מונע לולאות מיתוג במודל ה-⁦OSI⁩ בשכבה מספר ___" – **⁦2** (Data Link). "⁩הפעולה של מניעת הלולאות נעשית על ידי ___" – **⁦Port blocking⁩ (חסימת יציאות)**.
+> "פרוטוקול ⁦STP⁩ מונע לולאות מיתוג במודל ה-⁦OSI⁩ בשכבה מספר ___" – **⁦2⁩** (⁦Data Link). "⁩הפעולה של מניעת הלולאות נעשית על ידי ___" – **⁦Port blocking⁩ (חסימת יציאות)**.
 
 ### איך נבחר ה-⁦Root Bridge⁩ (נשאל בבגרות!)
 
-המתג עם **⁦Bridge ID⁩ הנמוך ביותר** הופך ל-⁦root. Bridge ID = **Priority (2⁩ בתים) + ⁦MAC address**.⁩ ברירת מחדל ⁦priority = 32768⁩ לכולם. אם ה-⁦priority⁩ שווה – מכריע ה-**⁦MAC⁩ הנמוך ביותר**.
+המתג עם **⁦Bridge ID⁩ הנמוך ביותר** הופך ל-⁦root. Bridge ID⁩ = **⁦Priority (2⁩ בתים) + ⁦MAC address⁩**. ברירת מחדל ⁦priority = 32768⁩ לכולם. אם ה-⁦priority⁩ שווה – מכריע ה-**⁦MAC⁩ הנמוך ביותר**.
 
 > 📝 **בבגרות (שאלה ⁦3⁩ז)**
 >
-> ⁦4⁩ מתגים, ⁦priority⁩ ברירת מחדל זהה. ⁦MAC⁩ים: ⁦SW1=0C:0E:15:22:05:97, SW2=0C:E0:38:00:36:75, SW3=0C:E0:18:A1:B3:19, SW4=0C:0E:15:1A:3C:9D.⁩ מי ה-⁦root⁩? משווים בית-בית: ⁦SW1⁩ ו-⁦SW4⁩ מתחילים ב-⁦0C:0E:15⁩, השאר ב-⁦0C:E0.⁩ הבית הרביעי: ⁦SW1=22, SW4=1A. 1A < 22⁩ ⇒ **⁦SW4⁩ הוא ה-⁦root bridge**.⁩ הסיבה: "כי כתובת ה-⁦MAC⁩ שלו היא הנמוכה ביותר" (וה-⁦priority⁩ זהה).
+> ⁦4⁩ מתגים, ⁦priority⁩ ברירת מחדל זהה. ⁦MAC⁩ים: ⁦SW1=0C:0E:15:22:05:97, SW2=0C:E0:38:00:36:75, SW3=0C:E0:18:A1:B3:19, SW4=0C:0E:15:1A:3C:9D.⁩ מי ה-⁦root⁩? משווים בית-בית: ⁦SW1⁩ ו-⁦SW4⁩ מתחילים ב-⁦0C:0E:15⁩, השאר ב-⁦0C:E0.⁩ הבית הרביעי: ⁦SW1=22, SW4=1A. 1A⁩ < ⁦22⁩ ⇒ **⁦SW4⁩ הוא ה-⁦root bridge⁩**. הסיבה: "כי כתובת ה-⁦MAC⁩ שלו היא הנמוכה ביותר" (וה-⁦priority⁩ זהה).
 
 ### ⁦OSPF DR/BDR⁩ – רקע לשאלה ⁦2⁩ח (שכבה ⁦3⁩, אך נשאל)
 
-בבחירת ⁦DR/BDR⁩ ב-⁦OSPF⁩: קודם **⁦priority⁩ הגבוה ביותר**, ואם שווה – **⁦Router-ID⁩ הגבוה ביותר**. בשאלת הבגרות ⁦R1(pri 2, RID 1.1.1.1), R2(pri 1), R3(pri 2, RID 3.3.3.3), R4(pri 1).⁩ בין בעלי ⁦priority 2: R3 (RID 3.3.3.3) > R1⁩ ⇒ **⁦R3 = DR**.⁩ ה-⁦BDR⁩ הוא הבא: בין ⁦priority 2, R1⁩; אבל אחרי ⁦DR⁩ משווים את השאר – ⁦R1 (RID 1.1.1.1)⁩ הוא הגבוה מבין הנותרים בעלי ⁦priority 2.⁩ תשובה: **⁦R3 = DR, R1 = BDR**.⁩ (שימו לב: ההיגיון הפוך מ-⁦STP⁩ – שם נמוך מנצח, כאן גבוה.)
+בבחירת ⁦DR/BDR⁩ ב-⁦OSPF⁩: קודם **⁦priority⁩ הגבוה ביותר**, ואם שווה – **⁦Router-ID⁩ הגבוה ביותר**. בשאלת הבגרות ⁦R1(pri 2, RID 1.1.1.1), R2(pri 1), R3(pri 2, RID 3.3.3.3), R4(pri 1).⁩ בין בעלי ⁦priority 2: R3 (RID 3.3.3.3) > R1⁩ ⇒ **⁦R3 = DR⁩**. ה-⁦BDR⁩ הוא הבא: בין ⁦priority 2, R1⁩; אבל אחרי ⁦DR⁩ משווים את השאר – ⁦R1 (RID 1.1.1.1)⁩ הוא הגבוה מבין הנותרים בעלי ⁦priority 2.⁩ תשובה: **⁦R3 = DR, R1 = BDR⁩**. (שימו לב: ההיגיון הפוך מ-⁦STP⁩ – שם נמוך מנצח, כאן גבוה.)
 
 ### הגנות ⁦STP⁩
 
@@ -162,11 +174,11 @@ S1# show spanning-tree
 
 ## ⁦6.6 DHCP⁩ – ⁦Starvation, Spoofing⁩ ו-⁦DHCP Snooping⁩
 
-**⁦DHCP starvation⁩:** תוקף מבקש את כל הכתובות ב-⁦pool⁩ (עם ⁦MAC⁩ים מזויפים) – משתמשים אמיתיים לא מקבלים כתובת (⁦DoS). **DHCP spoofing (rogue server)⁩:** התוקף מקים שרת ⁦DHCP⁩ משלו שעונה מהר יותר, ומחלק לקורבנות **⁦default gateway⁩ = הכתובת שלו** ו-**⁦DNS⁩ שלו** ⇒ ⁦MITM⁩ על כל התעבורה.
+**⁦DHCP starvation⁩:** תוקף מבקש את כל הכתובות ב-⁦pool⁩ (עם ⁦MAC⁩ים מזויפים) – משתמשים אמיתיים לא מקבלים כתובת (⁦DoS).⁩ **⁦DHCP spoofing (rogue server)⁩:** התוקף מקים שרת ⁦DHCP⁩ משלו שעונה מהר יותר, ומחלק לקורבנות **⁦default gateway⁩ = הכתובת שלו** ו-**⁦DNS⁩ שלו** ⇒ ⁦MITM⁩ על כל התעבורה.
 
 ### ⁦DHCP Snooping⁩ – ההגנה
 
-המתג מסמן פורטים כ-**⁦trusted⁩** (לכיוון שרת ה-⁦DHCP⁩ הלגיטימי / ⁦uplink)⁩ או **⁦untrusted⁩** (פורטי קצה, ברירת מחדל). הודעות שרת (⁦OFFER, ACK)⁩ מפורט ⁦untrusted⁩ – נחסמות. המתג בונה **⁦DHCP Snooping Binding Table** (MAC⁩↔⁦IP⁩↔פורט↔⁦VLAN)⁩ – בסיס ל-⁦DAI⁩ ו-⁦IP Source Guard.⁩
+המתג מסמן פורטים כ-**⁦trusted⁩** (לכיוון שרת ה-⁦DHCP⁩ הלגיטימי / ⁦uplink)⁩ או **⁦untrusted⁩** (פורטי קצה, ברירת מחדל). הודעות שרת (⁦OFFER, ACK)⁩ מפורט ⁦untrusted⁩ – נחסמות. המתג בונה **⁦DHCP Snooping Binding Table⁩** (⁦MAC⁩↔⁦IP⁩↔פורט↔⁦VLAN)⁩ – בסיס ל-⁦DAI⁩ ו-⁦IP Source Guard.⁩
 
 ```
 S1(config)# ip dhcp snooping
@@ -178,21 +190,9 @@ S1(config-if-range)# ip dhcp snooping limit rate 6   ! נגד starvation
 S1# show ip dhcp snooping binding
 ```
 
-### 📊 תרשים: ⁦DHCP Snooping⁩ — החלטה לפי אמון הפורט (הגנה)
-
-```mermaid
-flowchart TD
-    MSG["A DHCP server message<br/>(OFFER / ACK) arrives on a port"] --> Q{"Is the port TRUSTED?<br/>(uplink to the real server)"}
-    Q -->|yes| FWD["Forward - legitimate server"]
-    Q -->|no| DROP["DROP - a rogue server<br/>is not allowed to answer"]
-    FWD --> BIND["Add to the Binding Table<br/>MAC + IP + port + VLAN"]
-```
-
-_רק פורט מהימן רשאי לשלוח תשובות ⁦DHCP.⁩ הטבלה שנבנית היא הבסיס ל-⁦DAI⁩ ול-⁦IP Source Guard.⁩_
-
 ## ⁦6.7 ARP Spoofing⁩ ו-⁦Dynamic ARP Inspection (DAI)⁩
 
-**⁦ARP⁩** ממפה ⁦IP⁩ ל-⁦MAC⁩, וחסר כל אימות: כל מחשב יכול לשלוח "⁦Gratuitous ARP"⁩ שאומר "אני ה-⁦gateway"⁩ – והקורבנות יעדכנו את הטבלה שלהם ויתחילו לשלוח את התעבורה לתוקף (⁦MITM). **DAI⁩** בודק כל הודעת ⁦ARP⁩ מול טבלת ה-⁦DHCP Snooping⁩: אם ה-⁦IP⁩↔⁦MAC⁩ לא תואם לרשומה – ההודעה נזרקת.
+**⁦ARP⁩** ממפה ⁦IP⁩ ל-⁦MAC⁩, וחסר כל אימות: כל מחשב יכול לשלוח "⁦Gratuitous ARP"⁩ שאומר "אני ה-⁦gateway"⁩ – והקורבנות יעדכנו את הטבלה שלהם ויתחילו לשלוח את התעבורה לתוקף (⁦MITM).⁩ **⁦DAI⁩** בודק כל הודעת ⁦ARP⁩ מול טבלת ה-⁦DHCP Snooping⁩: אם ה-⁦IP⁩↔⁦MAC⁩ לא תואם לרשומה – ההודעה נזרקת.
 
 ```
 S1(config)# ip arp inspection vlan 10,20
@@ -205,17 +205,6 @@ S1# show ip arp inspection
 ```
 
 המשלים: **⁦IP Source Guard⁩** – מוודא שכתובת ה-⁦IP⁩ במסגרת תואמת לפורט לפי טבלת ה-⁦snooping⁩ (נגד ⁦IP spoofing).⁩
-
-### 📊 תרשים: ⁦Dynamic ARP Inspection⁩ — אימות מול טבלת ה-⁦Binding⁩ (הגנה)
-
-```mermaid
-flowchart TD
-    ARP["An ARP message arrives"] --> Q{"Does IP-to-MAC match<br/>the DHCP Snooping table?"}
-    Q -->|yes| OK["Allow - genuine"]
-    Q -->|no| DROP["DROP - forged ARP<br/>(this is what stops ARP spoofing)"]
-```
-
-_⁦DAI⁩ מוסיף ל-⁦ARP⁩ את האימות שחסר לו מלכתחילה: הודעה שלא תואמת לטבלה נזרקת._
 
 ## ⁦6.8 Storm Control⁩
 
@@ -230,7 +219,7 @@ S1# show storm-control
 
 ## ⁦6.9 SPAN⁩ – שיקוף פורטים (הבסיס ל-⁦IDS)⁩
 
-**⁦SPAN** (Switched Port Analyzer, "port mirroring")⁩ מעתיק את כל התעבורה מפורט/⁦VLAN⁩ מקור לפורט יעד – שאליו מחובר ⁦Wireshark⁩ או **⁦IDS**.⁩ זה החיבור לפרק ⁦5: IDS "⁩מחוץ לנתיב" מקבל את התעבורה דווקא דרך ⁦SPAN. **RSPAN⁩** – שיקוף בין מתגים דרך ⁦VLAN⁩ ייעודי; **⁦ERSPAN⁩** – מעל ⁦IP (GRE).⁩
+**⁦SPAN⁩** (⁦Switched Port Analyzer, "port mirroring")⁩ מעתיק את כל התעבורה מפורט/⁦VLAN⁩ מקור לפורט יעד – שאליו מחובר ⁦Wireshark⁩ או **⁦IDS⁩**. זה החיבור לפרק ⁦5: IDS "⁩מחוץ לנתיב" מקבל את התעבורה דווקא דרך ⁦SPAN.⁩ **⁦RSPAN⁩** – שיקוף בין מתגים דרך ⁦VLAN⁩ ייעודי; **⁦ERSPAN⁩** – מעל ⁦IP (GRE).⁩
 
 ```
 S1(config)# monitor session 1 source interface f0/1 - 10 both
@@ -244,19 +233,19 @@ S1# show monitor session 1
 
 ## ⁦6.10 NAC⁩ ו-⁦802.1X⁩
 
-**⁦NAC** (Network Access Control)⁩ – "בקרת בריאות": לפני שמחשב מקבל גישה מלאה, בודקים שהוא עומד בתנאים (אנטי-וירוס מעודכן, ⁦patch⁩, אין תוכנות אסורות). מחשב שנכשל מועבר ל-⁦VLAN "⁩הסגר" (⁦quarantine)⁩ לתיקון. הבסיס הטכני: **⁦802.1X⁩** (פרק ⁦3)⁩ – המתג/⁦AP⁩ חוסם את הפורט עד אימות מול ⁦RADIUS.⁩ שילוב: ⁦802.1X⁩ מאמת *מי*, ⁦NAC⁩ בודק *באיזה מצב* המכשיר.
+**⁦NAC⁩** (⁦Network Access Control)⁩ – "בקרת בריאות": לפני שמחשב מקבל גישה מלאה, בודקים שהוא עומד בתנאים (אנטי-וירוס מעודכן, ⁦patch⁩, אין תוכנות אסורות). מחשב שנכשל מועבר ל-⁦VLAN "⁩הסגר" (⁦quarantine)⁩ לתיקון. הבסיס הטכני: **⁦802.1X⁩** (פרק ⁦3)⁩ – המתג/⁦AP⁩ חוסם את הפורט עד אימות מול ⁦RADIUS.⁩ שילוב: ⁦802.1X⁩ מאמת *מי*, ⁦NAC⁩ בודק *באיזה מצב* המכשיר.
 
 ## ⁦6.11⁩ מערכות קצה: ⁦IronPort, CSA⁩, ומיילים/אתרים
 
-- **⁦Cisco IronPort⁩** – משפחת מכשירים ל**אבטחת תוכן** בקצה: **⁦ESA** (Email Security Appliance)⁩ – סינון ⁦spam, phishing⁩ ווירוסים במייל; **⁦WSA** (Web Security Appliance)⁩ – ⁦proxy⁩ שמסנן אתרים זדוניים, ⁦URL filtering⁩, בדיקת הורדות. סיסקו רכשה את ⁦IronPort⁩ ב-⁦2007.⁩
-- **⁦CSA** (Cisco Security Agent)⁩ – ⁦HIPS⁩ על התחנה (פרק ⁦5).⁩
+- **⁦Cisco IronPort⁩** – משפחת מכשירים ל**אבטחת תוכן** בקצה: **⁦ESA⁩** (⁦Email Security Appliance)⁩ – סינון ⁦spam, phishing⁩ ווירוסים במייל; **⁦WSA⁩** (⁦Web Security Appliance)⁩ – ⁦proxy⁩ שמסנן אתרים זדוניים, ⁦URL filtering⁩, בדיקת הורדות. סיסקו רכשה את ⁦IronPort⁩ ב-⁦2007.⁩
+- **⁦CSA⁩** (⁦Cisco Security Agent)⁩ – ⁦HIPS⁩ על התחנה (פרק ⁦5).⁩
 - היום התחום נקרא **⁦Secure Email / Secure Web / SWG / CASB⁩**, ולרוב בענן (⁦Cisco Umbrella).⁩
 
 ## ⁦6.12⁩ אבטחת ⁦VoIP⁩ ו-⁦SAN⁩
 
 ### ⁦VoIP⁩ (טלפוניה על ⁦IP)⁩
 
-איומים: האזנה לשיחות (⁦sniffing), **toll fraud⁩** (שימוש לא מורשה בקווים לחיוב יקר), התחזות (⁦caller-ID spoofing), DoS⁩ על ה-⁦PBX, SPIT (spam⁩ קולי). הגנות: **⁦Voice VLAN⁩ נפרד** (הפרדה מתעבורת הנתונים), הצפנה (**⁦SRTP⁩** למדיה, **⁦TLS/SIP-TLS⁩** לאיתות), אימות מכשירי טלפון, ⁦ACL⁩ בין ⁦voice⁩ ל-⁦data.⁩
+איומים: האזנה לשיחות (⁦sniffing)⁩, **⁦toll fraud⁩** (שימוש לא מורשה בקווים לחיוב יקר), התחזות (⁦caller-ID spoofing), DoS⁩ על ה-⁦PBX, SPIT (spam⁩ קולי). הגנות: **⁦Voice VLAN⁩ נפרד** (הפרדה מתעבורת הנתונים), הצפנה (**⁦SRTP⁩** למדיה, **⁦TLS/SIP-TLS⁩** לאיתות), אימות מכשירי טלפון, ⁦ACL⁩ בין ⁦voice⁩ ל-⁦data.⁩
 
 ```
 S1(config-if)# switchport access vlan 10        ! נתונים
@@ -265,7 +254,7 @@ S1(config-if)# switchport voice vlan 20       ! קול – מתויג בנפרד
 
 ### ⁦SAN⁩ (רשת אחסון)
 
-⁦SAN⁩ מחברת שרתים לאחסון בלוקים (⁦Fibre Channel / iSCSI).⁩ איומים: גישה לא מורשית ל-⁦LUN, WWN spoofing.⁩ הגנות: **⁦Zoning⁩** (מי מדבר עם מי ב-⁦fabric⁩ – מקביל ל-⁦VLAN), **LUN masking⁩** (איזה שרת רואה איזה נפח), **⁦VSAN⁩** (בידוד לוגי), אימות (⁦FC-SP / CHAP⁩ ל-⁦iSCSI)⁩, והצפנת נתונים במנוחה. חשיבות: כל הנתונים הקריטיים של הארגון נמצאים שם.
+⁦SAN⁩ מחברת שרתים לאחסון בלוקים (⁦Fibre Channel / iSCSI).⁩ איומים: גישה לא מורשית ל-⁦LUN, WWN spoofing.⁩ הגנות: **⁦Zoning⁩** (מי מדבר עם מי ב-⁦fabric⁩ – מקביל ל-⁦VLAN)⁩, **⁦LUN masking⁩** (איזה שרת רואה איזה נפח), **⁦VSAN⁩** (בידוד לוגי), אימות (⁦FC-SP / CHAP⁩ ל-⁦iSCSI)⁩, והצפנת נתונים במנוחה. חשיבות: כל הנתונים הקריטיים של הארגון נמצאים שם.
 
 ## ⁦6.13 Wi-Fi⁩ ו-⁦Evil Twin⁩
 
@@ -301,7 +290,7 @@ S1(config-if)# switchport voice vlan 20       ! קול – מתויג בנפרד
 
 > ✏️ **תרגיל ⁦2⁩ – מי ה-⁦root⁩?**
 >
-> ⁦4⁩ מתגים, ⁦priority: SW1=32768, SW2=32768, SW3=**4096**, SW4=32768. MAC⁩ים עולים בסדר ⁦SW1⁩
+> ⁦4⁩ מתגים, ⁦priority: SW1=32768, SW2=32768, SW3⁩=**⁦4096⁩**, ⁦SW4=32768. MAC⁩ים עולים בסדר ⁦SW1⁩
 >
 > **תשובה:** ⁦SW3⁩ – ה-⁦priority⁩ נבדק ראשון והוא הנמוך (⁦4096).⁩ ה-⁦MAC⁩ נבדק רק בתיקו. לו כולם היו ⁦32768⁩ – ⁦SW1 (MAC⁩ נמוך).
 
@@ -317,58 +306,6 @@ S1(config-if)# switchport voice vlan 20       ! קול – מתויג בנפרד
 >
 > **תשובה:** דוגמה: על פורטי הקצה: ⁦mode access, access vlan 10, nonegotiate, port-security max 2 sticky violation restrict, portfast, bpduguard enable, ip dhcp snooping (untrusted, limit rate), no cdp enable.⁩ על ה-⁦uplink: mode trunk, nonegotiate, native vlan 999, allowed vlan list, dhcp snooping trust, arp inspection trust.⁩ גלובלי: ⁦ip dhcp snooping + vlan, ip arp inspection vlan, portfast bpduguard default.⁩ כיבוי פורטים לא בשימוש ל-⁦vlan 999 + shutdown.⁩
 
-## ❓ חידון – בדקו את עצמכם
-
-**⁦1.⁩** מהי המטרה של התקפת ⁦MAC Flooding⁩?
-- א. להפיל את המתג · ב. למלא את טבלת ה-⁦MAC⁩ כדי שהמתג יציף הכול והתוקף יראה את תעבורת כולם · ג. לגנוב סיסמאות · ד. לשנות ⁦VLAN⁩
-
-<details><summary>תשובה</summary>**ב** – כשהטבלה מלאה, המתג מציף כל מסגרת לכל הפורטים (כמו ⁦Hub)⁩, והתוקף רואה תעבורה שלא מיועדת לו. ההגנה: ⁦Port Security.⁩</details>
-
-**⁦2.⁩** איזו הגנה מסכלת ⁦VLAN Hopping⁩ מסוג ⁦Switch Spoofing⁩?
-- א. ⁦DHCP Snooping⁩ · ב. `⁦switchport nonegotiate⁩` (כיבוי ⁦DTP)⁩ · ג. ⁦Storm Control⁩ · ד. ⁦Root Guard⁩
-
-<details><summary>תשובה</summary>**ב** – כיבוי ⁦DTP⁩ מונע מהתוקף "לשכנע" את הפורט להפוך ל-⁦Trunk.⁩ יחד עם `⁦switchport mode access⁩` מפורש.</details>
-
-**⁦3.⁩** מדוע בוחרים ⁦Native VLAN⁩ שהוא ⁦VLAN⁩ ריק (למשל ⁦999)⁩?
-- א. לחסוך כתובות · ב. כי מסגרת לא מתויגת שנוחתת שם לא מגיעה לשום מקום – מסכל ⁦Double Tagging⁩ · ג. כדי להאיץ את הרשת · ד. חובה ב-⁦802.1Q⁩
-
-<details><summary>תשובה</summary>**ב** – ⁦Double Tagging⁩ מנצל את זה שה-⁦Native⁩ עובר בלי תווית. ⁦Native⁩ ריק משאיר לתוקף מקום ריק.</details>
-
-**⁦4.⁩** במצב ⁦Port Security⁩ ברירת המחדל (`⁦shutdown⁩`), מה קורה בהפרה?
-- א. המסגרות נזרקות בשקט · ב. מתקבלת התראה בלבד · ג. הפורט עובר ל-⁦err-disabled⁩ ומכובה · ד. המתג מאותחל
-
-<details><summary>תשובה</summary>**ג** – והחזרה: `⁦shutdown⁩` ואז `⁦no shutdown⁩`, אחרי תיקון הסיבה.</details>
-
-**⁦5.⁩** לפי מה נבחר ה-⁦Root Bridge⁩ ב-⁦STP⁩?
-- א. המתג המהיר ביותר · ב. ה-⁦Bridge ID⁩ הנמוך (עדיפות ואז ⁦MAC)⁩ · ג. המתג עם הכי הרבה פורטים · ד. הראשון שהודלק
-
-<details><summary>תשובה</summary>**ב** – ובלי הגדרת עדיפות, המתג עם ה-⁦MAC⁩ הנמוך (לרוב הישן) מנצח. לכן קובעים ידנית.</details>
-
-**⁦6.** BPDU Guard⁩ מגן על:
-- א. פורטי ⁦Trunk⁩ · ב. פורטי קצה (⁦Access⁩ עם ⁦PortFast)⁩ שמקבלים ⁦BPDU⁩ – סימן שחובר מתג/תוקף · ג. שרת ה-⁦DHCP⁩ · ד. ה-⁦uplink⁩
-
-<details><summary>תשובה</summary>**ב** – מחשב לא אמור לשלוח ⁦BPDU.⁩ אם ⁦BPDU⁩ מגיע לפורט קצה → ⁦err-disable⁩ מיידי.</details>
-
-**⁦7.⁩** מהי מתקפת ⁦Rogue DHCP⁩, ומה הסכנה העיקרית?
-- א. דלדול כתובות בלבד · ב. שרת ⁦DHCP⁩ מזויף שמחלק לקורבנות ⁦default gateway⁩ ו-⁦DNS⁩ שלו – ⁦MITM⁩ על כל התעבורה · ג. שינוי ⁦VLAN⁩ · ד. הצפת שידורים
-
-<details><summary>תשובה</summary>**ב** – הלקוח מקבל את ה-⁦Offer⁩ הראשון. אם התוקף עונה מהר, הוא הופך ל"שער" של הקורבן. ההגנה: ⁦DHCP Snooping (trust).⁩</details>
-
-**⁦8.⁩** על איזו טבלה מסתמך ⁦Dynamic ARP Inspection⁩?
-- א. טבלת ה-⁦MAC⁩ · ב. טבלת הניתוב · ג. טבלת ה-⁦DHCP Snooping Binding⁩ · ד. טבלת ה-⁦ARP⁩ של הנתב
-
-<details><summary>תשובה</summary>**ג** – ⁦DAI⁩ בודק כל הודעת ⁦ARP⁩ מול ה-⁦Binding Table (IP⁩↔⁦MAC⁩↔פורט). לכן חייבים להפעיל ⁦DHCP Snooping⁩ קודם.</details>
-
-**⁦9.⁩** מדוע ⁦ARP⁩ פגיע לזיוף מלכתחילה?
-- א. הוא איטי · ב. הוא לא מוצפן · ג. אין בו שום אימות – כל מכשיר יכול לענות על כל שאלה, גם בשקר · ד. הוא עובד רק ב-⁦IPv4⁩
-
-<details><summary>תשובה</summary>**ג** – זו התכונה מפרק ⁦1.⁩ תוקף עונה "אני השער" והקורבן מאמין. ⁦DAI⁩ מוסיף את האימות שחסר.</details>
-
-**⁦10.⁩** מהי מתקפת ⁦Evil Twin⁩?
-- א. שני מתגים עם אותו ⁦IP⁩ · ב. נקודת גישה אלחוטית זדונית עם ⁦SSID⁩ זהה לחוקית, בעוצמה חזקה יותר, ל-⁦MITM⁩ · ג. שני שרתי ⁦DHCP⁩ · ד. לולאת ⁦STP⁩
-
-<details><summary>תשובה</summary>**ב** – מכשירים מתחברים אוטומטית ל-⁦SSID⁩ מוכר. הגנה: ⁦WPA2/WPA3-Enterprise⁩ עם ⁦802.1X⁩ (אימות הדדי) ו-⁦WIPS.⁩</details>
-
 ## ⁦6.16⁩ שאלות בסגנון בגרות
 
 > 📝 **שאלה ⁦1⁩**
@@ -381,7 +318,7 @@ S1(config-if)# switchport voice vlan 20       ! קול – מתויג בנפרד
 >
 > איזו התקפת שכבה ⁦2⁩ אפשר לסכל על ידי השבתת פרוטוקול ⁦DTP⁩? ⁦1. DHCP spoofing 2. ARP spoofing 3. VLAN hopping 4. ARP poisoning⁩
 >
-> **תשובה:** **⁦3. VLAN hopping** (switch spoofing).⁩
+> **תשובה:** **⁦3. VLAN hopping⁩** (⁦switch spoofing).⁩
 
 > 📝 **שאלה ⁦3⁩**
 >
@@ -409,11 +346,11 @@ S1(config-if)# switchport voice vlan 20       ! קול – מתויג בנפרד
 
 ## ⁦6.17⁩ מעבדה (⁦2⁩ שעות) – הקשחת מתג ב-⁦Packet Tracer⁩
 
-⁦1. Port security: 2⁩ מחשבים על פורט אחד (דרך ⁦hub/⁩מתג קטן), ⁦maximum 1, violation shutdown.⁩ הוסיפו מחשב שני ⇒ ⁦err-disabled.⁩ שחזרו עם ⁦shut/no shut⁩ והעלו ל-⁦maximum 2.⁩
-⁦2. BPDU Guard⁩: הגדירו ⁦portfast+bpduguard⁩ על פורט קצה; חברו אליו מתג נוסף ⇒ ⁦err-disabled.⁩
-⁦3. Root bridge: 3⁩ מתגים בטבעת; הגדירו את המרכזי כ-`⁦root primary⁩`; `⁦show spanning-tree⁩` – ודאו מי ⁦root⁩ ואיזה פורט ⁦blocking.⁩
-⁦4. DTP⁩: הגדירו ⁦trunk⁩ מפורש + ⁦nonegotiate⁩ בין המתגים; פורטי קצה ⁦access + nonegotiate.⁩
-⁦5. DHCP snooping⁩: הפעילו, סמנו את פורט השרת ⁦trusted⁩; הוסיפו "שרת ⁦DHCP"⁩ תוקף על פורט ⁦untrusted⁩ וראו שההצעות שלו נחסמות.
+1. ⁦Port security: 2⁩ מחשבים על פורט אחד (דרך ⁦hub/⁩מתג קטן), ⁦maximum 1, violation shutdown.⁩ הוסיפו מחשב שני ⇒ ⁦err-disabled.⁩ שחזרו עם ⁦shut/no shut⁩ והעלו ל-⁦maximum 2.⁩
+2. ⁦BPDU Guard⁩: הגדירו ⁦portfast+bpduguard⁩ על פורט קצה; חברו אליו מתג נוסף ⇒ ⁦err-disabled.⁩
+3. ⁦Root bridge: 3⁩ מתגים בטבעת; הגדירו את המרכזי כ-`⁦root primary⁩`; `⁦show spanning-tree⁩` – ודאו מי ⁦root⁩ ואיזה פורט ⁦blocking.⁩
+4. ⁦DTP⁩: הגדירו ⁦trunk⁩ מפורש + ⁦nonegotiate⁩ בין המתגים; פורטי קצה ⁦access + nonegotiate.⁩
+5. ⁦DHCP snooping⁩: הפעילו, סמנו את פורט השרת ⁦trusted⁩; הוסיפו "שרת ⁦DHCP"⁩ תוקף על פורט ⁦untrusted⁩ וראו שההצעות שלו נחסמות.
 
 ## בנק שאלות שתלמידים שואלים – ותשובות מוכנות
 
@@ -441,7 +378,7 @@ S1(config-if)# switchport voice vlan 20       ! קול – מתויג בנפרד
 ת: נקודת גישה זדונית עם **אותו שם רשת (⁦SSID)⁩** כמו החוקית, בעוצמה חזקה יותר – מכשירים מתחברים אליה אוטומטית והתוקף מבצע ⁦MITM.⁩ הגנה: ⁦WPA2/WPA3-Enterprise⁩ עם ⁦802.1X⁩ (אימות הדדי – המכשיר מוודא שהשרת אמיתי) ו-⁦WIPS.⁩
 
 **ש: "מה ההבדל בין ⁦port security⁩ ל-⁦802.1X⁩?"**  
-ת: **⁦port security⁩** מגביל **כמה/אילו כתובות ⁦MAC⁩** מותרות בפורט (הגנה מפני ⁦MAC flooding). **802.1X⁩** דורש **אימות משתמש/מכשיר** מלא מול שרת ⁦RADIUS⁩ לפני שנותנים גישה. ⁦802.1X⁩ חזק בהרבה אך דורש תשתית שרת.
+ת: **⁦port security⁩** מגביל **כמה/אילו כתובות ⁦MAC⁩** מותרות בפורט (הגנה מפני ⁦MAC flooding).⁩ **⁦802.1X⁩** דורש **אימות משתמש/מכשיר** מלא מול שרת ⁦RADIUS⁩ לפני שנותנים גישה. ⁦802.1X⁩ חזק בהרבה אך דורש תשתית שרת.
 
 ## מילון מונחים – הגדרות
 
