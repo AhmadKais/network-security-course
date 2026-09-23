@@ -145,7 +145,7 @@ def lst(node,env):
     out.append(r'\end{'+env+'}')
     return '\n'.join(out)
 
-BOXENV={'faq':'faqbox','mistake':'mistakebox','tip':'tipbox','exam':'exambox','def':'defbox','story':'storybox','ex':'exbox'}
+BOXENV={'faq':'faqbox','mistake':'mistakebox','tip':'tipbox','exam':'exambox','def':'defbox','story':'storybox','ex':'exbox','lab':'tipbox'}
 def box(div):
     classes=div.cls()
     env=None
