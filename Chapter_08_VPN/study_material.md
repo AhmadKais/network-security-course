@@ -43,13 +43,13 @@ _⁦10⁩ שעות עיוני + ⁦3⁩ מעשי · שבועות ⁦24⁩–⁦2
 **⁦GRE⁩** (⁦Generic Routing Encapsulation)⁩ הוא פרוטוקול מנהור של סיסקו שעוטף חבילה בתוך חבילת ⁦IP⁩ חדשה. יתרון: יכול לשאת **⁦multicast⁩ ו-⁦broadcast⁩** (ולכן פרוטוקולי ניתוב כמו ⁦OSPF/EIGRP⁩ רצים דרכו) וגם תעבורה שאינה ⁦IP.⁩ חיסרון קריטי: **⁦GRE⁩ אינו מצפין כלום** – הוא רק עוטף. לכן בפועל: **⁦GRE over IPsec⁩** – ⁦GRE⁩ נותן את הגמישות (⁦multicast, routing), IPsec⁩ נותן את ההצפנה.
 
 ```
-! מנהרת GRE בין R1 ל-R2
+! GRE tunnel between R1 and R2
 R1(config)# interface tunnel 0
-R1(config-if)# ip address 172.16.1.1 255.255.255.252    ! כתובת פנימית של המנהרה
-R1(config-if)# tunnel source 200.1.1.1                   ! ה-IP הציבורי המקומי
-R1(config-if)# tunnel destination 200.2.2.2              ! ה-IP הציבורי המרוחק
-R1(config-if)# tunnel mode gre ip                            ! ברירת מחדל
-! עכשיו מנתבים דרך המנהרה
+R1(config-if)# ip address 172.16.1.1 255.255.255.252    ! the tunnel's internal address
+R1(config-if)# tunnel source 200.1.1.1                   ! local public IP
+R1(config-if)# tunnel destination 200.2.2.2              ! remote public IP
+R1(config-if)# tunnel mode gre ip                            ! default
+! now route through the tunnel
 R1(config)# ip route 10.2.2.0 255.255.255.0 172.16.1.2
 R1# show ip interface brief | include Tunnel
 R1# show interfaces tunnel 0
@@ -106,10 +106,10 @@ R1# show interfaces tunnel 0
 ## ⁦8.6⁩ הגדרת ⁦Site-to-Site IPsec VPN⁩ ב-⁦CLI (5⁩ שלבים)
 
 ```
-! ===== שלב 0: ACL "מעניין" – איזו תעבורה להצפין =====
+! ===== Step 0: the "interesting" ACL - which traffic to encrypt =====
 R1(config)# access-list 100 permit ip 10.1.1.0 0.0.0.255 10.2.2.0 0.0.0.255
 
-! ===== שלב 1: מדיניות IKE Phase 1 (ISAKMP) =====
+! ===== Step 1: IKE Phase 1 policy (ISAKMP) =====
 R1(config)# crypto isakmp policy 10
 R1(config-isakmp)# encryption aes 256
 R1(config-isakmp)# hash sha
@@ -117,26 +117,26 @@ R1(config-isakmp)# authentication pre-share
 R1(config-isakmp)# group 14                 ! DH group 14 (2048-bit)
 R1(config-isakmp)# lifetime 3600
 R1(config-isakmp)# exit
-! מפתח משותף מראש + כתובת השכן
+! pre-shared key + the peer's address
 R1(config)# crypto isakmp key S3cr3tPSK address 200.2.2.2
 
-! ===== שלב 2: transform set – הגנת Phase 2 =====
+! ===== Step 2: transform set - Phase 2 protection =====
 R1(config)# crypto ipsec transform-set TSET esp-aes 256 esp-sha-hmac
 R1(cfg-crypto-trans)# mode tunnel
 R1(cfg-crypto-trans)# exit
 
-! ===== שלב 3: crypto map – מקשר הכול =====
+! ===== Step 3: crypto map - ties it all together =====
 R1(config)# crypto map CMAP 10 ipsec-isakmp
 R1(config-crypto-map)# set peer 200.2.2.2
 R1(config-crypto-map)# set transform-set TSET
-R1(config-crypto-map)# match address 100          ! ה-ACL המעניין
+R1(config-crypto-map)# match address 100          ! the interesting ACL
 R1(config-crypto-map)# set pfs group14
 R1(config-crypto-map)# exit
 
-! ===== שלב 4: החלה על הממשק החיצוני =====
+! ===== Step 4: apply on the outside interface =====
 R1(config)# interface g0/0
 R1(config-if)# crypto map CMAP
-! (R2 מוגדר במראה: כתובות ו-ACL הפוכים, אותה מדיניות ואותו PSK)
+! (R2 is mirror-configured: reversed addresses & ACL, same policy & PSK)
 ```
 
 > ⚠️ **טעויות נפוצות ב-⁦IPsec⁩**
@@ -151,8 +151,8 @@ R1(config-if)# crypto map CMAP
 ### וריפיקציה ופתרון תקלות
 
 ```
-R1# show crypto isakmp sa          ! Phase 1 – מצב QM_IDLE = הצליח
-R1# show crypto ipsec sa           ! Phase 2 – ספירת חבילות encrypted/decrypted
+R1# show crypto isakmp sa          ! Phase 1 - state QM_IDLE = success
+R1# show crypto ipsec sa           ! Phase 2 - count of encrypted/decrypted packets
 R1# show crypto map
 R1# show crypto session
 R1# debug crypto isakmp

@@ -55,9 +55,9 @@
 
 <h2>3.6 הגדרה בפועל – שלב אחר שלב</h2>
 <p>עכשיו שהבנו את הרעיון, נראה איך מגדירים. הצעד הראשון תמיד: להפעיל את מנגנון ה-AAA בפקודה <code>aaa new-model</code>. מרגע זה, כל קווי הגישה מתחילים להשתמש ב-AAA במקום בשיטה הישנה.</p>
-<pre>R1(config)# username admin secret P@ss        <span class="c">! משתמש מקומי – גיבוי, קודם כול!</span>
-R1(config)# <b>aaa new-model</b>                    <span class="c">! מפעיל את מסגרת ה-AAA</span>
-R1(config)# tacacs-server host 10.0.0.5 key Key123  <span class="c">! שרת TACACS+ והמפתח המשותף</span>
+<pre>R1(config)# username admin secret P@ss        <span class="c">! local user - a backup, first of all!</span>
+R1(config)# <b>aaa new-model</b>                    <span class="c">! enables the AAA framework</span>
+R1(config)# tacacs-server host 10.0.0.5 key Key123  <span class="c">! TACACS+ server and the shared key</span>
 R1(config)# <b>aaa authentication login default group tacacs+ local</b></pre>
 <p>השורה האחרונה היא "רשימת שיטות" (method list): היא אומרת "כדי לאמת התחברות, נסה קודם את שרת ה-TACACS+; ואם הוא <u>לא זמין</u> – השתמש במשתמש המקומי". הגיבוי המקומי (<code>local</code>) קריטי: בלעדיו, אם השרת נופל, אף אחד לא יוכל להיכנס.</p>
 <div class="box mistake"><span class="t">הטעות המסוכנת ביותר בפרק – היזהרו!</span>
@@ -80,9 +80,9 @@ R1(config)# aaa authentication login default group radius local</pre>
 
 <h2>3.8 בדיקה ופתרון תקלות</h2>
 <p>אחרי שמגדירים, איך יודעים שהכול עובד – ואיך מאבחנים כשלא? הנה הכלים המרכזיים ותקלות נפוצות:</p>
-<pre>R1# <b>show aaa sessions</b>                       <span class="c">! מי מחובר כרגע דרך AAA</span>
-R1# <b>test aaa group tacacs+ admin P@ss legacy</b>  <span class="c">! בודק אימות בלי להתחבר בפועל</span>
-R1# <b>debug aaa authentication</b>                <span class="c">! מעקב חי אחר תהליך האימות</span></pre>
+<pre>R1# <b>show aaa sessions</b>                       <span class="c">! who is currently connected via AAA</span>
+R1# <b>test aaa group tacacs+ admin P@ss legacy</b>  <span class="c">! test authentication without actually logging in</span>
+R1# <b>debug aaa authentication</b>                <span class="c">! live trace of the authentication process</span></pre>
 <ul>
 <li><b>הנתב "נתקע" כמה שניות ואז מקבל את המשתמש המקומי:</b> סימן שהשרת אינו נגיש (בדקו כתובת, ACL, ושהשירות פועל). הגיבוי ל-<code>local</code> עבד – זה תקין, אבל צריך לתקן את הקשר לשרת.</li>
 <li><b>"אימות נכשל" מיד, גם עם סיסמה נכונה:</b> לרוב המפתח המשותף (key) אינו זהה בין הנתב לשרת, או שהשרת לא מכיר את כתובת הנתב כלקוח מורשה.</li>

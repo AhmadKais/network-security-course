@@ -40,13 +40,13 @@ _⁦10⁩ שעות עיוני + ⁦2⁩ מעשי · שבועות ⁦4⁩–⁦6�
 הנה "סיפור" קצר של פקודות. קראו את הסימן בתחילת כל שורה כדי לעקוב איפה אנחנו נמצאים:
 
 ```
-Router> enable                 ! ממצב "רק להסתכל" למצב "מנהל"
-Router# configure terminal     ! נכנסים למצב הגדרות
-Router(config)# hostname R1    ! נותנים לנתב שם – שימו לב שהסימן משתנה מיד
-R1(config)# interface g0/0     ! נכנסים לפורט מסוים
-R1(config-if)# no shutdown     ! מדליקים את הפורט
-R1(config-if)# end             ! חוזרים ישר למצב מנהל
-R1# write                       ! שומרים! (אחרת ההגדרות ייעלמו בכיבוי)
+Router> enable                 ! from "look only" mode to "admin" mode
+Router# configure terminal     ! enter global configuration mode
+Router(config)# hostname R1    ! give the router a name - notice the prompt changes immediately
+R1(config)# interface g0/0     ! enter a specific interface
+R1(config-if)# no shutdown     ! bring the port up
+R1(config-if)# end             ! jump straight back to privileged mode
+R1# write                       ! save! (otherwise the config is lost on reboot)
 ```
 
 ## ⁦2.3⁩ סיסמאות: מה חזק, מה חלש, ולמה
@@ -54,10 +54,10 @@ R1# write                       ! שומרים! (אחרת ההגדרות ייע�
 הצעד הבסיסי בהקשחה הוא סיסמאות טובות. ב-⁦IOS⁩ יש כמה סוגים של סיסמאות, וההבדל ביניהן קריטי. הכלל הפשוט: תמיד להשתמש במילה `⁦secret⁩`, אף פעם לא במילה `⁦password⁩`.
 
 ```
-R1(config)# enable secret Str0ng-P@ss   ! סיסמת מצב מנהל – מאוחסנת מגובבת (בטוח)
-R1(config)# enable password weak         ! מאוחסנת בטקסט גלוי – לא להשתמש!
-R1(config)# service password-encryption  ! מסתיר את הסיסמאות הגלויות בקונפיג
-R1(config)# username admin secret P@ss   ! משתמש מקומי עם סיסמה מגובבת
+R1(config)# enable secret Str0ng-P@ss   ! privileged-mode password - stored hashed (secure)
+R1(config)# enable password weak         ! stored in clear text - do not use!
+R1(config)# service password-encryption  ! hides the clear-text passwords in the config
+R1(config)# username admin secret P@ss   ! local user with a hashed password
 ```
 
 למה `⁦secret⁩` עדיף? כי הוא נשמר כ**גיבוב (⁦hash)⁩** – טביעת אצבע חד-כיוונית של הסיסמה, שממנה אי אפשר לשחזר את הסיסמה המקורית (נרחיב על גיבוב בפרק ⁦7).⁩ לעומת זאת `⁦password⁩` נשמר בטקסט גלוי, וגם הפקודה `⁦service password-encryption⁩` שמסתירה אותו משתמשת בהצפנה חלשה מאוד (מה שנקרא "⁦type 7")⁩ שנשברת בשנייה באתרים חינמיים באינטרנט. לכן `⁦service password-encryption⁩` מגן רק מפני מישהו שמציץ מעבר לכתף בזמן שאתם צופים בקונפיג – לא מפני תוקף אמיתי. ההגנה האמיתית היא ה-`⁦secret⁩`.
@@ -67,16 +67,16 @@ R1(config)# username admin secret P@ss   ! משתמש מקומי עם סיסמה
 סיסמה חזקה היא רק חצי מהסיפור – כדאי גם למנוע מתוקף לנסות **אינספור** ניחושים. ל-⁦IOS⁩ יש מנגנון מובנה לכך: אחרי מספר ניסיונות כושלים בפרק זמן נתון, הנתב "ננעל" לזמן מה ולא מקבל ניסיונות חדשים. זה הופך התקפת ברוט-פורס (ניחוש שיטתי) מבלתי-מעשית.
 
 ```
-R1(config)# login block-for 120 attempts 3 within 60  ! 3 כישלונות תוך 60 שנ' → נעילה ל-120 שנ'
-R1(config)# login delay 2                              ! השהיה של 2 שנ' בין ניסיונות
-R1(config)# login on-failure log                       ! רשום כל כישלון ליומן
+R1(config)# login block-for 120 attempts 3 within 60  ! 3 failures within 60s -> lock for 120s
+R1(config)# login delay 2                              ! 2s delay between attempts
+R1(config)# login on-failure log                       ! log every failure
 ```
 
 בנוסף, כדאי להגדיר **⁦exec-timeout⁩** על קווי הגישה – ניתוק אוטומטי אחרי כמה דקות של חוסר פעילות, כדי שמסך פתוח ונטוש לא יישאר גישה פתוחה למי שיעבור לידו:
 
 ```
 R1(config)# line vty 0 4
-R1(config-line)# exec-timeout 5 0   ! ניתוק אחרי 5 דקות ללא פעילות
+R1(config-line)# exec-timeout 5 0   ! disconnect after 5 minutes of inactivity
 ```
 
 ## ⁦2.4 Telnet⁩ מול ⁦SSH⁩ – ההבדל שמציל אתכם
@@ -94,14 +94,14 @@ R1(config-line)# exec-timeout 5 0   ! ניתוק אחרי 5 דקות ללא פע
 כדי ש-⁦SSH⁩ יעבוד, הנתב צריך לייצר לעצמו **זוג מפתחות ⁦RSA⁩** – מפתח ציבורי ומפתח פרטי (נבין אותם לעומק בפרק ⁦7).⁩ המפתחות האלה הם מה שמצפין את החיבור. כדי לייצר אותם, הנתב חייב קודם שם מלא, שמורכב מהשם שלו (⁦hostname)⁩ ומשם דומיין. לכן שני אלה חייבים לבוא ראשונים:
 
 ```
-R1(config)# hostname R1                       ! 1. שם לנתב
-R1(config)# ip domain-name school.local       ! 2. שם דומיין (חובה לפני יצירת מפתחות)
-R1(config)# crypto key generate rsa modulus 2048  ! 3. ייצור זוג מפתחות RSA
-R1(config)# username admin privilege 15 secret P@ss ! 4. משתמש שאיתו נתחבר
-R1(config)# ip ssh version 2                         ! SSHv2 בלבד
-R1(config)# line vty 0 4                          ! 5. הגדרת קווי הגישה מרחוק
-R1(config-line)# login local                      ! אימות מול המשתמש המקומי
-R1(config-line)# transport input ssh              ! רק SSH – חוסם Telnet
+R1(config)# hostname R1                       ! 1. Hostname
+R1(config)# ip domain-name school.local       ! 2. Domain name (required before generating keys)
+R1(config)# crypto key generate rsa modulus 2048  ! 3. Generate the RSA key pair
+R1(config)# username admin privilege 15 secret P@ss ! 4. User to log in with
+R1(config)# ip ssh version 2                         ! SSHv2 only
+R1(config)# line vty 0 4                          ! 5. Configure the remote-access (vty) lines
+R1(config-line)# login local                      ! authenticate against the local user
+R1(config-line)# transport input ssh              ! SSH only - blocks Telnet
 ```
 
 > ⚠️ **הטעות הנפוצה ביותר**
@@ -122,7 +122,7 @@ R1(config-line)# transport input ssh              ! רק SSH – חוסם Telnet
 
 ```
 R1(config)# banner motd #
-*** גישה בלתי מורשית אסורה. הפעילות מנוטרת ומתועדת. ***
+*** Unauthorized access prohibited. Activity is monitored and logged. ***
 #
 ```
 
@@ -139,7 +139,7 @@ R1(config)# banner motd #
 הרחבנו קודם שיש ⁦16⁩ רמות הרשאה. בפועל משתמשים בשלוש: רמה ⁦1⁩ (המשתמש הרגיל – רק צפייה), רמה ⁦15⁩ (מנהל מלא), ורמות ביניים שאליהן אפשר "להעביר" פקודות מסוימות. לדוגמה, אפשר ליצור רמה ⁦5⁩ שמותר לה גם לאתחל את הנתב ולצפות בהגדרות, ולתת אותה לצוות התמיכה:
 
 ```
-R1(config)# privilege exec level 5 reload            ! רמה 5 יכולה לאתחל
+R1(config)# privilege exec level 5 reload            ! level 5 can reload
 R1(config)# enable secret level 5 Lvl5-P@ss
 R1(config)# username helpdesk privilege 5 secret Help-P@ss
 ```
@@ -151,8 +151,8 @@ R1(config)# username helpdesk privilege 5 secret Help-P@ss
 תוקף שהצליח להיכנס עלול למחוק את מערכת ההפעלה (⁦IOS)⁩ ואת קובץ ההגדרות כדי לשתק את הנתב לגמרי. תכונת **⁦IOS Resilient Configuration⁩** שומרת עותק מוגן שלא ניתן למחוק דרך שורת הפקודה – מעין "גיבוי חסין" בתוך הנתב עצמו:
 
 ```
-R1(config)# secure boot-image    ! מגן על קובץ מערכת ההפעלה
-R1(config)# secure boot-config   ! מגן על קובץ ההגדרות
+R1(config)# secure boot-image    ! protects the OS (IOS) image file
+R1(config)# secure boot-config   ! protects the config file
 ```
 
 בנוסף לגיבוי החסין, נהוג לגבות את ההגדרות באופן שוטף לשרת חיצוני (`⁦copy running-config tftp⁩:`) ולתעד מי שינה מה – מה שנקרא **ביקורת (⁦Auditing)⁩**. תיעוד כזה עונה על השאלה החשובה "מי הקליד את הפקודה הזו ומתי?", ומשלים את ה-⁦syslog⁩ שנכיר מיד.
@@ -166,8 +166,8 @@ R1(config)# secure boot-config   ! מגן על קובץ ההגדרות
 הנתב מייצר כל הזמן הודעות על אירועים: ממשק שעלה או נפל, ניסיון כניסה כושל, חבילה שנחסמה. **⁦Syslog⁩** הוא המנגנון ששולח את ההודעות האלה ל**שרת מרכזי** (על פורט ⁦UDP 514).⁩ למה שרת מרכזי ולא רק בנתב עצמו? כי תוקף חכם שמצליח להיכנס לנתב ימחק את היומן המקומי כדי לטשטש עקבות – אבל אין לו גישה לשרת החיצוני, ושם הראיות נשמרות.
 
 ```
-R1(config)# logging host 10.0.0.5       ! שולח את היומן לשרת
-R1(config)# logging trap warnings       ! שולח רמות 0 עד 4
+R1(config)# logging host 10.0.0.5       ! sends the log to the server
+R1(config)# logging trap warnings       ! sends levels 0 through 4
 ```
 
 להודעות היומן יש **⁦8⁩ רמות חומרה**, מ-⁦0 (Emergency⁩, החמור ביותר) עד ⁦7 (Debug⁩, מידע פנימי מפורט). כשבוחרים רמה מקבלים אותה וכל מה שחמור ממנה – למשל אם בוחרים רמה ⁦4 (warnings)⁩ מקבלים את רמות ⁦0⁩ עד ⁦4.⁩
@@ -201,8 +201,8 @@ R1(config)# ntp server 10.0.0.5
 נתב מגיע מהמפעל עם הרבה שירותים דלוקים שהיו שימושיים פעם והיום הם רק שטח תקיפה מיותר. עיקרון ההקשחה פשוט: **כל שירות שלא צריך – כבה אותו**. כל שירות פתוח הוא דלת אפשרית (זכרו את סיפור ⁦Cisco Smart Install⁩!).
 
 ```
-R1(config)# no ip http server      ! ממשק ניהול web מיותר
-R1(config)# no cdp run             ! פרוטוקול שחושף דגם וגרסה לשכנים
+R1(config)# no ip http server      ! unnecessary web management interface
+R1(config)# no cdp run             ! a protocol that exposes model and version to neighbors
 ```
 
 כדי לחסוך זמן, קיימת פקודה אחת שמבצעת חלק גדול מההקשחה אוטומטית: **⁦AutoSecure⁩**. היא מכבה שירותים מסוכנים, מפעילה ניטור, ומקשיחה את הנתב בכמה שאלות פשוטות.

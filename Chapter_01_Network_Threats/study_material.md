@@ -184,7 +184,7 @@ graph LR
 
 ```
 R1(config)# login block-for 120 attempts 3 within 60
-! אם היו 3 ניסיונות כושלים תוך 60 שניות – חסום כניסות למשך 120 שניות
+! if there were 3 failed attempts within 60s - block logins for 120s
 ```
 
 ## ⁦1.11⁩ ניהול אבטחה: מדיניות, תקנים ותפקידים

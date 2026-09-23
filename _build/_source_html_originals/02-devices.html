@@ -23,30 +23,30 @@
 <div class="box tip"><span class="t">מושג חשוב: איפה נשמרות ההגדרות?</span>
 לנתב יש שני "עותקים" של ההגדרות. <b>running-config</b> הוא הקונפיגורציה הפעילה כרגע – אבל היא נמצאת בזיכרון זמני ו<u>נמחקת בכיבוי</u>. <b>startup-config</b> היא הקונפיגורציה השמורה, שנטענת מחדש בכל הדלקה. לכן אחרי שמסיימים להגדיר – חייבים לשמור, בפקודה <code>write</code> (או <code>copy running-config startup-config</code>). מי ששוכח לשמור מגלה שכל עבודתו נעלמה אחרי אתחול.</div>
 <p>הנה "סיפור" קצר של פקודות. קראו את הסימן בתחילת כל שורה כדי לעקוב איפה אנחנו נמצאים:</p>
-<pre>Router&gt; <b>enable</b>                 <span class="c">! ממצב "רק להסתכל" למצב "מנהל"</span>
-Router# <b>configure terminal</b>     <span class="c">! נכנסים למצב הגדרות</span>
-Router(config)# <b>hostname R1</b>    <span class="c">! נותנים לנתב שם – שימו לב שהסימן משתנה מיד</span>
-R1(config)# <b>interface g0/0</b>     <span class="c">! נכנסים לפורט מסוים</span>
-R1(config-if)# <b>no shutdown</b>     <span class="c">! מדליקים את הפורט</span>
-R1(config-if)# <b>end</b>             <span class="c">! חוזרים ישר למצב מנהל</span>
-R1# <b>write</b>                       <span class="c">! שומרים! (אחרת ההגדרות ייעלמו בכיבוי)</span></pre>
+<pre>Router&gt; <b>enable</b>                 <span class="c">! from "look only" mode to "admin" mode</span>
+Router# <b>configure terminal</b>     <span class="c">! enter global configuration mode</span>
+Router(config)# <b>hostname R1</b>    <span class="c">! give the router a name - notice the prompt changes immediately</span>
+R1(config)# <b>interface g0/0</b>     <span class="c">! enter a specific interface</span>
+R1(config-if)# <b>no shutdown</b>     <span class="c">! bring the port up</span>
+R1(config-if)# <b>end</b>             <span class="c">! jump straight back to privileged mode</span>
+R1# <b>write</b>                       <span class="c">! save! (otherwise the config is lost on reboot)</span></pre>
 
 <h2>2.3 סיסמאות: מה חזק, מה חלש, ולמה</h2>
 <p>הצעד הבסיסי בהקשחה הוא סיסמאות טובות. ב-IOS יש כמה סוגים של סיסמאות, וההבדל ביניהן קריטי. הכלל הפשוט: תמיד להשתמש במילה <code>secret</code>, אף פעם לא במילה <code>password</code>.</p>
-<pre>R1(config)# <b>enable secret</b> Str0ng-P@ss   <span class="c">! סיסמת מצב מנהל – מאוחסנת מגובבת (בטוח)</span>
-R1(config)# enable password weak         <span class="c">! מאוחסנת בטקסט גלוי – לא להשתמש!</span>
-R1(config)# <b>service password-encryption</b>  <span class="c">! מסתיר את הסיסמאות הגלויות בקונפיג</span>
-R1(config)# username admin <b>secret</b> P@ss   <span class="c">! משתמש מקומי עם סיסמה מגובבת</span></pre>
+<pre>R1(config)# <b>enable secret</b> Str0ng-P@ss   <span class="c">! privileged-mode password - stored hashed (secure)</span>
+R1(config)# enable password weak         <span class="c">! stored in clear text - do not use!</span>
+R1(config)# <b>service password-encryption</b>  <span class="c">! hides the clear-text passwords in the config</span>
+R1(config)# username admin <b>secret</b> P@ss   <span class="c">! local user with a hashed password</span></pre>
 <p>למה <code>secret</code> עדיף? כי הוא נשמר כ<b>גיבוב (hash)</b> – טביעת אצבע חד-כיוונית של הסיסמה, שממנה אי אפשר לשחזר את הסיסמה המקורית (נרחיב על גיבוב בפרק 7). לעומת זאת <code>password</code> נשמר בטקסט גלוי, וגם הפקודה <code>service password-encryption</code> שמסתירה אותו משתמשת בהצפנה חלשה מאוד (מה שנקרא "type 7") שנשברת בשנייה באתרים חינמיים באינטרנט. לכן <code>service password-encryption</code> מגן רק מפני מישהו שמציץ מעבר לכתף בזמן שאתם צופים בקונפיג – לא מפני תוקף אמיתי. ההגנה האמיתית היא ה-<code>secret</code>.</p>
 
 <h3>הגנה מפני ניחוש סיסמאות</h3>
 <p>סיסמה חזקה היא רק חצי מהסיפור – כדאי גם למנוע מתוקף לנסות <u>אינספור</u> ניחושים. ל-IOS יש מנגנון מובנה לכך: אחרי מספר ניסיונות כושלים בפרק זמן נתון, הנתב "ננעל" לזמן מה ולא מקבל ניסיונות חדשים. זה הופך התקפת ברוט-פורס (ניחוש שיטתי) מבלתי-מעשית.</p>
-<pre>R1(config)# <b>login block-for 120 attempts 3 within 60</b>  <span class="c">! 3 כישלונות תוך 60 שנ' → נעילה ל-120 שנ'</span>
-R1(config)# login delay 2                              <span class="c">! השהיה של 2 שנ' בין ניסיונות</span>
-R1(config)# login on-failure log                       <span class="c">! רשום כל כישלון ליומן</span></pre>
+<pre>R1(config)# <b>login block-for 120 attempts 3 within 60</b>  <span class="c">! 3 failures within 60s -> lock for 120s</span>
+R1(config)# login delay 2                              <span class="c">! 2s delay between attempts</span>
+R1(config)# login on-failure log                       <span class="c">! log every failure</span></pre>
 <p>בנוסף, כדאי להגדיר <b>exec-timeout</b> על קווי הגישה – ניתוק אוטומטי אחרי כמה דקות של חוסר פעילות, כדי שמסך פתוח ונטוש לא יישאר גישה פתוחה למי שיעבור לידו:</p>
 <pre>R1(config)# line vty 0 4
-R1(config-line)# <b>exec-timeout 5 0</b>   <span class="c">! ניתוק אחרי 5 דקות ללא פעילות</span></pre>
+R1(config-line)# <b>exec-timeout 5 0</b>   <span class="c">! disconnect after 5 minutes of inactivity</span></pre>
 <h2>2.4 Telnet מול SSH – ההבדל שמציל אתכם</h2>
 <p>כדי לנהל נתב מרחוק (מבלי להתחבר אליו פיזית בכבל), מתחברים אליו דרך הרשת. יש לכך שני פרוטוקולים, ואחד מהם מסוכן מאוד.</p>
 <p><b>Telnet</b> (פורט 23) הוא הפרוטוקול הישן. הבעיה שלו חמורה: הוא מעביר את <u>הכול</u> בטקסט גלוי, כולל את שם המשתמש והסיסמה. כל מי ש"מקשיב" לרשת יכול לראות אותם. <b>SSH (Secure Shell)</b> (פורט 22) הוא הפרוטוקול המאובטח: הוא <u>מצפין</u> את כל התקשורת, כך שמאזין רואה רק ג'יבריש, וגם מוודא שאתם מדברים באמת עם הנתב הנכון. משתמשים ב-SSH גרסה 2 בלבד.</p>
@@ -54,14 +54,14 @@ R1(config-line)# <b>exec-timeout 5 0</b>   <span class="c">! ניתוק אחרי
 בבדיקת חדירה מוזמנת, הבודק חיבר מחשב נייד לשקע רשת בחדר המתנה והריץ תוכנה שמקשיבה לתעבורה (Wireshark). תוך 40 דקות הוא לכד תקשורת Telnet של טכנאי שהתחבר למתג הראשי – ושם המשתמש והסיסמה השתקפו על מסכו בטקסט גלוי. עם הסיסמה הזו הוא קיבל שליטה בכל המתגים בבניין. הטכנאי לא עשה שום דבר "לא נכון" – הוא פשוט השתמש בכלי הישן שהיה זמין. ההגנה מפני כל התרחיש הזה היא שורה אחת שחוסמת Telnet ומחייבת SSH.</div>
 <h3>הגדרת SSH – חמישה שלבים, כל אחד מוסבר</h3>
 <p>כדי ש-SSH יעבוד, הנתב צריך לייצר לעצמו <b>זוג מפתחות RSA</b> – מפתח ציבורי ומפתח פרטי (נבין אותם לעומק בפרק 7). המפתחות האלה הם מה שמצפין את החיבור. כדי לייצר אותם, הנתב חייב קודם שם מלא, שמורכב מהשם שלו (hostname) ומשם דומיין. לכן שני אלה חייבים לבוא ראשונים:</p>
-<pre>R1(config)# <b>hostname R1</b>                       <span class="c">! 1. שם לנתב</span>
-R1(config)# <b>ip domain-name school.local</b>       <span class="c">! 2. שם דומיין (חובה לפני יצירת מפתחות)</span>
-R1(config)# <b>crypto key generate rsa</b> modulus 2048  <span class="c">! 3. ייצור זוג מפתחות RSA</span>
-R1(config)# username admin privilege 15 secret P@ss <span class="c">! 4. משתמש שאיתו נתחבר</span>
-R1(config)# ip ssh version 2                         <span class="c">! SSHv2 בלבד</span>
-R1(config)# <b>line vty 0 4</b>                          <span class="c">! 5. הגדרת קווי הגישה מרחוק</span>
-R1(config-line)# <b>login local</b>                      <span class="c">! אימות מול המשתמש המקומי</span>
-R1(config-line)# <b>transport input ssh</b>              <span class="c">! רק SSH – חוסם Telnet</span></pre>
+<pre>R1(config)# <b>hostname R1</b>                       <span class="c">! 1. Hostname</span>
+R1(config)# <b>ip domain-name school.local</b>       <span class="c">! 2. Domain name (required before generating keys)</span>
+R1(config)# <b>crypto key generate rsa</b> modulus 2048  <span class="c">! 3. Generate the RSA key pair</span>
+R1(config)# username admin privilege 15 secret P@ss <span class="c">! 4. User to log in with</span>
+R1(config)# ip ssh version 2                         <span class="c">! SSHv2 only</span>
+R1(config)# <b>line vty 0 4</b>                          <span class="c">! 5. Configure the remote-access (vty) lines</span>
+R1(config-line)# <b>login local</b>                      <span class="c">! authenticate against the local user</span>
+R1(config-line)# <b>transport input ssh</b>              <span class="c">! SSH only - blocks Telnet</span></pre>
 <div class="box mistake"><span class="t">הטעות הנפוצה ביותר</span>
 אם שוכחים את שורת <code>ip domain-name</code> (או משאירים את שם הנתב כברירת המחדל "Router"), הפקודה <code>crypto key generate rsa</code> נכשלת עם ההודעה "Please define a domain-name first". זכרו: השם והדומיין חייבים לבוא <u>לפני</u> יצירת המפתחות, כי שם המפתח נגזר מהם.</div>
 <p>הערה על <code>line vty 0 4</code>: "VTY" הם קווי הגישה הווירטואליים שדרכם מתחברים מרחוק (יש חמישה כאלה, ממוספרים 0 עד 4). עליהם אנחנו קובעים שני דברים: <code>login local</code> – שהאימות ייעשה מול מסד המשתמשים המקומי (כלומר יידרש גם שם וגם סיסמה), ו-<code>transport input ssh</code> – שמותר להתחבר רק ב-SSH ולא ב-Telnet.</p>
@@ -72,7 +72,7 @@ R1(config-line)# <b>transport input ssh</b>              <span class="c">! רק 
 <p><b>רמות הרשאה (Privilege Levels):</b> לפעמים רוצים לתת למישהו גישה חלקית – למשל למתמחה שיוכל רק לצפות, בלי לשנות. ל-IOS יש 16 רמות הרשאה (0 עד 15). רמה 1 היא ברירת המחדל (רק צפייה), רמה 15 היא הרשאת מנהל מלאה, ואת הרמות שביניהן אפשר להתאים אישית ולהעביר אליהן פקודות מסוימות. כך אפשר לתת לכל תפקיד בדיוק את מה שהוא צריך – עיקרון שנקרא "מינימום הרשאות".</p>
 <p><b>Banner:</b> זוהי הודעת אזהרה שמופיעה בכניסה לנתב. מטרתה משפטית – להבהיר שהגישה מיועדת למורשים בלבד ושהפעילות מנוטרת.</p>
 <pre>R1(config)# <b>banner motd #</b>
-*** גישה בלתי מורשית אסורה. הפעילות מנוטרת ומתועדת. ***
+*** Unauthorized access prohibited. Activity is monitored and logged. ***
 #</pre>
 <div class="box mistake"><span class="t">מה לא לכתוב בבאנר</span>
 לא לכתוב "Welcome" (ברוכים הבאים) – במקרה משפטי בארה"ב פורץ טען שהבאנר "הזמין" אותו להיכנס. לא לכתוב את שם החברה ולא את דגם הנתב – זה רק עוזר לתוקף. הבאנר צריך רק להזהיר, לא לקבל את פני האורח.</div>
@@ -81,21 +81,21 @@ R1(config-line)# <b>transport input ssh</b>              <span class="c">! רק 
 
 <h3>רמות הרשאה בפירוט, ותצוגות תפקיד</h3>
 <p>הרחבנו קודם שיש 16 רמות הרשאה. בפועל משתמשים בשלוש: רמה 1 (המשתמש הרגיל – רק צפייה), רמה 15 (מנהל מלא), ורמות ביניים שאליהן אפשר "להעביר" פקודות מסוימות. לדוגמה, אפשר ליצור רמה 5 שמותר לה גם לאתחל את הנתב ולצפות בהגדרות, ולתת אותה לצוות התמיכה:</p>
-<pre>R1(config)# <b>privilege exec level 5 reload</b>            <span class="c">! רמה 5 יכולה לאתחל</span>
+<pre>R1(config)# <b>privilege exec level 5 reload</b>            <span class="c">! level 5 can reload</span>
 R1(config)# <b>enable secret level 5</b> Lvl5-P@ss
 R1(config)# <b>username helpdesk privilege 5 secret</b> Help-P@ss</pre>
 <p>לרמות ההרשאה יש חיסרון: רמה גבוהה מקבלת אוטומטית גם את כל מה שמותר ברמות שמתחתיה, ואין שליטה מדויקת. פתרון מדויק יותר הוא <b>תצוגת תפקיד (Role-Based CLI View)</b> – "תצוגה" שמכילה רשימת פקודות מדויקת שהמשתמש רשאי להריץ, ותו לא. כך אפשר לתת לכל תפקיד בדיוק את מה שהוא צריך (עיקרון "מינימום הרשאות"). הגדרת תצוגות דורשת שמנגנון ה-AAA יופעל (נלמד עליו בפרק 3).</p>
 <h3>שמירה והגנה על ההגדרות וה-IOS</h3>
 <p>תוקף שהצליח להיכנס עלול למחוק את מערכת ההפעלה (IOS) ואת קובץ ההגדרות כדי לשתק את הנתב לגמרי. תכונת <b>IOS Resilient Configuration</b> שומרת עותק מוגן שלא ניתן למחוק דרך שורת הפקודה – מעין "גיבוי חסין" בתוך הנתב עצמו:</p>
-<pre>R1(config)# <b>secure boot-image</b>    <span class="c">! מגן על קובץ מערכת ההפעלה</span>
-R1(config)# <b>secure boot-config</b>   <span class="c">! מגן על קובץ ההגדרות</span></pre>
+<pre>R1(config)# <b>secure boot-image</b>    <span class="c">! protects the OS (IOS) image file</span>
+R1(config)# <b>secure boot-config</b>   <span class="c">! protects the config file</span></pre>
 <p>בנוסף לגיבוי החסין, נהוג לגבות את ההגדרות באופן שוטף לשרת חיצוני (<code>copy running-config tftp:</code>) ולתעד מי שינה מה – מה שנקרא <b>ביקורת (Auditing)</b>. תיעוד כזה עונה על השאלה החשובה "מי הקליד את הפקודה הזו ומתי?", ומשלים את ה-syslog שנכיר מיד.</p>
 <h2>2.6 ניטור: לדעת מה קורה בנתב</h2>
 <p>אבטחה טובה היא לא רק חסימה – היא גם לדעת מה קורה. לשם כך יש שלושה שירותים שכדאי להפעיל.</p>
 <h3>Syslog – יומן האירועים</h3>
 <p>הנתב מייצר כל הזמן הודעות על אירועים: ממשק שעלה או נפל, ניסיון כניסה כושל, חבילה שנחסמה. <b>Syslog</b> הוא המנגנון ששולח את ההודעות האלה ל<b>שרת מרכזי</b> (על פורט UDP 514). למה שרת מרכזי ולא רק בנתב עצמו? כי תוקף חכם שמצליח להיכנס לנתב ימחק את היומן המקומי כדי לטשטש עקבות – אבל אין לו גישה לשרת החיצוני, ושם הראיות נשמרות.</p>
-<pre>R1(config)# <b>logging host 10.0.0.5</b>       <span class="c">! שולח את היומן לשרת</span>
-R1(config)# <b>logging trap warnings</b>       <span class="c">! שולח רמות 0 עד 4</span></pre>
+<pre>R1(config)# <b>logging host 10.0.0.5</b>       <span class="c">! sends the log to the server</span>
+R1(config)# <b>logging trap warnings</b>       <span class="c">! sends levels 0 through 4</span></pre>
 <p>להודעות היומן יש <b>8 רמות חומרה</b>, מ-0 (Emergency, החמור ביותר) עד 7 (Debug, מידע פנימי מפורט). כשבוחרים רמה מקבלים אותה וכל מה שחמור ממנה – למשל אם בוחרים רמה 4 (warnings) מקבלים את רמות 0 עד 4.</p>
 <h3>NTP – למה זמן מדויק הוא עניין של אבטחה</h3>
 <p><b>NTP (Network Time Protocol)</b> מסנכרן את השעון של כל הציוד ברשת למקור זמן אחד. זה נשמע טכני ומשעמם, אבל הוא קריטי לאבטחה: בלי זמן מסונכרן, אי אפשר לשחזר את סדר האירועים בזמן חקירה. אם הנתב מראה שעה אחת והשרת שעה אחרת, לא תדעו אם הכניסה הכושלת לנתב קרתה לפני החדירה לשרת או אחריה. חוץ מזה, גם תעודות דיגיטליות ומפתחות VPN תלויים בשעון נכון.</p>
@@ -111,8 +111,8 @@ Shodan הוא מנוע חיפוש שסורק כל הזמן את האינטרנט
 <p>ב-<b>SNMPv3</b> יש שלוש רמות אבטחה שכדאי להכיר: <b>noAuthNoPriv</b> (בלי אימות ובלי הצפנה – החלש), <b>authNoPriv</b> (אימות בלבד), ו-<b>authPriv</b> (גם אימות וגם הצפנה – המומלץ). המילה "auth" מציינת אימות (מי שולח) ו-"priv" מציינת פרטיות/הצפנה (שאף אחד לא יקרא). זה ההבדל המהותי מ-v1/v2c, שאין בהם לא אימות אמיתי ולא הצפנה.</p>
 <h2>2.7 כיבוי שירותים מיותרים ו-AutoSecure</h2>
 <p>נתב מגיע מהמפעל עם הרבה שירותים דלוקים שהיו שימושיים פעם והיום הם רק שטח תקיפה מיותר. עיקרון ההקשחה פשוט: <b>כל שירות שלא צריך – כבה אותו</b>. כל שירות פתוח הוא דלת אפשרית (זכרו את סיפור Cisco Smart Install!).</p>
-<pre>R1(config)# no ip http server      <span class="c">! ממשק ניהול web מיותר</span>
-R1(config)# no cdp run             <span class="c">! פרוטוקול שחושף דגם וגרסה לשכנים</span></pre>
+<pre>R1(config)# no ip http server      <span class="c">! unnecessary web management interface</span>
+R1(config)# no cdp run             <span class="c">! a protocol that exposes model and version to neighbors</span></pre>
 <p>כדי לחסוך זמן, קיימת פקודה אחת שמבצעת חלק גדול מההקשחה אוטומטית: <b>AutoSecure</b>. היא מכבה שירותים מסוכנים, מפעילה ניטור, ומקשיחה את הנתב בכמה שאלות פשוטות.</p>
 <pre>R1# <b>auto secure</b></pre>
 <div class="box mistake"><span class="t">זהירות עם AutoSecure</span>

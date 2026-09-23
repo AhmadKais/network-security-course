@@ -108,32 +108,32 @@
 <li>הגדרת IPS: שם, מיקום, התראות, קטגוריות.</li>
 <li>החלה על ממשק וטעינת החבילה.</li>
 </ol>
-<pre><span class="c">! שלב 2 – תיקייה</span>
+<pre><span class="c">! Step 2 - config-location directory</span>
 R1# <b>mkdir ipsdir</b>
-<span class="c">! שלב 3 – מפתח ציבורי של סיסקו (מעתיקים מהקובץ; קטע מקוצר)</span>
+<span class="c">! Step 3 - Cisco's public key (copied from the file; excerpt)</span>
 R1(config)# crypto key pubkey-chain rsa
 R1(config-pubkey-chain)# <b>named-key realm-cisco.pub signature</b>
 R1(config-pubkey-key)# key-string
 R1(config-pubkey)# 30820122 300D0609 2A864886 ...
 R1(config-pubkey)# quit
-<span class="c">! שלב 4 – הגדרת ה-IPS</span>
+<span class="c">! Step 4 - configure the IPS</span>
 R1(config)# <b>ip ips config location flash:ipsdir</b>
-R1(config)# <b>ip ips name MYIPS</b>            <span class="c">! אפשר: ip ips name MYIPS list 101 – רק תעבורה שתואמת ל-ACL</span>
-R1(config)# <b>ip ips notify log</b>            <span class="c">! התראות ל-syslog</span>
+R1(config)# <b>ip ips name MYIPS</b>            <span class="c">! optional: ip ips name MYIPS list 101 - only traffic matching the ACL</span>
+R1(config)# <b>ip ips notify log</b>            <span class="c">! alerts to syslog</span>
 R1(config)# ip http secure-server
-R1(config)# <b>ip ips notify sdee</b>           <span class="c">! ולתחנת ניהול</span>
+R1(config)# <b>ip ips notify sdee</b>           <span class="c">! and to the management station</span>
 R1(config)# <b>ip ips signature-category</b>
 R1(config-ips-category)# <b>category all</b>
-R1(config-ips-category-action)# <b>retired true</b>          <span class="c">! קודם – הכול בפנסיה</span>
+R1(config-ips-category-action)# <b>retired true</b>          <span class="c">! first - retire (disable) all signatures</span>
 R1(config-ips-category-action)# exit
 R1(config-ips-category)# <b>category ios_ips basic</b>
-R1(config-ips-category-action)# <b>retired false</b>         <span class="c">! ואז – רק הבסיסיות פעילות</span>
+R1(config-ips-category-action)# <b>retired false</b>         <span class="c">! then - only the basic ones are active</span>
 R1(config-ips-category-action)# exit
 R1(config-ips-category)# exit
-<span class="c">! שלב 5 – החלה על ממשק (בכיוון שממנו מגיעה התעבורה החשודה)</span>
+<span class="c">! Step 5 - apply on the interface (in the direction the suspect traffic comes from)</span>
 R1(config)# interface g0/0
 R1(config-if)# <b>ip ips MYIPS in</b>
-<span class="c">! טעינת חבילת החתימות (מ-TFTP/USB) – ב-Packet Tracer שלב זה לא קיים</span>
+<span class="c">! load the signature package (from TFTP/USB) - this step doesn't exist in Packet Tracer</span>
 R1# <b>copy tftp://10.0.0.5/IOS-S416-CLI.pkg idconf</b></pre>
 <h3>שינוי חתימה בודדת – הדוגמה הקלאסית: התראה + חסימה על ping</h3>
 <pre>R1(config)# <b>ip ips signature-definition</b>
@@ -153,11 +153,11 @@ Do you want to accept these changes? [confirm]</pre>
 Packet Tracer תומך בתת-קבוצה: <code>ip ips config location</code>, <code>ip ips name</code>, <code>ip ips notify log</code>, <code>signature-category</code> (all retired / ios_ips basic), <code>ip ips NAME in|out</code>, ושינוי חתימה 2004 0 (ICMP echo) עם produce-alert ו-deny-packet-inline. אין טעינת חבילה ואין SDEE. תרגיל ה-ping הוא התרגיל שעובד – ורואים בשרת ה-syslog את ההתראה ואת ה-ping נכשל. זה מספיק להמחשה.</div>
 
 <h2>5.9 וריפיקציה ופתרון תקלות</h2>
-<pre>R1# <b>show ip ips all</b>                   <span class="c">! סיכום: שם, ממשקים, קטגוריות, מספר חתימות טעונות</span>
+<pre>R1# <b>show ip ips all</b>                   <span class="c">! summary: name, interfaces, categories, number of loaded signatures</span>
 R1# <b>show ip ips configuration</b>
 R1# <b>show ip ips interfaces</b>
-R1# <b>show ip ips signatures</b> [count]      <span class="c">! אילו חתימות פעילות</span>
-R1# <b>show ip ips statistics</b>            <span class="c">! כמה חבילות נבדקו, כמה התראות</span>
+R1# <b>show ip ips signatures</b> [count]      <span class="c">! which signatures are active</span>
+R1# <b>show ip ips statistics</b>            <span class="c">! how many packets were inspected, how many alerts</span>
 R1# <b>clear ip ips statistics</b>
 R1# show ip ips sessions
 R1# debug ip ips</pre>

@@ -103,10 +103,10 @@ _⁦11⁩ שעות עיוני + ⁦3⁩ מעשי · שבועות ⁦27⁩–⁦2
 | ⁦Kali Linux⁩ | הפצת לינוקס עם כל כלי הבדיקה מותקנים |
 
 ```
-! דוגמאות Nmap (רק ברשת מעבדה מבודדת ובאישור!)
-nmap 192.168.1.0/24              # אילו מארחים חיים ואילו פורטים
-nmap -sV 192.168.1.10            # גרסאות שירותים
-nmap -O 192.168.1.10             # ניחוש מערכת הפעלה
+! Nmap examples (only on an isolated lab network, with permission!)
+nmap 192.168.1.0/24              # which hosts are up and which ports
+nmap -sV 192.168.1.10            # service versions
+nmap -O 192.168.1.10             # OS guessing
 nmap -sS -p 1-1000 192.168.1.10  # SYN scan
 ```
 

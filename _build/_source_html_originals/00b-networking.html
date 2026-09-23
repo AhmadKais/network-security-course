@@ -26,8 +26,8 @@
 פתחו טרמינל ב-Kali ובקשו מהמחשב להציג את הכתובות של עצמו. הפקודה <code>ip addr</code> מראה כל כרטיס רשת שיש לכם:</div>
 <pre>$ <b>ip addr</b>
 2: eth0: &lt;BROADCAST,MULTICAST,UP&gt; mtu 1500 ...
-    link/ether <b>08:00:27:ab:cd:ef</b>          <span class="c"># כתובת ה-MAC שלכם (תעודת הזהות)</span>
-    inet <b>10.0.2.15</b>/24 ...                  <span class="c"># כתובת ה-IP שלכם (הכתובת למשלוח)</span></pre>
+    link/ether <b>08:00:27:ab:cd:ef</b>          <span class="c"># your MAC address (the device ID)</span>
+    inet <b>10.0.2.15</b>/24 ...                  <span class="c"># your IP address (the delivery address)</span></pre>
 <p>רואים את שתי הכתובות? ה-<code>link/ether</code> היא ה-MAC, וה-<code>inet</code> היא ה-IP. הרגע גיליתם מי אתם ברשת. אגב, ה-<code>/24</code> שבסוף אומר "כמה מהכתובת שייך לרשת שלי" – על זה נדבר בתמצית לבגרות.</p>
 
 <h3>3. "האם החבר בבית?" – שולחים דפיקה ומחכים להד</h3>
@@ -70,11 +70,11 @@ graph LR
 <div class="box lab"><span class="t">מעבדה 4: לראות את ההודעה קופצת ברחבי העולם 🌍</span>
 הריצו traceroute ליעד כלשהו. כל שורה שתחזור היא נתב אחד בדרך – תחנה במסע:</div>
 <pre>$ <b>traceroute google.com</b>
- 1  10.0.2.2        0.4 ms      <span class="c"># הנתב שבבית או בכיתה</span>
- 2  62.90.x.x       8 ms        <span class="c"># הכניסה לספקית האינטרנט שלכם</span>
- 3  212.143.x.x     9 ms        <span class="c"># עמוק בתוך רשת הספקית</span>
- 6  108.170.x.x     22 ms       <span class="c"># כבר ברשת של גוגל</span>
- 9  142.250.185.78  30 ms       <span class="c"># הגענו! השרת של גוגל</span></pre>
+ 1  10.0.2.2        0.4 ms      <span class="c"># the home / classroom router</span>
+ 2  62.90.x.x       8 ms        <span class="c"># entry into your ISP</span>
+ 3  212.143.x.x     9 ms        <span class="c"># deep inside the ISP's network</span>
+ 6  108.170.x.x     22 ms       <span class="c"># already inside Google's network</span>
+ 9  142.250.185.78  30 ms       <span class="c"># arrived! Google's server</span></pre>
 <p>כל שורה היא מכשיר אמיתי, בבניין אמיתי, אולי במדינה אחרת. ההודעה שלכם עברה דרך כולם ב-30 אלפיות השנייה. תריצו את זה לאתר יפני או אוסטרלי – תראו יותר תחנות וזמנים גדולים יותר, ותוכלו ממש "לראות" את המרחק הפיזי בעולם. זה לא קסם. זו רשת.</p>
 
 <h3>6. רגע – איך המחשב יודע לאן לשלוח את הצעד הראשון?</h3>
@@ -87,10 +87,10 @@ graph LR
 <div class="box lab"><span class="t">מעבדה 5: הפנקסים הפנימיים של המחשב</span>
 נציץ בשני הפנקסים:</div>
 <pre>$ <b>ip route</b>
-default via <b>10.0.2.2</b> dev eth0        <span class="c"># ברירת המחדל - השער לכל יעד מרוחק</span>
+default via <b>10.0.2.2</b> dev eth0        <span class="c"># default route - the gateway for any remote destination</span>
 
 $ <b>ip neigh</b>
-10.0.2.2 dev eth0 lladdr <b>52:54:00:12:35:02</b> REACHABLE   <span class="c"># טבלת ARP - ממפה כתובת IP לכתובת MAC</span></pre>
+10.0.2.2 dev eth0 lladdr <b>52:54:00:12:35:02</b> REACHABLE   <span class="c"># ARP table - maps an IP address to a MAC address</span></pre>
 <p>שימו לב: כדי לדבר עם השער, המחשב חייב לדעת גם את ה-IP שלו (מטבלת הניתוב) וגם את ה-MAC שלו (מטבלת ה-ARP). שתי הכתובות עובדות יחד – וזה בדיוק המקום שבו, בפרק 6, נראה איך תוקף יכול "לשקר" בטבלת ה-ARP ולהאזין לכל התעבורה.</p>
 
 <h3>7. איך הודעה אחת "נארזת" למסע – שכבות ומעטפות</h3>
@@ -123,12 +123,12 @@ graph TB
 
 <div class="box lab"><span class="t">מעבדה 6: הצ'אט הראשון שלכם 💬</span>
 <b>תלמיד א' (השרת)</b> פותח דלת מספר 4444 ומקשיב. הדגל <code>-l</code> = listen (הקשב), <code>-v</code> = verbose (הסבר), <code>-n</code> = בלי DNS, <code>-p</code> = הפורט:</div>
-<pre><span class="c"># תלמיד א' - השרת, מאזין ומחכה לחיבור</span>
+<pre><span class="c"># student A - the server, listens and waits for a connection</span>
 $ <b>nc -lvnp 4444</b>
 listening on [any] 4444 ...</pre>
-<pre><span class="c"># תלמיד ב' - הלקוח, מתחבר לכתובת של תלמיד א</span>
+<pre><span class="c"># student B - the client, connects to student A's address</span>
 $ <b>nc 10.0.2.15 4444</b>
-היי! זו ההודעה הראשונה שלי ברשת 🎉</pre>
+hey! my first message over the network :)</pre>
 <p>ברגע שתלמיד ב' מקליד שורה ולוחץ Enter – היא מופיעה מיד על המסך של תלמיד א', ולהפך. בניתם ערוץ תקשורת דו-כיווני בין שני מחשבים, בשורה אחת. זה כל מה שיש מתחת ל"קסם" של כל אפליקציית צ'אט בעולם: לקוח, שרת, ודלת.</p>
 
 <div class="box mistake"><span class="t">אם זה לא עבד – זה חלק מהלמידה</span>
@@ -139,22 +139,22 @@ $ <b>nc 10.0.2.15 4444</b>
 
 <div class="box lab"><span class="t">מעבדה 7: מה הדפדפן באמת אומר?</span>
 בטרמינל אחד נפתח "שרת" שמקשיב, ובשני נשלח אליו בקשה עם curl:</div>
-<pre><span class="c"># טרמינל 1 - שרת מדומה שמאזין בדלת 8080</span>
+<pre><span class="c"># terminal 1 - a mock server listening on port 8080</span>
 $ <b>nc -lvnp 8080</b></pre>
-<pre><span class="c"># טרמינל 2 - הלקוח דופק על אותה דלת</span>
+<pre><span class="c"># terminal 2 - the client knocks on that port</span>
 $ <b>curl http://localhost:8080/hello</b></pre>
 <p>ברגע ש-curl רץ, בטרמינל של השרת יופיע הטקסט הבא – זו הבקשה, בשפת HTTP, מילה במילה:</p>
-<pre><b>GET</b> /hello HTTP/1.1          <span class="c"># בקשה - תן לי את הדף hello</span>
+<pre><b>GET</b> /hello HTTP/1.1          <span class="c"># request - give me the hello page</span>
 Host: localhost:8080
-User-Agent: curl/8.5.0        <span class="c"># מי שולח את הבקשה (כאן curl)</span>
+User-Agent: curl/8.5.0        <span class="c"># who sends the request (here, curl)</span>
 Accept: */*</pre>
 <p>זהו זה. אין שום קסם. אתר אינטרנט זה בסך הכול לקוח ששולח <code>GET</code> ושרת שמחזיר טקסט. עכשיו נעשה את זה מול אתר אמיתי:</p>
 <pre>$ <b>curl -v https://example.com</b>
-&gt; GET / HTTP/2                 <span class="c"># מה שאנחנו (הלקוח) שולחים</span>
+&gt; GET / HTTP/2                 <span class="c"># what we (the client) send</span>
 &gt; host: example.com
-&lt; HTTP/2 200                   <span class="c"># תשובת השרת - הקוד 200 פירושו הצלחה</span>
+&lt; HTTP/2 200                   <span class="c"># server's reply - code 200 means success</span>
 &lt; content-type: text/html
-&lt;!doctype html&gt; ...            <span class="c"># זהו דף התוכן, כפי שהדפדפן היה מצייר</span></pre>
+&lt;!doctype html&gt; ...            <span class="c"># this is the content page, exactly as the browser would draw it</span></pre>
 <p>ה-<code>200</code> הזה הוא "קוד תשובה" מפורסם. פגשתם פעם <code>404</code>? זה פשוט השרת שאומר "לא מצאתי את הדף". עכשיו אתם יודעים מאיפה זה בא.</p>
 
 <h3>4. שתי שפות משלוח: שיחת טלפון מול גלויה (TCP ו-UDP)</h3>
@@ -270,16 +270,16 @@ B=1011, A=1010, 3=0011, F=1111 ⇒ <b>בינארי:</b> 1011 1010 0011 1111<br>
 <tr><td>OSPF</td><td>110</td></tr>
 <tr><td>RIP</td><td>120</td></tr>
 </table>
-<pre><span class="c">! ניתוב סטטי: אל רשת היעד, דרך ה-next-hop</span>
+<pre><span class="c">! static route: to the destination network, via the next-hop</span>
 R1(config)# <b>ip route 10.10.2.20 255.255.255.252 10.10.255.1</b>
-<span class="c">! ניתוב ברירת מחדל (לאינטרנט / כגיבוי)</span>
+<span class="c">! default route (to the internet / as a backup)</span>
 R1(config)# <b>ip route 0.0.0.0 0.0.0.0 200.1.1.1</b>
-<span class="c">! גיבוי (floating static) – AD גבוה מ-OSPF כדי שלא יבטל את הניתוב הדינמי</span>
+<span class="c">! backup (floating static) - AD higher than OSPF so it won't override the dynamic route</span>
 R1(config)# ip route 10.0.0.0 255.0.0.0 200.1.1.2 <b>120</b></pre>
 <div class="box exam"><span class="t">DHCP Relay – כשהשרת ברשת אחרת</span>
 בקשת DHCP היא broadcast ואינה עוברת נתב. מגדירים על הממשק של הלקוח את כתובת שרת ה-DHCP:
 <pre>R1(config)# interface g0/0
-R1(config-if)# <b>ip helper-address 192.50.100.100</b>   <span class="c">! כתובת שרת ה-DHCP</span></pre></div>
+R1(config-if)# <b>ip helper-address 192.50.100.100</b>   <span class="c">! DHCP server address</span></pre></div>
 
 <h3>ז. מיתוג: VLAN, Trunk ו-Router-on-a-Stick</h3>
 <ul>
@@ -287,14 +287,14 @@ R1(config-if)# <b>ip helper-address 192.50.100.100</b>   <span class="c">! כת�
 <li><b>Trunk (802.1Q)</b> – קישור שנושא כמה VLANים בין מתגים; מוסיף תג של מספר ה-VLAN.</li>
 <li><b>Router-on-a-Stick</b> – נתב עם תת-ממשקים (subinterfaces), אחד לכל VLAN, לניתוב ביניהם.</li>
 </ul>
-<pre><span class="c">! ניתוב בין VLANים על ממשק פיזי אחד</span>
+<pre><span class="c">! inter-VLAN routing on a single physical interface</span>
 R1(config)# interface g0/0/1.10
 R1(config-subif)# <b>encapsulation dot1Q 10</b>
 R1(config-subif)# <b>ip address 172.18.1.254 255.255.0.0</b>
 R1(config)# interface g0/0/1.20
 R1(config-subif)# encapsulation dot1Q 20
 R1(config-subif)# ip address 172.18.2.254 255.255.0.0
-<span class="c">! בדיקת טבלת ה-MAC של המתג</span>
+<span class="c">! check the switch MAC table</span>
 S1# <b>show mac address-table</b></pre>
 
 <h3>ח. STP ו-OSPF – כללי הבחירה (נשאלים כמעט תמיד)</h3>
@@ -321,10 +321,10 @@ STP פועל בשכבה <b>2</b> ומונע לולאות ע"י <b>חסימת י�
 </table>
 <pre>Switch(config)# <b>hostname R1</b>
 R1(config)# interface g0/1
-R1(config-if)# <b>no switchport</b>          <span class="c">! הופך פורט מתג ל-L3 (פורט מנותב)</span>
+R1(config-if)# <b>no switchport</b>          <span class="c">! turns a switchport into L3 (a routed port)</span>
 R1(config-if)# ip address 10.100.20.42 255.255.255.0
 R1(config-if)# no shutdown
-<span class="c">! בדיקות נפוצות</span>
+<span class="c">! common checks</span>
 R1# show ip interface brief
 R1# show ip route
 R1# show running-config</pre>

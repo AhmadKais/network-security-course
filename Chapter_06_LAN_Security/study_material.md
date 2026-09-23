@@ -68,13 +68,13 @@ graph LR
 
 ```
 S1(config)# interface f0/1
-S1(config-if)# switchport mode access              ! חובה – port security לא עובד על trunk דינמי
+S1(config-if)# switchport mode access              ! required - port security does not work on a dynamic trunk
 S1(config-if)# switchport port-security
-S1(config-if)# switchport port-security maximum 2    ! עד 2 MAC (מחשב + טלפון IP)
-S1(config-if)# switchport port-security mac-address sticky  ! לומד את הכתובת ושומר בקונפיג
+S1(config-if)# switchport port-security maximum 2    ! up to 2 MACs (a PC + an IP phone)
+S1(config-if)# switchport port-security mac-address sticky  ! learns the address and saves it to the config
 S1(config-if)# switchport port-security violation shutdown
 S1(config-if)# switchport port-security aging time 60
-! וריפיקציה
+! verification
 S1# show port-security
 S1# show port-security interface f0/1
 S1# show port-security address
@@ -111,20 +111,20 @@ S1# show port-security address
 ### ההגנה על פורטים
 
 ```
-! פורט קצה (למחשב) – מפורש access, כיבוי DTP
+! edge port (to a PC) - explicit access, DTP off
 S1(config)# interface range f0/1 - 20
 S1(config-if-range)# switchport mode access
 S1(config-if-range)# switchport access vlan 10
-S1(config-if-range)# switchport nonegotiate          ! לא לשלוח DTP
+S1(config-if-range)# switchport nonegotiate          ! do not send DTP
 S1(config-if-range)# spanning-tree portfast
 S1(config-if-range)# spanning-tree bpduguard enable
-! פורט trunk – מפורש trunk, native ייעודי
+! trunk port - explicit trunk, dedicated native VLAN
 S1(config)# interface g0/1
 S1(config-if)# switchport mode trunk
 S1(config-if)# switchport nonegotiate
-S1(config-if)# switchport trunk native vlan 999       ! VLAN "חור שחור", לא בשימוש
-S1(config-if)# switchport trunk allowed vlan 10,20,30      ! רק מה שצריך
-! פורטים לא בשימוש – לכבות ולשים ב-VLAN מבודד
+S1(config-if)# switchport trunk native vlan 999       ! black-hole VLAN, unused
+S1(config-if)# switchport trunk allowed vlan 10,20,30      ! only what's needed
+! unused ports - shut down and put in an isolated VLAN
 S1(config)# interface range f0/21 - 24
 S1(config-if-range)# switchport access vlan 999
 S1(config-if-range)# shutdown
@@ -160,15 +160,15 @@ S1(config-if-range)# shutdown
 | **⁦Loop Guard⁩** | מגן מלולאה כשפורט מפסיק לקבל ⁦BPDU⁩ | קישורים ⁦redundant⁩ |
 
 ```
-! פר-ממשק
+! per-interface
 S1(config-if)# spanning-tree portfast
 S1(config-if)# spanning-tree bpduguard enable
-! גלובלי – על כל פורטי PortFast (זו התשובה בבגרות שאלה 7ד)
+! global - on all PortFast ports (this is the Bagrut Q7d answer)
 S1(config)# spanning-tree portfast default
 S1(config)# spanning-tree portfast bpduguard default
-! שהמתג שלנו יהיה root בוודאות
-S1(config)# spanning-tree vlan 10 root primary       ! מוריד priority ל-24576
-S1(config)# spanning-tree vlan 10 priority 4096            ! ידני – חייב כפולה של 4096
+! so our switch is guaranteed to be the root
+S1(config)# spanning-tree vlan 10 root primary       ! lowers priority to 24576
+S1(config)# spanning-tree vlan 10 priority 4096            ! manual - must be a multiple of 4096
 S1# show spanning-tree
 ```
 
@@ -183,10 +183,10 @@ S1# show spanning-tree
 ```
 S1(config)# ip dhcp snooping
 S1(config)# ip dhcp snooping vlan 10,20
-S1(config)# interface g0/1                    ! לכיוון שרת DHCP הלגיטימי
+S1(config)# interface g0/1                    ! toward the legitimate DHCP server
 S1(config-if)# ip dhcp snooping trust
-S1(config)# interface range f0/1 - 20         ! פורטי קצה
-S1(config-if-range)# ip dhcp snooping limit rate 6   ! נגד starvation
+S1(config)# interface range f0/1 - 20         ! edge ports
+S1(config-if-range)# ip dhcp snooping limit rate 6   ! against starvation
 S1# show ip dhcp snooping binding
 ```
 
@@ -197,8 +197,8 @@ S1# show ip dhcp snooping binding
 ```
 S1(config)# ip arp inspection vlan 10,20
 S1(config)# interface g0/1
-S1(config-if)# ip arp inspection trust            ! uplink מהימן
-! לפורטים סטטיים בלי DHCP – מגדירים ACL של ARP ידני
+S1(config-if)# ip arp inspection trust            ! trusted uplink
+! for static ports without DHCP - define a manual ARP ACL
 S1(config)# arp access-list STATIC-HOSTS
 S1(config-arp-nacl)# permit ip host 10.0.0.5 mac host aaaa.bbbb.cccc
 S1# show ip arp inspection
@@ -211,9 +211,9 @@ S1# show ip arp inspection
 מגביל את אחוז התעבורה מסוג ⁦broadcast / multicast / unknown-unicast⁩ על פורט; אם עוברים סף – המתג מפיל את העודף (ומתריע). מגן מ-⁦broadcast storms⁩ (גם מלולאה וגם מתקלה/התקפה). התכנית מציינת "⁦Storm Control (SC)".⁩
 
 ```
-S1(config-if)# storm-control broadcast level 5.00       ! מעל 5% מרוחב הפס – הגבל
+S1(config-if)# storm-control broadcast level 5.00       ! above 5% of bandwidth - throttle
 S1(config-if)# storm-control multicast level pps 1k
-S1(config-if)# storm-control action shutdown            ! או trap
+S1(config-if)# storm-control action shutdown            ! or trap
 S1# show storm-control
 ```
 
@@ -223,7 +223,7 @@ S1# show storm-control
 
 ```
 S1(config)# monitor session 1 source interface f0/1 - 10 both
-S1(config)# monitor session 1 destination interface f0/24   ! כאן ה-IDS/Wireshark
+S1(config)# monitor session 1 destination interface f0/24   ! here sit the IDS / Wireshark
 S1# show monitor session 1
 ```
 
@@ -248,8 +248,8 @@ S1# show monitor session 1
 איומים: האזנה לשיחות (⁦sniffing)⁩, **⁦toll fraud⁩** (שימוש לא מורשה בקווים לחיוב יקר), התחזות (⁦caller-ID spoofing), DoS⁩ על ה-⁦PBX, SPIT (spam⁩ קולי). הגנות: **⁦Voice VLAN⁩ נפרד** (הפרדה מתעבורת הנתונים), הצפנה (**⁦SRTP⁩** למדיה, **⁦TLS/SIP-TLS⁩** לאיתות), אימות מכשירי טלפון, ⁦ACL⁩ בין ⁦voice⁩ ל-⁦data.⁩
 
 ```
-S1(config-if)# switchport access vlan 10        ! נתונים
-S1(config-if)# switchport voice vlan 20       ! קול – מתויג בנפרד
+S1(config-if)# switchport access vlan 10        ! data
+S1(config-if)# switchport voice vlan 20       ! voice - tagged separately
 ```
 
 ### ⁦SAN⁩ (רשת אחסון)

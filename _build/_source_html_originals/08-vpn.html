@@ -31,13 +31,13 @@
 
 <h2>8.3 GRE – מנהור בסיסי (בלי הצפנה!)</h2>
 <p><b>GRE</b> (Generic Routing Encapsulation) הוא פרוטוקול מנהור של סיסקו שעוטף חבילה בתוך חבילת IP חדשה. יתרון: יכול לשאת <b>multicast ו-broadcast</b> (ולכן פרוטוקולי ניתוב כמו OSPF/EIGRP רצים דרכו) וגם תעבורה שאינה IP. חיסרון קריטי: <b>GRE אינו מצפין כלום</b> – הוא רק עוטף. לכן בפועל: <b>GRE over IPsec</b> – GRE נותן את הגמישות (multicast, routing), IPsec נותן את ההצפנה.</p>
-<pre><span class="c">! מנהרת GRE בין R1 ל-R2</span>
+<pre><span class="c">! GRE tunnel between R1 and R2</span>
 R1(config)# <b>interface tunnel 0</b>
-R1(config-if)# <b>ip address 172.16.1.1 255.255.255.252</b>    <span class="c">! כתובת פנימית של המנהרה</span>
-R1(config-if)# <b>tunnel source 200.1.1.1</b>                   <span class="c">! ה-IP הציבורי המקומי</span>
-R1(config-if)# <b>tunnel destination 200.2.2.2</b>              <span class="c">! ה-IP הציבורי המרוחק</span>
-R1(config-if)# tunnel mode gre ip                            <span class="c">! ברירת מחדל</span>
-<span class="c">! עכשיו מנתבים דרך המנהרה</span>
+R1(config-if)# <b>ip address 172.16.1.1 255.255.255.252</b>    <span class="c">! the tunnel's internal address</span>
+R1(config-if)# <b>tunnel source 200.1.1.1</b>                   <span class="c">! local public IP</span>
+R1(config-if)# <b>tunnel destination 200.2.2.2</b>              <span class="c">! remote public IP</span>
+R1(config-if)# tunnel mode gre ip                            <span class="c">! default</span>
+<span class="c">! now route through the tunnel</span>
 R1(config)# ip route 10.2.2.0 255.255.255.0 172.16.1.2
 R1# <b>show ip interface brief | include Tunnel</b>
 R1# show interfaces tunnel 0</pre>
@@ -79,10 +79,10 @@ R1# show interfaces tunnel 0</pre>
 <p><b>SA</b> (Security Association) – "הסכם" חד-כיווני שמגדיר איך לאבטח זרם תעבורה מסוים, עם מזהה <b>SPI</b>. Phase 2 מייצר PFS (Perfect Forward Secrecy) אם מפעילים DH מחדש – כך שדליפת מפתח אחד לא חושפת תעבורה עבר.</p>
 
 <h2>8.6 הגדרת Site-to-Site IPsec VPN ב-CLI (5 שלבים)</h2>
-<pre><span class="c">! ===== שלב 0: ACL "מעניין" – איזו תעבורה להצפין =====</span>
+<pre><span class="c">! ===== Step 0: the "interesting" ACL - which traffic to encrypt =====</span>
 R1(config)# <b>access-list 100 permit ip 10.1.1.0 0.0.0.255 10.2.2.0 0.0.0.255</b>
 
-<span class="c">! ===== שלב 1: מדיניות IKE Phase 1 (ISAKMP) =====</span>
+<span class="c">! ===== Step 1: IKE Phase 1 policy (ISAKMP) =====</span>
 R1(config)# <b>crypto isakmp policy 10</b>
 R1(config-isakmp)# <b>encryption aes 256</b>
 R1(config-isakmp)# <b>hash sha</b>
@@ -90,26 +90,26 @@ R1(config-isakmp)# <b>authentication pre-share</b>
 R1(config-isakmp)# <b>group 14</b>                 <span class="c">! DH group 14 (2048-bit)</span>
 R1(config-isakmp)# lifetime 3600
 R1(config-isakmp)# exit
-<span class="c">! מפתח משותף מראש + כתובת השכן</span>
+<span class="c">! pre-shared key + the peer's address</span>
 R1(config)# <b>crypto isakmp key S3cr3tPSK address 200.2.2.2</b>
 
-<span class="c">! ===== שלב 2: transform set – הגנת Phase 2 =====</span>
+<span class="c">! ===== Step 2: transform set - Phase 2 protection =====</span>
 R1(config)# <b>crypto ipsec transform-set TSET esp-aes 256 esp-sha-hmac</b>
 R1(cfg-crypto-trans)# mode tunnel
 R1(cfg-crypto-trans)# exit
 
-<span class="c">! ===== שלב 3: crypto map – מקשר הכול =====</span>
+<span class="c">! ===== Step 3: crypto map - ties it all together =====</span>
 R1(config)# <b>crypto map CMAP 10 ipsec-isakmp</b>
 R1(config-crypto-map)# <b>set peer 200.2.2.2</b>
 R1(config-crypto-map)# <b>set transform-set TSET</b>
-R1(config-crypto-map)# <b>match address 100</b>          <span class="c">! ה-ACL המעניין</span>
+R1(config-crypto-map)# <b>match address 100</b>          <span class="c">! the interesting ACL</span>
 R1(config-crypto-map)# set pfs group14
 R1(config-crypto-map)# exit
 
-<span class="c">! ===== שלב 4: החלה על הממשק החיצוני =====</span>
+<span class="c">! ===== Step 4: apply on the outside interface =====</span>
 R1(config)# interface g0/0
 R1(config-if)# <b>crypto map CMAP</b>
-<span class="c">! (R2 מוגדר במראה: כתובות ו-ACL הפוכים, אותה מדיניות ואותו PSK)</span></pre>
+<span class="c">! (R2 is mirror-configured: reversed addresses & ACL, same policy & PSK)</span></pre>
 <div class="box mistake"><span class="t">טעויות נפוצות ב-IPsec</span>
 • מדיניות Phase 1 לא תואמת בין הצדדים (encryption/hash/group/auth שונים) ⇒ המנהרה לא קמה. <b>שני הצדדים חייבים להסכים.</b><br>
 • PSK שונה משני הצדדים.<br>
@@ -118,8 +118,8 @@ R1(config-if)# <b>crypto map CMAP</b>
 • יש NAT שמתרגם את התעבורה המעניינת <i>לפני</i> ההצפנה ⇒ ה-ACL לא תואם. פתרון: NAT exemption (ACL עם deny לתעבורת ה-VPN).<br>
 • המנהרה קמה רק כשיש "תעבורה מעניינת" – ping אחד לא מספיק לפעמים; שלחו כמה.</div>
 <h3>וריפיקציה ופתרון תקלות</h3>
-<pre>R1# <b>show crypto isakmp sa</b>          <span class="c">! Phase 1 – מצב QM_IDLE = הצליח</span>
-R1# <b>show crypto ipsec sa</b>           <span class="c">! Phase 2 – ספירת חבילות encrypted/decrypted</span>
+<pre>R1# <b>show crypto isakmp sa</b>          <span class="c">! Phase 1 - state QM_IDLE = success</span>
+R1# <b>show crypto ipsec sa</b>           <span class="c">! Phase 2 - count of encrypted/decrypted packets</span>
 R1# <b>show crypto map</b>
 R1# <b>show crypto session</b>
 R1# debug crypto isakmp

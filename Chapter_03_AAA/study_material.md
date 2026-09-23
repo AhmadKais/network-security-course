@@ -80,9 +80,9 @@ _⁦11⁩ שעות עיוני + ⁦3⁩ מעשי · שבועות ⁦7⁩–⁦9�
 עכשיו שהבנו את הרעיון, נראה איך מגדירים. הצעד הראשון תמיד: להפעיל את מנגנון ה-⁦AAA⁩ בפקודה `⁦aaa new-model⁩`. מרגע זה, כל קווי הגישה מתחילים להשתמש ב-⁦AAA⁩ במקום בשיטה הישנה.
 
 ```
-R1(config)# username admin secret P@ss        ! משתמש מקומי – גיבוי, קודם כול!
-R1(config)# aaa new-model                    ! מפעיל את מסגרת ה-AAA
-R1(config)# tacacs-server host 10.0.0.5 key Key123  ! שרת TACACS+ והמפתח המשותף
+R1(config)# username admin secret P@ss        ! local user - a backup, first of all!
+R1(config)# aaa new-model                    ! enables the AAA framework
+R1(config)# tacacs-server host 10.0.0.5 key Key123  ! TACACS+ server and the shared key
 R1(config)# aaa authentication login default group tacacs+ local
 ```
 
@@ -128,9 +128,9 @@ R1(config)# aaa accounting commands 15 default start-stop group tacacs+
 אחרי שמגדירים, איך יודעים שהכול עובד – ואיך מאבחנים כשלא? הנה הכלים המרכזיים ותקלות נפוצות:
 
 ```
-R1# show aaa sessions                       ! מי מחובר כרגע דרך AAA
-R1# test aaa group tacacs+ admin P@ss legacy  ! בודק אימות בלי להתחבר בפועל
-R1# debug aaa authentication                ! מעקב חי אחר תהליך האימות
+R1# show aaa sessions                       ! who is currently connected via AAA
+R1# test aaa group tacacs+ admin P@ss legacy  ! test authentication without actually logging in
+R1# debug aaa authentication                ! live trace of the authentication process
 ```
 
 - **הנתב "נתקע" כמה שניות ואז מקבל את המשתמש המקומי:** סימן שהשרת אינו נגיש (בדקו כתובת, ⁦ACL⁩, ושהשירות פועל). הגיבוי ל-`⁦local⁩` עבד – זה תקין, אבל צריך לתקן את הקשר לשרת.

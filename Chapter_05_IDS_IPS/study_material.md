@@ -123,32 +123,32 @@ _⁦11⁩ שעות עיוני + ⁦3⁩ מעשי · שבועות ⁦13⁩–⁦1
 5. החלה על ממשק וטעינת החבילה.
 
 ```
-! שלב 2 – תיקייה
+! Step 2 - config-location directory
 R1# mkdir ipsdir
-! שלב 3 – מפתח ציבורי של סיסקו (מעתיקים מהקובץ; קטע מקוצר)
+! Step 3 - Cisco's public key (copied from the file; excerpt)
 R1(config)# crypto key pubkey-chain rsa
 R1(config-pubkey-chain)# named-key realm-cisco.pub signature
 R1(config-pubkey-key)# key-string
 R1(config-pubkey)# 30820122 300D0609 2A864886 ...
 R1(config-pubkey)# quit
-! שלב 4 – הגדרת ה-IPS
+! Step 4 - configure the IPS
 R1(config)# ip ips config location flash:ipsdir
-R1(config)# ip ips name MYIPS            ! אפשר: ip ips name MYIPS list 101 – רק תעבורה שתואמת ל-ACL
-R1(config)# ip ips notify log            ! התראות ל-syslog
+R1(config)# ip ips name MYIPS            ! optional: ip ips name MYIPS list 101 - only traffic matching the ACL
+R1(config)# ip ips notify log            ! alerts to syslog
 R1(config)# ip http secure-server
-R1(config)# ip ips notify sdee           ! ולתחנת ניהול
+R1(config)# ip ips notify sdee           ! and to the management station
 R1(config)# ip ips signature-category
 R1(config-ips-category)# category all
-R1(config-ips-category-action)# retired true          ! קודם – הכול בפנסיה
+R1(config-ips-category-action)# retired true          ! first - retire (disable) all signatures
 R1(config-ips-category-action)# exit
 R1(config-ips-category)# category ios_ips basic
-R1(config-ips-category-action)# retired false         ! ואז – רק הבסיסיות פעילות
+R1(config-ips-category-action)# retired false         ! then - only the basic ones are active
 R1(config-ips-category-action)# exit
 R1(config-ips-category)# exit
-! שלב 5 – החלה על ממשק (בכיוון שממנו מגיעה התעבורה החשודה)
+! Step 5 - apply on the interface (in the direction the suspect traffic comes from)
 R1(config)# interface g0/0
 R1(config-if)# ip ips MYIPS in
-! טעינת חבילת החתימות (מ-TFTP/USB) – ב-Packet Tracer שלב זה לא קיים
+! load the signature package (from TFTP/USB) - this step doesn't exist in Packet Tracer
 R1# copy tftp://10.0.0.5/IOS-S416-CLI.pkg idconf
 ```
 
@@ -177,11 +177,11 @@ Do you want to accept these changes? [confirm]
 ## ⁦5.9⁩ וריפיקציה ופתרון תקלות
 
 ```
-R1# show ip ips all                   ! סיכום: שם, ממשקים, קטגוריות, מספר חתימות טעונות
+R1# show ip ips all                   ! summary: name, interfaces, categories, number of loaded signatures
 R1# show ip ips configuration
 R1# show ip ips interfaces
-R1# show ip ips signatures [count]      ! אילו חתימות פעילות
-R1# show ip ips statistics            ! כמה חבילות נבדקו, כמה התראות
+R1# show ip ips signatures [count]      ! which signatures are active
+R1# show ip ips statistics            ! how many packets were inspected, how many alerts
 R1# clear ip ips statistics
 R1# show ip ips sessions
 R1# debug ip ips

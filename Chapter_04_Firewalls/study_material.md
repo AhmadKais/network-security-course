@@ -64,8 +64,8 @@ _⁦11⁩ שעות עיוני + ⁦2⁩ מעשי · שבועות ⁦10⁩–⁦1
 מספרים **⁦1⁩–⁦99⁩** ו-⁦1300⁩–⁦1999.⁩ בודקת **רק את כתובת המקור**. לכן ממקמים אותה **קרוב ליעד** – אחרת היא תחסום את המקור מלהגיע גם ליעדים שלא התכוונו אליהם.
 
 ```
-R1(config)# access-list 10 deny 20.20.20.0 0.0.0.255    ! בבגרות שאלה 4ד – חסימת רשת /24
-R1(config)# access-list 10 permit any                 ! בלי זה – הכול נחסם (implicit deny)
+R1(config)# access-list 10 deny 20.20.20.0 0.0.0.255    ! Bagrut Q4d - blocking a /24 network
+R1(config)# access-list 10 permit any                 ! without this - everything is blocked (implicit deny)
 R1(config)# interface g0/1
 R1(config-if)# ip access-group 10 out
 ```
@@ -75,18 +75,18 @@ R1(config-if)# ip access-group 10 out
 מספרים **⁦100⁩–⁦199⁩** ו-⁦2000⁩–⁦2699.⁩ תחביר: `⁦access-list N⁩ {⁦permit|deny⁩} ⁦PROTOCOL SRC SRC-WC [op PORT] DST DST-WC [op PORT] [established] [log]⁩`. ממקמים **קרוב למקור** – כדי לא להעביר תעבורה שתיחסם ממילא דרך כל הרשת.
 
 ```
-! רשת IT (172.18.1.0/24) רשאית ל-DNS ול-DHCP, אך לא ל-web 10.0.0.190 – בבגרות חלק א שאלה 3ה
+! IT network (172.18.1.0/24) may reach DNS and DHCP, but not web 10.0.0.190 - Bagrut part A Q3e
 R1(config)# access-list 101 deny ip 172.18.1.0 0.0.0.255 host 10.0.0.190
 R1(config)# access-list 101 permit ip any any
 R1(config)# interface g0/0/1
 R1(config-if)# ip access-group 101 in
-! דוגמאות לפורטים
+! port examples
 R1(config)# access-list 110 permit tcp 192.168.1.0 0.0.0.255 any eq 80
 R1(config)# access-list 110 permit tcp 192.168.1.0 0.0.0.255 any eq 443
 R1(config)# access-list 110 permit udp 192.168.1.0 0.0.0.255 host 8.8.8.8 eq 53
-R1(config)# access-list 110 deny icmp any any echo            ! חסימת ping
-R1(config)# access-list 110 permit tcp any any established      ! רק תשובות (ACK/RST דלוק) – "stateful לעניים"
-R1(config)# access-list 110 deny ip any any log                 ! רשום מה נחסם (רק בסוף!)
+R1(config)# access-list 110 deny icmp any any echo            ! block ping
+R1(config)# access-list 110 permit tcp any any established      ! replies only (ACK/RST set) - "poor man's stateful"
+R1(config)# access-list 110 deny ip any any log                 ! log what gets blocked (only at the end!)
 ```
 
 אופרטורים: `⁦eq⁩` שווה, `⁦neq⁩`, `⁦gt⁩`, `⁦lt⁩`, `⁦range 20 21⁩`. פורטים ניתן לכתוב בשם (`⁦eq www⁩`, `⁦eq ftp⁩`, `⁦eq domain⁩`).
@@ -101,11 +101,11 @@ R1(config-ext-nacl)# 20 permit ip any any
 R1(config-ext-nacl)# exit
 R1(config)# interface g0/0/1
 R1(config-if)# ip access-group BLOCK-WEB in
-! עריכה: מוחקים/מוסיפים שורה לפי מספר רצף – בלי למחוק את כל הרשימה
+! editing: delete/add a line by sequence number - without erasing the whole list
 R1(config)# ip access-list extended BLOCK-WEB
 R1(config-ext-nacl)# no 10
 R1(config-ext-nacl)# 15 deny tcp 172.18.1.0 0.0.0.255 host 10.0.0.190 eq 443
-! סטנדרטית בשם – זה מה שמופיע בבגרות (config-std-nacl)
+! named standard ACL - this is what appears in the Bagrut (config-std-nacl)
 R1(config)# ip access-list standard BLOCK_LAN2
 R1(config-std-nacl)# deny 192.168.2.0 0.0.0.255
 R1(config-std-nacl)# permit any
@@ -132,9 +132,9 @@ R1(config-std-nacl)# permit any
 ### וריפיקציה
 
 ```
-R1# show access-lists                ! כולל מונה התאמות (matches) לכל שורה – הכלי הכי טוב לדיבוג
+R1# show access-lists                ! includes a match counter per line - the best debugging tool
 R1# show ip access-lists 101
-R1# show ip interface g0/1           ! איזו ACL מוחלת ובאיזה כיוון
+R1# show ip interface g0/1           ! which ACL is applied and in which direction
 R1# show running-config | section access-list
 R1# clear access-list counters
 ```
@@ -151,7 +151,7 @@ R1(config-time-range)# periodic weekdays 8:00 to 17:00
 R1(config-time-range)# exit
 R1(config)# access-list 120 permit tcp 192.168.1.0 0.0.0.255 any eq 80 time-range WORK-HOURS
 R1(config)# access-list 120 deny ip any any
-! אפשרויות: periodic Monday Wednesday 9:00 to 12:00 / absolute start 08:00 1 Jan 2026 end 17:00 31 Jan 2026
+! options: periodic Monday Wednesday 9:00 to 12:00 / absolute start 08:00 1 Jan 2026 end 17:00 31 Jan 2026
 ```
 
 ### ⁦Dynamic ACL (Lock-and-Key)⁩
@@ -192,24 +192,24 @@ R1(config-if)# ip access-group INBOUND in
 
 ```
 R1(config)# ip access-list extended ANTI-SPOOF
-! כתובות פרטיות (RFC 1918) לא אמורות להגיע מהאינטרנט – מישהו מזייף
+! private addresses (RFC 1918) shouldn't arrive from the internet - someone is spoofing
 R1(config-ext-nacl)# deny ip 10.0.0.0 0.255.255.255 any
 R1(config-ext-nacl)# deny ip 172.16.0.0 0.15.255.255 any
 R1(config-ext-nacl)# deny ip 192.168.0.0 0.0.255.255 any
-! הרשת שלנו כמקור מבחוץ – זיוף ודאי
+! our network as a source from outside - definitely spoofed
 R1(config-ext-nacl)# deny ip 203.0.113.0 0.0.0.255 any
 R1(config-ext-nacl)# deny ip 127.0.0.0 0.255.255.255 any     ! loopback
 R1(config-ext-nacl)# deny ip 0.0.0.0 0.255.255.255 any
 R1(config-ext-nacl)# deny ip 224.0.0.0 15.255.255.255 any    ! multicast
-! ICMP – לאפשר רק מה שצריך, לחסום echo מבחוץ (נגד ping sweep ו-Smurf)
+! ICMP - allow only what's needed, block echo from outside (anti ping-sweep & Smurf)
 R1(config-ext-nacl)# permit icmp any any echo-reply
 R1(config-ext-nacl)# permit icmp any any unreachable
 R1(config-ext-nacl)# permit icmp any any time-exceeded      ! traceroute
 R1(config-ext-nacl)# deny icmp any any
-! שירותי ניהול לא נגישים מבחוץ
+! management services not reachable from outside
 R1(config-ext-nacl)# deny tcp any any eq 23
 R1(config-ext-nacl)# deny udp any any eq 161
-! רק תשובות ל-TCP שהפנים פתח + שירותי DMZ
+! only replies to TCP that the inside opened + DMZ services
 R1(config-ext-nacl)# permit tcp any any established
 R1(config-ext-nacl)# permit tcp any host 203.0.113.10 eq 80
 R1(config-ext-nacl)# permit tcp any host 203.0.113.10 eq 443
@@ -225,18 +225,18 @@ R1(config-if)# ip access-group ANTI-SPOOF in
 ⁦ACL⁩ היא ⁦stateless.⁩ **⁦CBAC⁩** (נקראת גם ⁦Classic Firewall)⁩ מוסיפה מצב: היא *בוחנת* (⁦inspect)⁩ תעבורה שיוצאת מהפנים, זוכרת את השיחה בטבלת ⁦state⁩, ופותחת **אוטומטית וזמנית** חור ב-⁦ACL⁩ הנכנסת לתשובות בלבד. היא גם מבינה פרוטוקולים עם פורטים דינמיים (⁦FTP active)⁩ ומגנה מ-⁦SYN flood (TCP intercept-like).⁩
 
 ```
-! 1. ACL שחוסמת הכול מבחוץ (התשובות ייפתחו על ידי CBAC)
+! 1. ACL that blocks everything from outside (replies opened by CBAC)
 R1(config)# ip access-list extended OUTSIDE-IN
 R1(config-ext-nacl)# permit icmp any any echo-reply
 R1(config-ext-nacl)# deny ip any any
 R1(config)# interface s0/0/0
 R1(config-if)# ip access-group OUTSIDE-IN in
-! 2. כלל בדיקה
+! 2. Inspection rule
 R1(config)# ip inspect name FW tcp
 R1(config)# ip inspect name FW udp
 R1(config)# ip inspect name FW http
 R1(config)# ip inspect name FW ftp
-! 3. החלה בכיוון שבו התעבורה "מתחילה" – יוצאת החוצה
+! 3. Apply in the direction the traffic "starts" - outbound
 R1(config)# interface s0/0/0
 R1(config-if)# ip inspect FW out
 R1# show ip inspect sessions
@@ -266,35 +266,35 @@ R1# show ip inspect config
 ### ההגדרה – ⁦C3PL (Cisco Common Classification Policy Language)⁩ בחמישה שלבים
 
 ```
-! 1. אזורים
+! 1. Zones
 R1(config)# zone security INSIDE
 R1(config)# zone security OUTSIDE
-! 2. class-map – איזו תעבורה (match-any = מספיק תנאי אחד; match-all = כולם)
+! 2. class-map - which traffic (match-any = one condition is enough; match-all = all)
 R1(config)# class-map type inspect match-any WEB-DNS
 R1(config-cmap)# match protocol http
 R1(config-cmap)# match protocol https
 R1(config-cmap)# match protocol dns
 R1(config-cmap)# match protocol icmp
 R1(config-cmap)# exit
-! (אפשר גם match access-group 101 – לשלב ACL)
-! 3. policy-map – מה עושים עם התעבורה
+! (can also use match access-group 101 - to combine an ACL)
+! 3. policy-map - what to do with the traffic
 R1(config)# policy-map type inspect IN-TO-OUT
 R1(config-pmap)# class type inspect WEB-DNS
 R1(config-pmap-c)# inspect
 R1(config-pmap-c)# exit
-R1(config-pmap)# class class-default          ! כל השאר
+R1(config-pmap)# class class-default          ! everything else
 R1(config-pmap-c)# drop log
 R1(config-pmap-c)# exit
-! 4. zone-pair – מקור, יעד, ומדיניות
+! 4. zone-pair - source, destination, and policy
 R1(config)# zone-pair security IN-OUT source INSIDE destination OUTSIDE
 R1(config-sec-zone-pair)# service-policy type inspect IN-TO-OUT
 R1(config-sec-zone-pair)# exit
-! 5. שיוך ממשקים לאזורים – ברגע זה החסימה מתחילה!
+! 5. Assign interfaces to zones - blocking starts right now!
 R1(config)# interface g0/1
 R1(config-if)# zone-member security INSIDE
 R1(config)# interface s0/0/0
 R1(config-if)# zone-member security OUTSIDE
-! וריפיקציה
+! verification
 R1# show zone security
 R1# show zone-pair security
 R1# show policy-map type inspect zone-pair IN-OUT sessions

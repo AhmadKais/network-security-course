@@ -39,8 +39,8 @@ _סיפור, דוגמאות, והרבה ידיים על המקלדת (⁦Kali Li
 ```
 $ ip addr
 2: eth0: <BROADCAST,MULTICAST,UP> mtu 1500 ...
-    link/ether 08:00:27:ab:cd:ef          # כתובת ה-MAC שלכם (תעודת הזהות)
-    inet 10.0.2.15/24 ...                  # כתובת ה-IP שלכם (הכתובת למשלוח)
+    link/ether 08:00:27:ab:cd:ef          # your MAC address (the device ID)
+    inet 10.0.2.15/24 ...                  # your IP address (the delivery address)
 ```
 
 רואים את שתי הכתובות? ה-`⁦link/ether⁩` היא ה-⁦MAC⁩, וה-`⁦inet⁩` היא ה-⁦IP.⁩ הרגע גיליתם מי אתם ברשת. אגב, ה-`/⁦24⁩` שבסוף אומר "כמה מהכתובת שייך לרשת שלי" – על זה נדבר בתמצית לבגרות.
@@ -104,11 +104,11 @@ graph LR
 
 ```
 $ traceroute google.com
- 1  10.0.2.2        0.4 ms      # הנתב שבבית או בכיתה
- 2  62.90.x.x       8 ms        # הכניסה לספקית האינטרנט שלכם
- 3  212.143.x.x     9 ms        # עמוק בתוך רשת הספקית
- 6  108.170.x.x     22 ms       # כבר ברשת של גוגל
- 9  142.250.185.78  30 ms       # הגענו! השרת של גוגל
+ 1  10.0.2.2        0.4 ms      # the home / classroom router
+ 2  62.90.x.x       8 ms        # entry into your ISP
+ 3  212.143.x.x     9 ms        # deep inside the ISP's network
+ 6  108.170.x.x     22 ms       # already inside Google's network
+ 9  142.250.185.78  30 ms       # arrived! Google's server
 ```
 
 כל שורה היא מכשיר אמיתי, בבניין אמיתי, אולי במדינה אחרת. ההודעה שלכם עברה דרך כולם ב-⁦30⁩ אלפיות השנייה. תריצו את זה לאתר יפני או אוסטרלי – תראו יותר תחנות וזמנים גדולים יותר, ותוכלו ממש "לראות" את המרחק הפיזי בעולם. זה לא קסם. זו רשת.
@@ -126,10 +126,10 @@ $ traceroute google.com
 
 ```
 $ ip route
-default via 10.0.2.2 dev eth0        # ברירת המחדל - השער לכל יעד מרוחק
+default via 10.0.2.2 dev eth0        # default route - the gateway for any remote destination
 
 $ ip neigh
-10.0.2.2 dev eth0 lladdr 52:54:00:12:35:02 REACHABLE   # טבלת ARP - ממפה כתובת IP לכתובת MAC
+10.0.2.2 dev eth0 lladdr 52:54:00:12:35:02 REACHABLE   # ARP table - maps an IP address to a MAC address
 ```
 
 שימו לב: כדי לדבר עם השער, המחשב חייב לדעת גם את ה-⁦IP⁩ שלו (מטבלת הניתוב) וגם את ה-⁦MAC⁩ שלו (מטבלת ה-⁦ARP).⁩ שתי הכתובות עובדות יחד – וזה בדיוק המקום שבו, בפרק ⁦6⁩, נראה איך תוקף יכול "לשקר" בטבלת ה-⁦ARP⁩ ולהאזין לכל התעבורה.
@@ -175,15 +175,15 @@ graph TB
 > **תלמיד א' (השרת)** פותח דלת מספר ⁦4444⁩ ומקשיב. הדגל `-⁦l⁩` = ⁦listen⁩ (הקשב), `-⁦v⁩` = ⁦verbose⁩ (הסבר), `-⁦n⁩` = בלי ⁦DNS⁩, `-⁦p⁩` = הפורט:
 
 ```
-# תלמיד א' - השרת, מאזין ומחכה לחיבור
+# student A - the server, listens and waits for a connection
 $ nc -lvnp 4444
 listening on [any] 4444 ...
 ```
 
 ```
-# תלמיד ב' - הלקוח, מתחבר לכתובת של תלמיד א
+# student B - the client, connects to student A's address
 $ nc 10.0.2.15 4444
-היי! זו ההודעה הראשונה שלי ברשת 🎉
+hey! my first message over the network :)
 ```
 
 ברגע שתלמיד ב' מקליד שורה ולוחץ ⁦Enter⁩ – היא מופיעה מיד על המסך של תלמיד א', ולהפך. בניתם ערוץ תקשורת דו-כיווני בין שני מחשבים, בשורה אחת. זה כל מה שיש מתחת ל"קסם" של כל אפליקציית צ'אט בעולם: לקוח, שרת, ודלת.
@@ -201,21 +201,21 @@ $ nc 10.0.2.15 4444
 > בטרמינל אחד נפתח "שרת" שמקשיב, ובשני נשלח אליו בקשה עם ⁦curl⁩:
 
 ```
-# טרמינל 1 - שרת מדומה שמאזין בדלת 8080
+# terminal 1 - a mock server listening on port 8080
 $ nc -lvnp 8080
 ```
 
 ```
-# טרמינל 2 - הלקוח דופק על אותה דלת
+# terminal 2 - the client knocks on that port
 $ curl http://localhost:8080/hello
 ```
 
 ברגע ש-⁦curl⁩ רץ, בטרמינל של השרת יופיע הטקסט הבא – זו הבקשה, בשפת ⁦HTTP⁩, מילה במילה:
 
 ```
-GET /hello HTTP/1.1          # בקשה - תן לי את הדף hello
+GET /hello HTTP/1.1          # request - give me the hello page
 Host: localhost:8080
-User-Agent: curl/8.5.0        # מי שולח את הבקשה (כאן curl)
+User-Agent: curl/8.5.0        # who sends the request (here, curl)
 Accept: */*
 ```
 
@@ -223,11 +223,11 @@ Accept: */*
 
 ```
 $ curl -v https://example.com
-> GET / HTTP/2                 # מה שאנחנו (הלקוח) שולחים
+> GET / HTTP/2                 # what we (the client) send
 > host: example.com
-< HTTP/2 200                   # תשובת השרת - הקוד 200 פירושו הצלחה
+< HTTP/2 200                   # server's reply - code 200 means success
 < content-type: text/html
-<!doctype html> ...            # זהו דף התוכן, כפי שהדפדפן היה מצייר
+<!doctype html> ...            # this is the content page, exactly as the browser would draw it
 ```
 
 ה-`⁦200⁩` הזה הוא "קוד תשובה" מפורסם. פגשתם פעם `⁦404⁩`? זה פשוט השרת שאומר "לא מצאתי את הדף". עכשיו אתם יודעים מאיפה זה בא.
@@ -361,11 +361,11 @@ $ curl -v https://example.com
 | ⁦RIP⁩ | ⁦120⁩ |
 
 ```
-! ניתוב סטטי: אל רשת היעד, דרך ה-next-hop
+! static route: to the destination network, via the next-hop
 R1(config)# ip route 10.10.2.20 255.255.255.252 10.10.255.1
-! ניתוב ברירת מחדל (לאינטרנט / כגיבוי)
+! default route (to the internet / as a backup)
 R1(config)# ip route 0.0.0.0 0.0.0.0 200.1.1.1
-! גיבוי (floating static) – AD גבוה מ-OSPF כדי שלא יבטל את הניתוב הדינמי
+! backup (floating static) - AD higher than OSPF so it won't override the dynamic route
 R1(config)# ip route 10.0.0.0 255.0.0.0 200.1.1.2 120
 ```
 
@@ -374,7 +374,7 @@ R1(config)# ip route 10.0.0.0 255.0.0.0 200.1.1.2 120
 > בקשת ⁦DHCP⁩ היא ⁦broadcast⁩ ואינה עוברת נתב. מגדירים על הממשק של הלקוח את כתובת שרת ה-⁦DHCP⁩: 
 > ```
 > R1(config)# interface g0/0
-> R1(config-if)# ip helper-address 192.50.100.100   ! כתובת שרת ה-DHCP
+> R1(config-if)# ip helper-address 192.50.100.100   ! DHCP server address
 > ```
 
 ### ז. מיתוג: ⁦VLAN, Trunk⁩ ו-⁦Router-on-a-Stick⁩
@@ -384,14 +384,14 @@ R1(config)# ip route 10.0.0.0 255.0.0.0 200.1.1.2 120
 - **⁦Router-on-a-Stick⁩** – נתב עם תת-ממשקים (⁦subinterfaces)⁩, אחד לכל ⁦VLAN⁩, לניתוב ביניהם.
 
 ```
-! ניתוב בין VLANים על ממשק פיזי אחד
+! inter-VLAN routing on a single physical interface
 R1(config)# interface g0/0/1.10
 R1(config-subif)# encapsulation dot1Q 10
 R1(config-subif)# ip address 172.18.1.254 255.255.0.0
 R1(config)# interface g0/0/1.20
 R1(config-subif)# encapsulation dot1Q 20
 R1(config-subif)# ip address 172.18.2.254 255.255.0.0
-! בדיקת טבלת ה-MAC של המתג
+! check the switch MAC table
 S1# show mac address-table
 ```
 
@@ -425,10 +425,10 @@ S1# show mac address-table
 ```
 Switch(config)# hostname R1
 R1(config)# interface g0/1
-R1(config-if)# no switchport          ! הופך פורט מתג ל-L3 (פורט מנותב)
+R1(config-if)# no switchport          ! turns a switchport into L3 (a routed port)
 R1(config-if)# ip address 10.100.20.42 255.255.255.0
 R1(config-if)# no shutdown
-! בדיקות נפוצות
+! common checks
 R1# show ip interface brief
 R1# show ip route
 R1# show running-config

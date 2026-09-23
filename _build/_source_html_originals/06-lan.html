@@ -54,13 +54,13 @@ graph LR
 <p>מתג לומד כתובות MAC ורושם אותן בטבלת CAM (Content Addressable Memory) יחד עם הפורט. הטבלה מוגבלת (למשל 8,000 רשומות). כלי כמו <code>macof</code> מציף את המתג באלפי כתובות MAC מזויפות בשנייה; הטבלה מתמלאת, והמתג עובר ל<b>fail-open</b> – מתחיל לשדר <i>כל</i> מסגרת לכל הפורטים (כמו hub). עכשיו התוקף רואה את תעבורת כולם. זהו "MAC flooding".</p>
 <h3>Port Security – ההגנה</h3>
 <pre>S1(config)# interface f0/1
-S1(config-if)# <b>switchport mode access</b>              <span class="c">! חובה – port security לא עובד על trunk דינמי</span>
+S1(config-if)# <b>switchport mode access</b>              <span class="c">! required - port security does not work on a dynamic trunk</span>
 S1(config-if)# <b>switchport port-security</b>
-S1(config-if)# <b>switchport port-security maximum 2</b>    <span class="c">! עד 2 MAC (מחשב + טלפון IP)</span>
-S1(config-if)# <b>switchport port-security mac-address sticky</b>  <span class="c">! לומד את הכתובת ושומר בקונפיג</span>
+S1(config-if)# <b>switchport port-security maximum 2</b>    <span class="c">! up to 2 MACs (a PC + an IP phone)</span>
+S1(config-if)# <b>switchport port-security mac-address sticky</b>  <span class="c">! learns the address and saves it to the config</span>
 S1(config-if)# <b>switchport port-security violation shutdown</b>
 S1(config-if)# switchport port-security aging time 60
-<span class="c">! וריפיקציה</span>
+<span class="c">! verification</span>
 S1# <b>show port-security</b>
 S1# <b>show port-security interface f0/1</b>
 S1# show port-security address</pre>
@@ -83,20 +83,20 @@ S1# show port-security address</pre>
 <h3>התקפה ב': Double Tagging</h3>
 <p>התוקף (ב-VLAN של ה-native) שולח מסגרת עם <i>שני</i> תגים: החיצוני = native VLAN (המתג הראשון מסיר אותו), הפנימי = ה-VLAN של הקורבן. המתג השני רואה את התג הפנימי ומעביר ל-VLAN הקורבן. חד-כיווני, אך מסוכן. הגנה: native VLAN שאינו בשימוש ואינו VLAN 1.</p>
 <h3>ההגנה על פורטים</h3>
-<pre><span class="c">! פורט קצה (למחשב) – מפורש access, כיבוי DTP</span>
+<pre><span class="c">! edge port (to a PC) - explicit access, DTP off</span>
 S1(config)# interface range f0/1 - 20
 S1(config-if-range)# <b>switchport mode access</b>
 S1(config-if-range)# <b>switchport access vlan 10</b>
-S1(config-if-range)# <b>switchport nonegotiate</b>          <span class="c">! לא לשלוח DTP</span>
+S1(config-if-range)# <b>switchport nonegotiate</b>          <span class="c">! do not send DTP</span>
 S1(config-if-range)# <b>spanning-tree portfast</b>
 S1(config-if-range)# <b>spanning-tree bpduguard enable</b>
-<span class="c">! פורט trunk – מפורש trunk, native ייעודי</span>
+<span class="c">! trunk port - explicit trunk, dedicated native VLAN</span>
 S1(config)# interface g0/1
 S1(config-if)# <b>switchport mode trunk</b>
 S1(config-if)# <b>switchport nonegotiate</b>
-S1(config-if)# <b>switchport trunk native vlan 999</b>       <span class="c">! VLAN "חור שחור", לא בשימוש</span>
-S1(config-if)# switchport trunk allowed vlan 10,20,30      <span class="c">! רק מה שצריך</span>
-<span class="c">! פורטים לא בשימוש – לכבות ולשים ב-VLAN מבודד</span>
+S1(config-if)# <b>switchport trunk native vlan 999</b>       <span class="c">! black-hole VLAN, unused</span>
+S1(config-if)# switchport trunk allowed vlan 10,20,30      <span class="c">! only what's needed</span>
+<span class="c">! unused ports - shut down and put in an isolated VLAN</span>
 S1(config)# interface range f0/21 - 24
 S1(config-if-range)# switchport access vlan 999
 S1(config-if-range)# shutdown</pre>
@@ -119,15 +119,15 @@ S1(config-if-range)# shutdown</pre>
 <tr><td><b>Root Guard</b></td><td>מונע ממתג בפורט זה להפוך ל-root (אם ישלח BPDU עדיף – הפורט נחסם)</td><td>פורטים למתגי גישה מתחת</td></tr>
 <tr><td><b>Loop Guard</b></td><td>מגן מלולאה כשפורט מפסיק לקבל BPDU</td><td>קישורים redundant</td></tr>
 </table>
-<pre><span class="c">! פר-ממשק</span>
+<pre><span class="c">! per-interface</span>
 S1(config-if)# spanning-tree portfast
 S1(config-if)# <b>spanning-tree bpduguard enable</b>
-<span class="c">! גלובלי – על כל פורטי PortFast (זו התשובה בבגרות שאלה 7ד)</span>
+<span class="c">! global - on all PortFast ports (this is the Bagrut Q7d answer)</span>
 S1(config)# <b>spanning-tree portfast default</b>
 S1(config)# <b>spanning-tree portfast bpduguard default</b>
-<span class="c">! שהמתג שלנו יהיה root בוודאות</span>
-S1(config)# <b>spanning-tree vlan 10 root primary</b>       <span class="c">! מוריד priority ל-24576</span>
-S1(config)# spanning-tree vlan 10 priority 4096            <span class="c">! ידני – חייב כפולה של 4096</span>
+<span class="c">! so our switch is guaranteed to be the root</span>
+S1(config)# <b>spanning-tree vlan 10 root primary</b>       <span class="c">! lowers priority to 24576</span>
+S1(config)# spanning-tree vlan 10 priority 4096            <span class="c">! manual - must be a multiple of 4096</span>
 S1# <b>show spanning-tree</b></pre>
 
 <h2>6.6 DHCP – Starvation, Spoofing ו-DHCP Snooping</h2>
@@ -136,18 +136,18 @@ S1# <b>show spanning-tree</b></pre>
 <p>המתג מסמן פורטים כ-<b>trusted</b> (לכיוון שרת ה-DHCP הלגיטימי / uplink) או <b>untrusted</b> (פורטי קצה, ברירת מחדל). הודעות שרת (OFFER, ACK) מפורט untrusted – נחסמות. המתג בונה <b>DHCP Snooping Binding Table</b> (MAC↔IP↔פורט↔VLAN) – בסיס ל-DAI ו-IP Source Guard.</p>
 <pre>S1(config)# <b>ip dhcp snooping</b>
 S1(config)# <b>ip dhcp snooping vlan 10,20</b>
-S1(config)# interface g0/1                    <span class="c">! לכיוון שרת DHCP הלגיטימי</span>
+S1(config)# interface g0/1                    <span class="c">! toward the legitimate DHCP server</span>
 S1(config-if)# <b>ip dhcp snooping trust</b>
-S1(config)# interface range f0/1 - 20         <span class="c">! פורטי קצה</span>
-S1(config-if-range)# <b>ip dhcp snooping limit rate 6</b>   <span class="c">! נגד starvation</span>
+S1(config)# interface range f0/1 - 20         <span class="c">! edge ports</span>
+S1(config-if-range)# <b>ip dhcp snooping limit rate 6</b>   <span class="c">! against starvation</span>
 S1# <b>show ip dhcp snooping binding</b></pre>
 
 <h2>6.7 ARP Spoofing ו-Dynamic ARP Inspection (DAI)</h2>
 <p><b>ARP</b> ממפה IP ל-MAC, וחסר כל אימות: כל מחשב יכול לשלוח "Gratuitous ARP" שאומר "אני ה-gateway" – והקורבנות יעדכנו את הטבלה שלהם ויתחילו לשלוח את התעבורה לתוקף (MITM). <b>DAI</b> בודק כל הודעת ARP מול טבלת ה-DHCP Snooping: אם ה-IP↔MAC לא תואם לרשומה – ההודעה נזרקת.</p>
 <pre>S1(config)# <b>ip arp inspection vlan 10,20</b>
 S1(config)# interface g0/1
-S1(config-if)# <b>ip arp inspection trust</b>            <span class="c">! uplink מהימן</span>
-<span class="c">! לפורטים סטטיים בלי DHCP – מגדירים ACL של ARP ידני</span>
+S1(config-if)# <b>ip arp inspection trust</b>            <span class="c">! trusted uplink</span>
+<span class="c">! for static ports without DHCP - define a manual ARP ACL</span>
 S1(config)# arp access-list STATIC-HOSTS
 S1(config-arp-nacl)# permit ip host 10.0.0.5 mac host aaaa.bbbb.cccc
 S1# <b>show ip arp inspection</b></pre>
@@ -155,15 +155,15 @@ S1# <b>show ip arp inspection</b></pre>
 
 <h2>6.8 Storm Control</h2>
 <p>מגביל את אחוז התעבורה מסוג broadcast / multicast / unknown-unicast על פורט; אם עוברים סף – המתג מפיל את העודף (ומתריע). מגן מ-broadcast storms (גם מלולאה וגם מתקלה/התקפה). התכנית מציינת "Storm Control (SC)".</p>
-<pre>S1(config-if)# <b>storm-control broadcast level 5.00</b>       <span class="c">! מעל 5% מרוחב הפס – הגבל</span>
+<pre>S1(config-if)# <b>storm-control broadcast level 5.00</b>       <span class="c">! above 5% of bandwidth - throttle</span>
 S1(config-if)# <b>storm-control multicast level pps 1k</b>
-S1(config-if)# <b>storm-control action shutdown</b>            <span class="c">! או trap</span>
+S1(config-if)# <b>storm-control action shutdown</b>            <span class="c">! or trap</span>
 S1# <b>show storm-control</b></pre>
 
 <h2>6.9 SPAN – שיקוף פורטים (הבסיס ל-IDS)</h2>
 <p><b>SPAN</b> (Switched Port Analyzer, "port mirroring") מעתיק את כל התעבורה מפורט/VLAN מקור לפורט יעד – שאליו מחובר Wireshark או <b>IDS</b>. זה החיבור לפרק 5: IDS "מחוץ לנתיב" מקבל את התעבורה דווקא דרך SPAN. <b>RSPAN</b> – שיקוף בין מתגים דרך VLAN ייעודי; <b>ERSPAN</b> – מעל IP (GRE).</p>
 <pre>S1(config)# <b>monitor session 1 source interface f0/1 - 10 both</b>
-S1(config)# <b>monitor session 1 destination interface f0/24</b>   <span class="c">! כאן ה-IDS/Wireshark</span>
+S1(config)# <b>monitor session 1 destination interface f0/24</b>   <span class="c">! here sit the IDS / Wireshark</span>
 S1# <b>show monitor session 1</b></pre>
 <div class="box faq"><span class="t">שאלת תלמיד: "אם ה-IDS רק מקבל עותק דרך SPAN, למה שלא נחבר אותו inline ונחסום?"</span>
 כי אז הוא IPS, לא IDS – והוא מוסיף השהיה ונקודת כשל בנתיב. SPAN מאפשר לנטר בלי לגעת בזרימה: הפורט המשקף יכול אפילו ליפול בלי להשפיע על הרשת. זה בדיוק ה-trade-off מפרק 5.</div>
@@ -181,8 +181,8 @@ S1# <b>show monitor session 1</b></pre>
 <h2>6.12 אבטחת VoIP ו-SAN</h2>
 <h3>VoIP (טלפוניה על IP)</h3>
 <p>איומים: האזנה לשיחות (sniffing), <b>toll fraud</b> (שימוש לא מורשה בקווים לחיוב יקר), התחזות (caller-ID spoofing), DoS על ה-PBX, SPIT (spam קולי). הגנות: <b>Voice VLAN נפרד</b> (הפרדה מתעבורת הנתונים), הצפנה (<b>SRTP</b> למדיה, <b>TLS/SIP-TLS</b> לאיתות), אימות מכשירי טלפון, ACL בין voice ל-data.</p>
-<pre>S1(config-if)# switchport access vlan 10        <span class="c">! נתונים</span>
-S1(config-if)# <b>switchport voice vlan 20</b>       <span class="c">! קול – מתויג בנפרד</span></pre>
+<pre>S1(config-if)# switchport access vlan 10        <span class="c">! data</span>
+S1(config-if)# <b>switchport voice vlan 20</b>       <span class="c">! voice - tagged separately</span></pre>
 <h3>SAN (רשת אחסון)</h3>
 <p>SAN מחברת שרתים לאחסון בלוקים (Fibre Channel / iSCSI). איומים: גישה לא מורשית ל-LUN, WWN spoofing. הגנות: <b>Zoning</b> (מי מדבר עם מי ב-fabric – מקביל ל-VLAN), <b>LUN masking</b> (איזה שרת רואה איזה נפח), <b>VSAN</b> (בידוד לוגי), אימות (FC-SP / CHAP ל-iSCSI), והצפנת נתונים במנוחה. חשיבות: כל הנתונים הקריטיים של הארגון נמצאים שם.</p>
 

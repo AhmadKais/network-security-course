@@ -85,10 +85,10 @@
 <tr><td>Metasploit</td><td>מסגרת לניצול פגיעויות (בדיקות חדירה)</td></tr>
 <tr><td>Kali Linux</td><td>הפצת לינוקס עם כל כלי הבדיקה מותקנים</td></tr>
 </table>
-<pre><span class="c">! דוגמאות Nmap (רק ברשת מעבדה מבודדת ובאישור!)</span>
-nmap 192.168.1.0/24              <span class="c"># אילו מארחים חיים ואילו פורטים</span>
-nmap -sV 192.168.1.10            <span class="c"># גרסאות שירותים</span>
-nmap -O 192.168.1.10             <span class="c"># ניחוש מערכת הפעלה</span>
+<pre><span class="c">! Nmap examples (only on an isolated lab network, with permission!)</span>
+nmap 192.168.1.0/24              <span class="c"># which hosts are up and which ports</span>
+nmap -sV 192.168.1.10            <span class="c"># service versions</span>
+nmap -O 192.168.1.10             <span class="c"># OS guessing</span>
 nmap -sS -p 1-1000 192.168.1.10  <span class="c"># SYN scan</span></pre>
 <div class="box story"><span class="t">סיפור מהחיים: Equifax – פגיעות אחת שלא תוקנה (2017)</span>
 דליפת המידע של Equifax חשפה נתונים של 147 מיליון אמריקאים (מספרי ביטוח לאומי, תאריכי לידה). הסיבה: פגיעות ידועה ב-Apache Struts (CVE-2017-5638) עם תיקון זמין <i>חודשיים</i> קודם. סורק פגיעויות היה מוצא אותה תוך דקות – אבל התהליך של Equifax לא סרק את השרת הזה. הלקח: ניהול פגיעויות הוא לא אירוע חד-פעמי אלא תהליך מתמשך (scan → prioritize → patch → verify). זה הלב של פרק 9.</div>
