@@ -31,7 +31,7 @@ _⁦10⁩ שעות עיוני + ⁦3⁩ מעשי · שבועות ⁦24⁩–⁦2
 | **⁦Site-to-Site⁩** | שער (נתב/⁦ASA)⁩ לשער – מחבר שתי רשתות שלמות. שקוף למשתמשים | סניף תל אביב ↔ סניף חיפה |
 | **⁦Remote Access⁩** | משתמש יחיד (לקוח) ↔ שער החברה | עובד מהבית ↔ המשרד (⁦Cisco AnyConnect)⁩ |
 
-| **לפי מי מפעיל** | **** |
+| **לפי מי מפעיל** |  |
 | --- | --- |
 | **⁦Enterprise VPN⁩** | הארגון מנהל (⁦IPsec, SSL)⁩ – מה שנלמד כאן |
 | **⁦Service Provider VPN⁩** | ספק התקשורת מספק – **⁦MPLS⁩**, ⁦Metro Ethernet⁩ (מוזכר בתכנית: ⁦MPLS, GRE)⁩ |
@@ -67,7 +67,7 @@ R1# show interfaces tunnel 0
 
 ### שני פרוטוקולי ההגנה
 
-| **** | **⁦AH (Authentication Header)⁩** | **⁦ESP (Encapsulating Security Payload)⁩** |
+|  | **⁦AH (Authentication Header)⁩** | **⁦ESP (Encapsulating Security Payload)⁩** |
 | --- | --- | --- |
 | פרוטוקול ⁦IP⁩ | ⁦51⁩ | ⁦50⁩ |
 | שלמות + אימות | כן (כולל הכותרת החיצונית) | כן (המטען) |
@@ -167,7 +167,7 @@ R1# debug crypto ipsec
 
 ## ⁦8.7 SSL/TLS VPN⁩
 
-| **** | **⁦IPsec VPN⁩** | **⁦SSL VPN⁩** |
+|  | **⁦IPsec VPN⁩** | **⁦SSL VPN⁩** |
 | --- | --- | --- |
 | שכבה | ⁦3⁩ (רשת) | ⁦4⁩–⁦7⁩ (מעל ⁦TCP 443)⁩ |
 | לקוח | צריך תוכנת לקוח מותקנת ומוגדרת | **⁦Clientless⁩** – רק דפדפן (או לקוח קל ⁦AnyConnect)⁩ |

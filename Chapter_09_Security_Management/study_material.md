@@ -129,7 +129,7 @@ nmap -sS -p 1-1000 192.168.1.10  # SYN scan
 
 ## ⁦9.8⁩ המשכיות עסקית והתאוששות מאסון
 
-| **** | **⁦BCP (Business Continuity Plan)⁩** | **⁦DRP (Disaster Recovery Plan)⁩** |
+|  | **⁦BCP (Business Continuity Plan)⁩** | **⁦DRP (Disaster Recovery Plan)⁩** |
 | --- | --- | --- |
 | מטרה | שהעסק ימשיך לתפקד בזמן אסון | שחזור מערכות ה-⁦IT⁩ אחרי אסון |
 | היקף | כל העסק (אנשים, תהליכים, מבנים) | טכנולוגי (שרתים, נתונים) |
