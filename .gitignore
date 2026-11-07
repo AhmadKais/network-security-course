@@ -10,3 +10,8 @@ __pycache__/
 # backups / temp
 *.bak
 .DS_Store
+# teacher answer copies stay local (never published)
+Worksheets/*_teacher.pdf
+# worksheet sources contain the answers - kept local; only student PDFs are published
+Worksheets/*.tex
+Worksheets/img/

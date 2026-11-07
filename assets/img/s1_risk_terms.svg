@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" font-family="Segoe UI, Arial, Helvetica, sans-serif" xml:space="preserve" style="white-space:pre">
+<defs><marker id="ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F172A"/></marker><marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D4ED8"/></marker><marker id="ah-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#047857"/></marker><marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B91C1C"/></marker><marker id="ah-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B45309"/></marker><marker id="ah-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6D28D9"/></marker><marker id="ah-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748B"/></marker><marker id="ah-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F766E"/></marker></defs>
+<rect x="1" y="1" width="898" height="298" rx="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+<text x="450.0" y="34" font-size="20" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">The language of risk</text>
+<rect x="30" y="90" width="150" height="120" rx="10" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+<text x="105" y="115" font-size="16" text-anchor="middle" font-weight="700" fill="#1D4ED8" dominant-baseline="middle">Asset</text>
+<text x="105" y="145" font-size="12.5" text-anchor="middle" font-weight="400" fill="#0F172A" dominant-baseline="middle">what we protect</text>
+<text x="105" y="182" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" font-style="italic" dominant-baseline="middle">e.g. customer DB</text>
+<line x1="182" y1="150" x2="200" y2="150" stroke="#0F172A" stroke-width="2.5" marker-end="url(#ah-ink)"/>
+<rect x="202" y="90" width="150" height="120" rx="10" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
+<text x="277" y="115" font-size="16" text-anchor="middle" font-weight="700" fill="#B45309" dominant-baseline="middle">Vulnerability</text>
+<text x="277" y="145" font-size="12.5" text-anchor="middle" font-weight="400" fill="#0F172A" dominant-baseline="middle">a weakness</text>
+<text x="277" y="182" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" font-style="italic" dominant-baseline="middle">e.g. unpatched server</text>
+<line x1="354" y1="150" x2="372" y2="150" stroke="#0F172A" stroke-width="2.5" marker-end="url(#ah-ink)"/>
+<rect x="374" y="90" width="150" height="120" rx="10" fill="#FEE2E2" stroke="#B91C1C" stroke-width="2"/>
+<text x="449" y="115" font-size="16" text-anchor="middle" font-weight="700" fill="#B91C1C" dominant-baseline="middle">Threat</text>
+<text x="449" y="145" font-size="12.5" text-anchor="middle" font-weight="400" fill="#0F172A" dominant-baseline="middle">who / what can exploit it</text>
+<text x="449" y="182" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" font-style="italic" dominant-baseline="middle">e.g. ransomware gang</text>
+<line x1="526" y1="150" x2="544" y2="150" stroke="#0F172A" stroke-width="2.5" marker-end="url(#ah-ink)"/>
+<rect x="546" y="90" width="150" height="120" rx="10" fill="#EDE9FE" stroke="#6D28D9" stroke-width="2"/>
+<text x="621" y="115" font-size="16" text-anchor="middle" font-weight="700" fill="#6D28D9" dominant-baseline="middle">Risk</text>
+<text x="621" y="145" font-size="12.5" text-anchor="middle" font-weight="400" fill="#0F172A" dominant-baseline="middle">chance x damage</text>
+<text x="621" y="182" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" font-style="italic" dominant-baseline="middle">e.g. HIGH</text>
+<line x1="698" y1="150" x2="716" y2="150" stroke="#0F172A" stroke-width="2.5" marker-end="url(#ah-ink)"/>
+<rect x="718" y="90" width="150" height="120" rx="10" fill="#D1FAE5" stroke="#047857" stroke-width="2"/>
+<text x="793" y="115" font-size="16" text-anchor="middle" font-weight="700" fill="#047857" dominant-baseline="middle">Control</text>
+<text x="793" y="145" font-size="12.5" text-anchor="middle" font-weight="400" fill="#0F172A" dominant-baseline="middle">what reduces risk</text>
+<text x="793" y="182" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" font-style="italic" dominant-baseline="middle">e.g. patch + backup</text>
+<text x="450" y="250" font-size="14" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Risk exists only when a THREAT can exploit a VULNERABILITY of a valuable ASSET</text>
+</svg>

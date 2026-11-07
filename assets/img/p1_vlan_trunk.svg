@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="440" viewBox="0 0 900 440" font-family="Segoe UI, Arial, Helvetica, sans-serif" xml:space="preserve" style="white-space:pre">
+<defs><marker id="ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F172A"/></marker><marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D4ED8"/></marker><marker id="ah-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#047857"/></marker><marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B91C1C"/></marker><marker id="ah-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B45309"/></marker><marker id="ah-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6D28D9"/></marker><marker id="ah-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748B"/></marker><marker id="ah-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F766E"/></marker></defs>
+<rect x="1" y="1" width="898" height="438" rx="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+<text x="450.0" y="34" font-size="20" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">VLANs and a trunk between two switches</text>
+<rect x="195.0" y="204" width="130" height="32" rx="6" fill="#0F766E"/><path d="M238,214 L278,214 M272,209 L278,214 L272,219 M282,226 L242,226 M248,221 L242,226 L248,231" stroke="#FFFFFF" stroke-width="2.4" fill="none"/>
+<text x="260" y="252" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">SW1</text>
+<rect x="575.0" y="204" width="130" height="32" rx="6" fill="#0F766E"/><path d="M618,214 L658,214 M652,209 L658,214 L652,219 M662,226 L622,226 M628,221 L622,226 L628,231" stroke="#FFFFFF" stroke-width="2.4" fill="none"/>
+<text x="640" y="252" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">SW2</text>
+<line x1="325" y1="220" x2="575" y2="220" stroke="#B45309" stroke-width="7"/>
+<text x="450" y="196" font-size="14" text-anchor="middle" font-weight="700" fill="#B45309" dominant-baseline="middle">TRUNK (802.1Q)</text>
+<rect x="365" y="236" width="80" height="26" rx="13" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+<text x="405.0" y="249.0" font-size="12" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">tag 10</text>
+<rect x="455" y="236" width="80" height="26" rx="13" fill="#D1FAE5" stroke="#047857" stroke-width="2"/>
+<text x="495.0" y="249.0" font-size="12" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">tag 20</text>
+<line x1="180" y1="100" x2="230" y2="204" stroke="#1D4ED8" stroke-width="3.5"/>
+<rect x="124" y="76" width="52" height="36" rx="4" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2.5"/><rect x="130" y="82" width="40" height="24" rx="2" fill="#FFFFFF" stroke="#1D4ED8" stroke-width="1"/><rect x="145" y="112" width="10" height="8" fill="#1D4ED8"/><rect x="132" y="120" width="36" height="5" rx="2" fill="#1D4ED8"/>
+<text x="150" y="140" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">PC1</text>
+<rect x="15" y="88" width="90" height="24" rx="12" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+<text x="60.0" y="100.0" font-size="12" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">VLAN 10</text>
+<line x1="150" y1="324" x2="230" y2="236" stroke="#047857" stroke-width="3.5"/>
+<rect x="124" y="326" width="52" height="36" rx="4" fill="#D1FAE5" stroke="#047857" stroke-width="2.5"/><rect x="130" y="332" width="40" height="24" rx="2" fill="#FFFFFF" stroke="#047857" stroke-width="1"/><rect x="145" y="362" width="10" height="8" fill="#047857"/><rect x="132" y="370" width="36" height="5" rx="2" fill="#047857"/>
+<text x="150" y="390" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">PC2</text>
+<rect x="15" y="338" width="90" height="24" rx="12" fill="#D1FAE5" stroke="#047857" stroke-width="2"/>
+<text x="60.0" y="350.0" font-size="12" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">VLAN 20</text>
+<line x1="720" y1="100" x2="670" y2="204" stroke="#1D4ED8" stroke-width="3.5"/>
+<rect x="724" y="76" width="52" height="36" rx="4" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2.5"/><rect x="730" y="82" width="40" height="24" rx="2" fill="#FFFFFF" stroke="#1D4ED8" stroke-width="1"/><rect x="745" y="112" width="10" height="8" fill="#1D4ED8"/><rect x="732" y="120" width="36" height="5" rx="2" fill="#1D4ED8"/>
+<text x="750" y="140" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">PC3</text>
+<rect x="795" y="88" width="90" height="24" rx="12" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+<text x="840.0" y="100.0" font-size="12" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">VLAN 10</text>
+<line x1="750" y1="324" x2="670" y2="236" stroke="#047857" stroke-width="3.5"/>
+<rect x="724" y="326" width="52" height="36" rx="4" fill="#D1FAE5" stroke="#047857" stroke-width="2.5"/><rect x="730" y="332" width="40" height="24" rx="2" fill="#FFFFFF" stroke="#047857" stroke-width="1"/><rect x="745" y="362" width="10" height="8" fill="#047857"/><rect x="732" y="370" width="36" height="5" rx="2" fill="#047857"/>
+<text x="750" y="390" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">PC4</text>
+<rect x="795" y="338" width="90" height="24" rx="12" fill="#D1FAE5" stroke="#047857" stroke-width="2"/>
+<text x="840.0" y="350.0" font-size="12" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">VLAN 20</text>
+<text x="450" y="300" font-size="13" text-anchor="middle" font-weight="400" fill="#64748B" dominant-baseline="middle">access ports: one VLAN each, frames leave untagged</text>
+<text x="450" y="322" font-size="13" text-anchor="middle" font-weight="400" fill="#64748B" dominant-baseline="middle">trunk port: carries many VLANs, each frame gets a 4-byte tag</text>
+<text x="450" y="410" font-size="14" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">PC1 &lt;-&gt; PC3 talk (same VLAN 10).  PC1 &lt;-&gt; PC2 need a ROUTER (different VLANs).</text>
+</svg>

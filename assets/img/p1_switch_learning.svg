@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="470" viewBox="0 0 900 470" font-family="Segoe UI, Arial, Helvetica, sans-serif" xml:space="preserve" style="white-space:pre">
+<defs><marker id="ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F172A"/></marker><marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D4ED8"/></marker><marker id="ah-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#047857"/></marker><marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B91C1C"/></marker><marker id="ah-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B45309"/></marker><marker id="ah-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6D28D9"/></marker><marker id="ah-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748B"/></marker><marker id="ah-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F766E"/></marker></defs>
+<rect x="1" y="1" width="898" height="468" rx="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+<text x="450.0" y="34" font-size="20" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">How a switch learns MAC addresses</text>
+<rect x="255.0" y="224" width="150" height="32" rx="6" fill="#0F766E"/><path d="M308,234 L348,234 M342,229 L348,234 L342,239 M352,246 L312,246 M318,241 L312,246 L318,251" stroke="#FFFFFF" stroke-width="2.4" fill="none"/>
+<text x="330" y="272" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">SW1</text>
+<line x1="140" y1="132" x2="285" y2="224" stroke="#94A3B8" stroke-width="3"/>
+<rect x="84" y="86" width="52" height="36" rx="4" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2.5"/><rect x="90" y="92" width="40" height="24" rx="2" fill="#FFFFFF" stroke="#1D4ED8" stroke-width="1"/><rect x="105" y="122" width="10" height="8" fill="#1D4ED8"/><rect x="92" y="130" width="36" height="5" rx="2" fill="#1D4ED8"/>
+<text x="110" y="150" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">PC-A</text>
+<text x="110" y="167" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">AAAA  Fa0/1</text>
+<line x1="520" y1="132" x2="375" y2="224" stroke="#94A3B8" stroke-width="3"/>
+<rect x="524" y="86" width="52" height="36" rx="4" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2.5"/><rect x="530" y="92" width="40" height="24" rx="2" fill="#FFFFFF" stroke="#1D4ED8" stroke-width="1"/><rect x="545" y="122" width="10" height="8" fill="#1D4ED8"/><rect x="532" y="130" width="36" height="5" rx="2" fill="#1D4ED8"/>
+<text x="550" y="150" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">PC-B</text>
+<text x="550" y="167" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">BBBB  Fa0/2</text>
+<line x1="140" y1="332" x2="285" y2="256" stroke="#94A3B8" stroke-width="3"/>
+<rect x="84" y="336" width="52" height="36" rx="4" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2.5"/><rect x="90" y="342" width="40" height="24" rx="2" fill="#FFFFFF" stroke="#1D4ED8" stroke-width="1"/><rect x="105" y="372" width="10" height="8" fill="#1D4ED8"/><rect x="92" y="380" width="36" height="5" rx="2" fill="#1D4ED8"/>
+<text x="110" y="400" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">PC-C</text>
+<text x="110" y="417" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">CCCC  Fa0/3</text>
+<line x1="520" y1="332" x2="375" y2="256" stroke="#94A3B8" stroke-width="3"/>
+<rect x="524" y="336" width="52" height="36" rx="4" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2.5"/><rect x="530" y="342" width="40" height="24" rx="2" fill="#FFFFFF" stroke="#1D4ED8" stroke-width="1"/><rect x="545" y="372" width="10" height="8" fill="#1D4ED8"/><rect x="532" y="380" width="36" height="5" rx="2" fill="#1D4ED8"/>
+<text x="550" y="400" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">PC-D</text>
+<text x="550" y="417" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">DDDD  Fa0/4</text>
+<line x1="165" y1="150" x2="262" y2="210" stroke="#1D4ED8" stroke-width="3.5" marker-end="url(#ah-blue)"/>
+<circle cx="205" cy="168" r="13" fill="#1D4ED8"/><text x="205" y="169" font-size="13" text-anchor="middle" font-weight="700" fill="#FFFFFF" dominant-baseline="middle">1</text>
+<line x1="375" y1="218" x2="495" y2="150" stroke="#B45309" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#ah-amber)"/>
+<line x1="285" y1="262" x2="165" y2="330" stroke="#B45309" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#ah-amber)"/>
+<line x1="375" y1="262" x2="495" y2="330" stroke="#B45309" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#ah-amber)"/>
+<circle cx="452" cy="175" r="13" fill="#B45309"/><text x="452" y="176" font-size="13" text-anchor="middle" font-weight="700" fill="#FFFFFF" dominant-baseline="middle">2</text>
+<rect x="625" y="95" width="255" height="300" rx="10" fill="#FFFFFF" stroke="#334155" stroke-width="2"/>
+<text x="752" y="117" font-size="14" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">MAC address table</text>
+<line x1="635" y1="133" x2="870" y2="133" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="700" y="150" font-size="13" text-anchor="middle" font-weight="700" fill="#64748B" dominant-baseline="middle">MAC</text>
+<text x="810" y="150" font-size="13" text-anchor="middle" font-weight="700" fill="#64748B" dominant-baseline="middle">Port</text>
+<rect x="637" y="163" width="231" height="30" rx="4" fill="#D1FAE5" stroke="#047857" stroke-width="1.5"/>
+<text x="700" y="178" font-size="14" text-anchor="middle" font-weight="400" fill="#0F172A" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">AAAA</text>
+<text x="810" y="178" font-size="14" text-anchor="middle" font-weight="400" fill="#0F172A" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">Fa0/1</text>
+<text x="752" y="210" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" font-style="italic" dominant-baseline="middle">(BBBB not learned yet)</text>
+<circle cx="650" cy="250" r="11" fill="#1D4ED8"/><text x="650" y="251" font-size="13" text-anchor="middle" font-weight="700" fill="#FFFFFF" dominant-baseline="middle">1</text>
+<text x="668" y="250" font-size="12.5" text-anchor="start" font-weight="700" fill="#0F172A" dominant-baseline="middle">A sends to B: switch LEARNS</text>
+<text x="668" y="270" font-size="12.5" text-anchor="start" font-weight="400" fill="#0F172A" dominant-baseline="middle">source AAAA on port Fa0/1</text>
+<circle cx="650" cy="310" r="11" fill="#B45309"/><text x="650" y="311" font-size="13" text-anchor="middle" font-weight="700" fill="#FFFFFF" dominant-baseline="middle">2</text>
+<text x="668" y="310" font-size="12.5" text-anchor="start" font-weight="700" fill="#0F172A" dominant-baseline="middle">Destination BBBB unknown:</text>
+<text x="668" y="330" font-size="12.5" text-anchor="start" font-weight="400" fill="#0F172A" dominant-baseline="middle">FLOOD out all other ports</text>
+<text x="668" y="360" font-size="12.5" text-anchor="start" font-weight="400" fill="#64748B" dominant-baseline="middle">When B replies, BBBB is</text>
+<text x="668" y="378" font-size="12.5" text-anchor="start" font-weight="400" fill="#64748B" dominant-baseline="middle">learned too -&gt; no more flood</text>
+<text x="450" y="445" font-size="13.5" text-anchor="middle" font-weight="400" fill="#64748B" dominant-baseline="middle">Learn the SOURCE  -&gt;  forward by the DESTINATION  -&gt;  unknown = flood  -&gt;  forget after 300 s</text>
+</svg>

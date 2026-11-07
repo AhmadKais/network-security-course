@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="440" viewBox="0 0 900 440" font-family="Segoe UI, Arial, Helvetica, sans-serif" xml:space="preserve" style="white-space:pre">
+<defs><marker id="ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F172A"/></marker><marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D4ED8"/></marker><marker id="ah-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#047857"/></marker><marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B91C1C"/></marker><marker id="ah-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B45309"/></marker><marker id="ah-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6D28D9"/></marker><marker id="ah-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748B"/></marker><marker id="ah-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F766E"/></marker></defs>
+<rect x="1" y="1" width="898" height="438" rx="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+<text x="450.0" y="34" font-size="20" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Cisco IOS command modes (each mode lives inside the previous one)</text>
+<rect x="40" y="80" width="820" height="310" rx="10" fill="#F8FAFC" stroke="#334155" stroke-width="2"/>
+<text x="60" y="102" font-size="15" text-anchor="start" font-weight="700" fill="#0F172A" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">User EXEC   Router&gt;</text>
+<text x="840" y="102" font-size="13" text-anchor="end" font-weight="400" fill="#64748B" dominant-baseline="middle">look only (ping, show)</text>
+<rect x="80" y="125" width="760" height="250" rx="10" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+<text x="100" y="147" font-size="15" text-anchor="start" font-weight="700" fill="#0F172A" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">Privileged EXEC   Router#</text>
+<text x="820" y="147" font-size="13" text-anchor="end" font-weight="400" fill="#64748B" dominant-baseline="middle">all show + copy, reload, debug</text>
+<rect x="120" y="170" width="700" height="190" rx="10" fill="#D1FAE5" stroke="#047857" stroke-width="2"/>
+<text x="140" y="192" font-size="15" text-anchor="start" font-weight="700" fill="#0F172A" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">Global config   Router(config)#</text>
+<text x="800" y="192" font-size="13" text-anchor="end" font-weight="400" fill="#64748B" dominant-baseline="middle">changes the whole device</text>
+<rect x="160" y="215" width="620" height="38" rx="10" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
+<text x="180" y="234" font-size="14" text-anchor="start" font-weight="700" fill="#0F172A" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">Router(config-if)#</text>
+<text x="760" y="234" font-size="13" text-anchor="end" font-weight="400" fill="#64748B" dominant-baseline="middle">one interface</text>
+<rect x="160" y="261" width="620" height="38" rx="10" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
+<text x="180" y="280" font-size="14" text-anchor="start" font-weight="700" fill="#0F172A" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">Router(config-line)#</text>
+<text x="760" y="280" font-size="13" text-anchor="end" font-weight="400" fill="#64748B" dominant-baseline="middle">console / vty lines</text>
+<rect x="160" y="307" width="620" height="38" rx="10" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
+<text x="180" y="326" font-size="14" text-anchor="start" font-weight="700" fill="#0F172A" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">Router(config-router)#</text>
+<text x="760" y="326" font-size="13" text-anchor="end" font-weight="400" fill="#64748B" dominant-baseline="middle">routing protocol</text>
+<text x="450" y="415" font-size="13" text-anchor="middle" font-weight="400" fill="#0F172A" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">enable  -&gt;  configure terminal  -&gt;  interface g0/0     |     exit = one level up,  end / Ctrl+Z = back to #</text>
+</svg>

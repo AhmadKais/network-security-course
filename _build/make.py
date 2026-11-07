@@ -10,6 +10,9 @@ Commands (run from Course_Materials/):
   python3 _build/make.py slides  rebuild every presentation.html from _build/slides_src
   python3 _build/make.py book    assemble Full_Course.pdf from the chapter .tex files
   python3 _build/make.py all     slides + latex + book
+  python3 _build/make.py figures      regenerate assets/img/*.svg and Worksheets/img/*.png
+  python3 _build/make.py worksheets   compile every Worksheets/Worksheet_*.tex twice:
+                                      student copy (X.pdf) and teacher copy with answers (X_teacher.pdf)
   python3 _build/make.py convert [--force]
                                  (re)generate .tex from the ORIGINAL html drafts in
                                  _build/_source_html_originals/. Skips any .tex that already
@@ -165,6 +168,25 @@ def build_md():
         write(os.path.join(d,'study_material.md'), _conv(dom.root))
         print(f"md {folder}: OK")
 
+def build_figures():
+    subprocess.run([sys.executable, os.path.join(BUILD, 'figures.py')], check=True)
+    subprocess.run(['node', os.path.join(BUILD, 'svg2png.js'), os.path.join('Worksheets', 'img')], cwd=ROOT, check=True)
+
+
+def build_worksheets():
+    wd = os.path.join(ROOT, 'Worksheets')
+    for tex in sorted(f for f in os.listdir(wd) if f.startswith('Worksheet_') and f.endswith('.tex')):
+        stem = tex[:-4]
+        for job, pre in ((stem, ''), (stem + '_teacher', r'\def\withanswers{1}')):
+            for _ in range(2):   # second pass resolves "page X of Y"
+                subprocess.run(['lualatex', '-interaction=nonstopmode', '-halt-on-error', '-jobname=' + job,
+                                pre + r'\input{' + tex + '}'], cwd=wd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            for ext in ('aux', 'log', 'out'):
+                f = os.path.join(wd, job + '.' + ext)
+                if os.path.exists(f): os.remove(f)
+            ok = os.path.exists(os.path.join(wd, job + '.pdf'))
+            print(f"worksheet {job}: {'OK' if ok else 'FAILED'}")
+
 if __name__=='__main__':
     args=sys.argv[1:]
     what=args[0] if args else 'all'
@@ -174,5 +196,7 @@ if __name__=='__main__':
     elif what=='latex':      build_latex()
     elif what=='book':       build_book()
     elif what=='md':         build_md()
+    elif what=='figures':    build_figures()
+    elif what=='worksheets': build_worksheets()
     elif what=='all':        build_slides(); build_latex(); build_book(); build_md()
     else: print(__doc__)

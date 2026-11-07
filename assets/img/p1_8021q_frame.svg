@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="330" viewBox="0 0 900 330" font-family="Segoe UI, Arial, Helvetica, sans-serif" xml:space="preserve" style="white-space:pre">
+<defs><marker id="ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F172A"/></marker><marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D4ED8"/></marker><marker id="ah-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#047857"/></marker><marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B91C1C"/></marker><marker id="ah-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B45309"/></marker><marker id="ah-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6D28D9"/></marker><marker id="ah-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748B"/></marker><marker id="ah-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F766E"/></marker></defs>
+<rect x="1" y="1" width="898" height="328" rx="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+<text x="450.0" y="34" font-size="20" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">The 4-byte 802.1Q tag</text>
+<text x="40" y="90" font-size="14" text-anchor="start" font-weight="700" fill="#64748B" dominant-baseline="middle">Normal Ethernet frame</text>
+<rect x="40" y="105" width="126" height="44" rx="10" fill="#F1F5F9" stroke="#334155" stroke-width="2"/>
+<text x="103.0" y="127.0" font-size="14" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">Dest MAC</text>
+<rect x="170" y="105" width="126" height="44" rx="10" fill="#F1F5F9" stroke="#334155" stroke-width="2"/>
+<text x="233.0" y="127.0" font-size="14" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">Src MAC</text>
+<rect x="300" y="105" width="76" height="44" rx="10" fill="#F1F5F9" stroke="#334155" stroke-width="2"/>
+<text x="338.0" y="127.0" font-size="14" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">Type</text>
+<rect x="380" y="105" width="316" height="44" rx="10" fill="#EDE9FE" stroke="#6D28D9" stroke-width="2"/>
+<text x="538.0" y="127.0" font-size="14" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">Data (payload)</text>
+<rect x="700" y="105" width="66" height="44" rx="10" fill="#F1F5F9" stroke="#334155" stroke-width="2"/>
+<text x="733.0" y="127.0" font-size="14" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">FCS</text>
+<text x="40" y="185" font-size="14" text-anchor="start" font-weight="700" fill="#64748B" dominant-baseline="middle">Tagged 802.1Q frame (on a trunk)</text>
+<rect x="40" y="200" width="126" height="44" rx="10" fill="#F1F5F9" stroke="#334155" stroke-width="2"/>
+<text x="103.0" y="222.0" font-size="14" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">Dest MAC</text>
+<rect x="170" y="200" width="126" height="44" rx="10" fill="#F1F5F9" stroke="#334155" stroke-width="2"/>
+<text x="233.0" y="222.0" font-size="14" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">Src MAC</text>
+<rect x="300" y="200" width="106" height="44" rx="10" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
+<text x="353.0" y="222.0" font-size="14" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">802.1Q TAG</text>
+<rect x="410" y="200" width="76" height="44" rx="10" fill="#F1F5F9" stroke="#334155" stroke-width="2"/>
+<text x="448.0" y="222.0" font-size="14" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">Type</text>
+<rect x="490" y="200" width="206" height="44" rx="10" fill="#EDE9FE" stroke="#6D28D9" stroke-width="2"/>
+<text x="593.0" y="222.0" font-size="14" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">Data</text>
+<rect x="700" y="200" width="66" height="44" rx="10" fill="#F1F5F9" stroke="#334155" stroke-width="2"/>
+<text x="733.0" y="222.0" font-size="14" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">FCS</text>
+<path d="M300,246 L250,280 M406,246 L560,280" stroke="#B45309" fill="none" stroke-width="1.8" stroke-dasharray="7 5"/>
+<rect x="250" y="278" width="310" height="36" rx="10" fill="#FFFBEB" stroke="#B45309" stroke-width="2"/>
+<text x="405.0" y="296.0" font-size="12.5" text-anchor="middle" font-weight="600" fill="#0F172A" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">TPID 0x8100 | PRI 3b | VLAN ID 12 bits</text>
+<text x="590" y="296" font-size="13" text-anchor="start" font-weight="700" fill="#B45309" dominant-baseline="middle">12 bits -&gt; VLANs 1..4094</text>
+</svg>

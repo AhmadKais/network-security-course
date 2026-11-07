@@ -49,6 +49,10 @@ Switch(config-if)#         Switch(config-line)#    Switch(config-router)#
 > - **קיצורים** – `⁦sh run⁩` = `⁦show running-config⁩`, `⁦conf t⁩` = `⁦configure terminal⁩`, `⁦int fa0/1⁩` = `⁦interface FastEthernet0/1⁩`. ⁦IOS⁩ מבין כל קיצור שהוא **חד-משמעי**.
 > - **`⁦do⁩`** – להריץ פקודת `⁦show⁩` מתוך מצב ⁦config⁩ בלי לצאת: `(⁦config)# do show ip route⁩`.
 
+<p align="center"><img src="../../assets/img/p1_ios_modes.svg" alt="IOS modes" width="760"></p>
+
+_🖼️ מצבי העבודה של ⁦IOS⁩ מקוננים זה בתוך זה. הסימן בסוף שורת הפקודה (> , # , (⁦config)#)⁩ אומר תמיד באיזה מצב אתם ומה מותר לכם לעשות._
+
 ## ⁦8.2 running-config⁩ לעומת ⁦startup-config⁩ – למה ⁦write memory⁩ מציל שעות
 
 זו הטעות שקורית למישהו בכל כיתה, פעם אחת, ואז לא שוב.
@@ -198,6 +202,23 @@ TOP-DOWN  (start from what the user sees)   Use when: "only X does not work"
 </div>
 
 **הכלל:** כל בדיקה תלויה רק בבדיקות שמעליה בטבלה. הבדיקה הראשונה שנכשלת **מאתרת** את הבעיה. אחרי שמצאתם את השכבה – רק אז פותחים קונפיגורציה, ורק של המכשיר הרלוונטי.
+
+### 📊 תרשים: שיטת האבחון מלמטה למעלה
+
+```mermaid
+flowchart TD
+    S["Problem: PC cannot reach server"] --> L1{"Link light on?<br/>show ip int brief = up/up?"}
+    L1 -- no --> F1["Layer 1: cable, port, shutdown"]
+    L1 -- yes --> L2{"Correct VLAN / trunk?<br/>show vlan brief"}
+    L2 -- no --> F2["Layer 2: VLAN, trunk, err-disabled"]
+    L2 -- yes --> L3{"ping gateway works?"}
+    L3 -- no --> F3["Layer 3: IP, mask, gateway"]
+    L3 -- yes --> L4{"ping server IP works?"}
+    L4 -- no --> F4["Routing / ACL on the path"]
+    L4 -- yes --> F5["DNS or application (port)"]
+```
+
+_עובדים משכבה ⁦1⁩ כלפי מעלה, ובכל שלב מוכיחים בפקודה אחת. כך לא מבזבזים זמן על ⁦ACL⁩ כשהכבל בכלל לא מחובר._
 
 ## ⁦8.8⁩ הפקודות – מה כל אחת מוכיחה
 

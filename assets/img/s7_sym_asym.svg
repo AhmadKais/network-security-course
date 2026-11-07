@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="470" viewBox="0 0 900 470" font-family="Segoe UI, Arial, Helvetica, sans-serif" xml:space="preserve" style="white-space:pre">
+<defs><marker id="ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F172A"/></marker><marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D4ED8"/></marker><marker id="ah-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#047857"/></marker><marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B91C1C"/></marker><marker id="ah-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B45309"/></marker><marker id="ah-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6D28D9"/></marker><marker id="ah-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748B"/></marker><marker id="ah-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F766E"/></marker></defs>
+<rect x="1" y="1" width="898" height="468" rx="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+<text x="450.0" y="34" font-size="20" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Symmetric vs asymmetric encryption</text>
+<text x="450" y="82" font-size="15" text-anchor="middle" font-weight="700" fill="#1D4ED8" dominant-baseline="middle">Symmetric: ONE shared secret key</text>
+<path d="M58,176 C58,152 102,152 102,176 Z" fill="#1D4ED8"/><circle cx="80" cy="140" r="14" fill="#1D4ED8"/>
+<text x="80" y="192" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Alice</text>
+<path d="M798,176 C798,152 842,152 842,176 Z" fill="#1D4ED8"/><circle cx="820" cy="140" r="14" fill="#1D4ED8"/>
+<text x="820" y="192" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Bob</text>
+<rect x="170" y="125" width="140" height="50" rx="10" fill="#FFFFFF" stroke="#334155" stroke-width="2"/>
+<text x="240.0" y="150.0" font-size="15" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">Hello</text>
+<line x1="312" y1="150" x2="368" y2="150" stroke="#1D4ED8" stroke-width="2.5" marker-end="url(#ah-blue)"/>
+<rect x="370" y="125" width="160" height="50" rx="10" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+<text x="450.0" y="150.0" font-size="15" text-anchor="middle" font-weight="600" fill="#0F172A" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">k#9Lq..</text>
+<line x1="532" y1="150" x2="588" y2="150" stroke="#1D4ED8" stroke-width="2.5" marker-end="url(#ah-blue)"/>
+<rect x="590" y="125" width="140" height="50" rx="10" fill="#FFFFFF" stroke="#334155" stroke-width="2"/>
+<text x="660.0" y="150.0" font-size="15" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">Hello</text>
+<text x="340" y="196" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" dominant-baseline="middle">encrypt with K</text>
+<text x="560" y="196" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" dominant-baseline="middle">decrypt with K</text>
+<text x="450" y="222" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">AES, 3DES - fast, but how do we share K safely?</text>
+<line x1="30" y1="245" x2="870" y2="245" stroke="#E2E8F0" stroke-width="2"/>
+<text x="450" y="272" font-size="15" text-anchor="middle" font-weight="700" fill="#047857" dominant-baseline="middle">Asymmetric: key PAIR (public + private)</text>
+<path d="M58,371 C58,347 102,347 102,371 Z" fill="#1D4ED8"/><circle cx="80" cy="335" r="14" fill="#1D4ED8"/>
+<text x="80" y="387" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Alice</text>
+<path d="M798,371 C798,347 842,347 842,371 Z" fill="#1D4ED8"/><circle cx="820" cy="335" r="14" fill="#1D4ED8"/>
+<text x="820" y="387" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Bob</text>
+<rect x="170" y="320" width="140" height="50" rx="10" fill="#FFFFFF" stroke="#334155" stroke-width="2"/>
+<text x="240.0" y="345.0" font-size="15" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">Hello</text>
+<line x1="312" y1="345" x2="368" y2="345" stroke="#047857" stroke-width="2.5" marker-end="url(#ah-green)"/>
+<rect x="370" y="320" width="160" height="50" rx="10" fill="#D1FAE5" stroke="#047857" stroke-width="2"/>
+<text x="450.0" y="345.0" font-size="15" text-anchor="middle" font-weight="600" fill="#0F172A" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">Zx7!p..</text>
+<line x1="532" y1="345" x2="588" y2="345" stroke="#047857" stroke-width="2.5" marker-end="url(#ah-green)"/>
+<rect x="590" y="320" width="140" height="50" rx="10" fill="#FFFFFF" stroke="#334155" stroke-width="2"/>
+<text x="660.0" y="345.0" font-size="15" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">Hello</text>
+<text x="340" y="391" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" dominant-baseline="middle">Bob's PUBLIC key</text>
+<text x="560" y="391" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" dominant-baseline="middle">Bob's PRIVATE key</text>
+<text x="450" y="425" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">RSA, ECC - no shared secret needed, but ~1000x slower</text>
+<text x="450" y="450" font-size="12.5" text-anchor="middle" font-weight="400" fill="#64748B" dominant-baseline="middle">Real life (HTTPS): asymmetric to exchange a key, then symmetric for the data = HYBRID</text>
+</svg>

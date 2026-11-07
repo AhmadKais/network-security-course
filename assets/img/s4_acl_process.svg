@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="430" viewBox="0 0 900 430" font-family="Segoe UI, Arial, Helvetica, sans-serif" xml:space="preserve" style="white-space:pre">
+<defs><marker id="ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F172A"/></marker><marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D4ED8"/></marker><marker id="ah-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#047857"/></marker><marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B91C1C"/></marker><marker id="ah-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B45309"/></marker><marker id="ah-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6D28D9"/></marker><marker id="ah-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748B"/></marker><marker id="ah-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F766E"/></marker></defs>
+<rect x="1" y="1" width="898" height="428" rx="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+<text x="450.0" y="34" font-size="20" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">How an ACL is processed</text>
+<rect x="40" y="80" width="200" height="60" rx="10" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+<text x="140.0" y="100.9" font-size="14" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">packet arrives</text>
+<text x="140.0" y="119.10000000000001" font-size="14" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">src 10.1.1.50</text>
+<rect x="330" y="90" width="330" height="50" rx="10" fill="#F1F5F9" stroke="#334155" stroke-width="2"/>
+<text x="495.0" y="115.0" font-size="14" text-anchor="middle" font-weight="400" fill="#0F172A" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">10  deny host 10.1.1.66</text>
+<text x="690" y="115" font-size="13" text-anchor="start" font-weight="400" fill="#64748B" dominant-baseline="middle">no match -&gt; next line</text>
+<line x1="495" y1="142" x2="495" y2="178" stroke="#64748B" stroke-width="2" marker-end="url(#ah-slate)"/>
+<rect x="330" y="180" width="330" height="50" rx="10" fill="#D1FAE5" stroke="#047857" stroke-width="2"/>
+<text x="495.0" y="205.0" font-size="14" text-anchor="middle" font-weight="700" fill="#0F172A" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">20  permit 10.1.1.0 0.0.0.255</text>
+<text x="690" y="205" font-size="13" text-anchor="start" font-weight="700" fill="#047857" dominant-baseline="middle">MATCH -&gt; PERMIT, stop</text>
+<line x1="495" y1="232" x2="495" y2="268" stroke="#64748B" stroke-width="2" marker-end="url(#ah-slate)"/>
+<rect x="330" y="270" width="330" height="50" rx="10" fill="#F1F5F9" stroke="#334155" stroke-width="2"/>
+<text x="495.0" y="295.0" font-size="14" text-anchor="middle" font-weight="400" fill="#0F172A" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">30  deny any</text>
+<line x1="240" y1="110" x2="326" y2="115" stroke="#1D4ED8" stroke-width="2.5" marker-end="url(#ah-blue)"/>
+<rect x="330" y="360" width="330" height="46" rx="10" fill="#FEE2E2" stroke="#B91C1C" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="495.0" y="383.0" font-size="14" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">implicit deny any (invisible)</text>
+<text x="690" y="383" font-size="13" text-anchor="start" font-weight="400" fill="#B91C1C" dominant-baseline="middle">always the last line</text>
+<text x="160" y="230" font-size="16" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Top -&gt; down</text>
+<text x="160" y="255" font-size="14" text-anchor="middle" font-weight="400" fill="#64748B" dominant-baseline="middle">first match wins</text>
+<text x="160" y="280" font-size="14" text-anchor="middle" font-weight="400" fill="#64748B" dominant-baseline="middle">order matters!</text>
+</svg>

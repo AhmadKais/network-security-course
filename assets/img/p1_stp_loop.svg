@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="430" viewBox="0 0 900 430" font-family="Segoe UI, Arial, Helvetica, sans-serif" xml:space="preserve" style="white-space:pre">
+<defs><marker id="ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F172A"/></marker><marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D4ED8"/></marker><marker id="ah-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#047857"/></marker><marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B91C1C"/></marker><marker id="ah-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B45309"/></marker><marker id="ah-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6D28D9"/></marker><marker id="ah-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748B"/></marker><marker id="ah-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F766E"/></marker></defs>
+<rect x="1" y="1" width="898" height="428" rx="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+<text x="450.0" y="34" font-size="20" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Spanning Tree breaks the loop by blocking one port</text>
+<line x1="450" y1="120" x2="230" y2="320" stroke="#047857" stroke-width="5"/>
+<line x1="450" y1="120" x2="670" y2="320" stroke="#047857" stroke-width="5"/>
+<line x1="230" y1="320" x2="670" y2="320" stroke="#94A3B8" stroke-width="5" stroke-dasharray="7 5"/>
+<rect x="395.0" y="104" width="110" height="32" rx="6" fill="#0F766E"/><path d="M428,114 L468,114 M462,109 L468,114 L462,119 M472,126 L432,126 M438,121 L432,126 L438,131" stroke="#FFFFFF" stroke-width="2.4" fill="none"/>
+<rect x="175.0" y="304" width="110" height="32" rx="6" fill="#0F766E"/><path d="M208,314 L248,314 M242,309 L248,314 L242,319 M252,326 L212,326 M218,321 L212,326 L218,331" stroke="#FFFFFF" stroke-width="2.4" fill="none"/>
+<rect x="615.0" y="304" width="110" height="32" rx="6" fill="#0F766E"/><path d="M648,314 L688,314 M682,309 L688,314 L682,319 M692,326 L652,326 M658,321 L652,326 L658,331" stroke="#FFFFFF" stroke-width="2.4" fill="none"/>
+<rect x="380" y="62" width="140" height="28" rx="14" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
+<text x="450.0" y="76.0" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">ROOT BRIDGE</text>
+<text x="515" y="122" font-size="13" text-anchor="start" font-weight="700" fill="#0F172A" dominant-baseline="middle">SW1  priority 4096</text>
+<text x="230" y="358" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">SW2  priority 32768</text>
+<text x="670" y="358" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">SW3  priority 32768</text>
+<text x="305" y="272" font-size="13" text-anchor="middle" font-weight="700" fill="#047857" dominant-baseline="middle">RP</text>
+<text x="595" y="272" font-size="13" text-anchor="middle" font-weight="700" fill="#047857" dominant-baseline="middle">RP</text>
+<text x="430" y="172" font-size="13" text-anchor="middle" font-weight="700" fill="#1D4ED8" dominant-baseline="middle">DP</text>
+<text x="470" y="172" font-size="13" text-anchor="middle" font-weight="700" fill="#1D4ED8" dominant-baseline="middle">DP</text>
+<text x="298" y="305" font-size="13" text-anchor="middle" font-weight="700" fill="#1D4ED8" dominant-baseline="middle">DP</text>
+<circle cx="595" cy="320" r="14" fill="#FFFFFF" stroke="#B91C1C" stroke-width="2.5"/><path d="M589.5,314.5 L600.5,325.5 M600.5,314.5 L589.5,325.5" stroke="#B91C1C" fill="none" stroke-width="3"/>
+<text x="595" y="293" font-size="12" text-anchor="middle" font-weight="700" fill="#B91C1C" dominant-baseline="middle">BLOCKED</text>
+<rect x="40" y="380" width="820" height="36" rx="10" fill="#F8FAFC" stroke="#334155" stroke-width="2"/>
+<text x="450.0" y="398.0" font-size="13" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">RP = Root Port (best path to root)   DP = Designated Port (forwards)   X = blocked -&gt; no loop</text>
+</svg>

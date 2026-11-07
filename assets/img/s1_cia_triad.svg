@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="470" viewBox="0 0 900 470" font-family="Segoe UI, Arial, Helvetica, sans-serif" xml:space="preserve" style="white-space:pre">
+<defs><marker id="ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F172A"/></marker><marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D4ED8"/></marker><marker id="ah-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#047857"/></marker><marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B91C1C"/></marker><marker id="ah-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B45309"/></marker><marker id="ah-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6D28D9"/></marker><marker id="ah-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748B"/></marker><marker id="ah-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F766E"/></marker></defs>
+<rect x="1" y="1" width="898" height="468" rx="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+<text x="450.0" y="34" font-size="20" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">The CIA triad - the three goals of security</text>
+<path d="M450,95 L215,395 L685,395 Z" stroke="#0F172A" fill="#F8FAFC" stroke-width="3"/>
+<rect x="345" y="70" width="210" height="64" rx="10" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+<text x="450.0" y="93.55" font-size="13" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">Confidentiality</text>
+<text x="450.0" y="110.45" font-size="13" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">only the right people read</text>
+<rect x="90" y="360" width="250" height="64" rx="10" fill="#D1FAE5" stroke="#047857" stroke-width="2"/>
+<text x="215.0" y="383.55" font-size="13" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">Integrity</text>
+<text x="215.0" y="400.45" font-size="13" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">data is not changed</text>
+<rect x="560" y="360" width="250" height="64" rx="10" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
+<text x="685.0" y="383.55" font-size="13" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">Availability</text>
+<text x="685.0" y="400.45" font-size="13" text-anchor="middle" font-weight="600" fill="#0F172A" dominant-baseline="middle">service works when needed</text>
+<path d="M435.6,251.8 L435.6,239.0 A14.4,14.4 0 0 1 464.4,239.0 L464.4,251.8" stroke="#1D4ED8" fill="none" stroke-width="5.120000000000001"/>
+<rect x="429.2" y="250.2" width="41.6" height="32.0" rx="4.800000000000001" fill="#1D4ED8"/><circle cx="450" cy="264.6" r="4.800000000000001" fill="#FFFFFF"/>
+<text x="450" y="310" font-size="24" text-anchor="middle" font-weight="800" fill="#0F172A" dominant-baseline="middle">CIA</text>
+<text x="150" y="140" font-size="12.5" text-anchor="start" font-weight="700" fill="#B91C1C" dominant-baseline="middle">Attack: eavesdropping</text>
+<text x="150" y="160" font-size="12.5" text-anchor="start" font-weight="400" fill="#64748B" dominant-baseline="middle">Defense: encryption, ACL</text>
+<text x="40" y="260" font-size="12.5" text-anchor="start" font-weight="700" fill="#B91C1C" dominant-baseline="middle">Attack: tampering</text>
+<text x="40" y="280" font-size="12.5" text-anchor="start" font-weight="400" fill="#64748B" dominant-baseline="middle">Defense: hash, signature</text>
+<text x="860" y="260" font-size="12.5" text-anchor="end" font-weight="700" fill="#B91C1C" dominant-baseline="middle">Attack: DoS / DDoS</text>
+<text x="860" y="280" font-size="12.5" text-anchor="end" font-weight="400" fill="#64748B" dominant-baseline="middle">Defense: redundancy, backups</text>
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420" font-family="Segoe UI, Arial, Helvetica, sans-serif" xml:space="preserve" style="white-space:pre">
+<defs><marker id="ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F172A"/></marker><marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D4ED8"/></marker><marker id="ah-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#047857"/></marker><marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B91C1C"/></marker><marker id="ah-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B45309"/></marker><marker id="ah-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6D28D9"/></marker><marker id="ah-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748B"/></marker><marker id="ah-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F766E"/></marker></defs>
+<rect x="1" y="1" width="898" height="418" rx="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+<text x="450.0" y="34" font-size="20" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">AAA: three questions answered by one central server</text>
+<path d="M58,226 C58,202 102,202 102,226 Z" fill="#1D4ED8"/><circle cx="80" cy="190" r="14" fill="#1D4ED8"/>
+<text x="80" y="242" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">User</text>
+<text x="80" y="259" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">admin</text>
+<ellipse cx="390" cy="208" rx="34" ry="12" fill="#1D4ED8"/><rect x="356" y="192" width="68" height="16" fill="#1D4ED8"/><ellipse cx="390" cy="192" rx="34" ry="12" fill="#3B82F6" stroke="#1D4ED8" stroke-width="2"/><path d="M372,192 L408,192 M390,184 L390,200" stroke="#FFFFFF" stroke-width="2.5"/><path d="M402,188 L408,192 L402,196 M378,188 L372,192 L378,196" stroke="#FFFFFF" stroke-width="2.2" fill="none"/>
+<text x="390" y="236" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">NAS / Router</text>
+<rect x="738" y="170" width="44" height="60" rx="5" fill="#F1F5F9" stroke="#334155" stroke-width="2.5"/><rect x="744" y="178" width="32" height="11" rx="2" fill="#FFFFFF" stroke="#334155" stroke-width="1.2"/><circle cx="770" cy="183.5" r="2.2" fill="#22C55E"/><rect x="744" y="195" width="32" height="11" rx="2" fill="#FFFFFF" stroke="#334155" stroke-width="1.2"/><circle cx="770" cy="200.5" r="2.2" fill="#22C55E"/><rect x="744" y="212" width="32" height="11" rx="2" fill="#FFFFFF" stroke="#334155" stroke-width="1.2"/><circle cx="770" cy="217.5" r="2.2" fill="#22C55E"/>
+<text x="760" y="246" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">AAA server</text>
+<text x="760" y="263" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" font-family="Consolas, 'DejaVu Sans Mono', monospace" dominant-baseline="middle">RADIUS / TACACS+</text>
+<line x1="115" y1="180" x2="345" y2="180" stroke="#1D4ED8" stroke-width="2.5" marker-end="url(#ah-blue)"/>
+<text x="230.0" y="170.0" font-size="12" text-anchor="middle" font-weight="600" fill="#1D4ED8" dominant-baseline="middle">1. ssh: user + password</text>
+<line x1="430" y1="180" x2="725" y2="180" stroke="#1D4ED8" stroke-width="2.5" marker-end="url(#ah-blue)"/>
+<text x="577.5" y="170.0" font-size="12" text-anchor="middle" font-weight="600" fill="#1D4ED8" dominant-baseline="middle">2. Access-Request</text>
+<line x1="725" y1="222" x2="430" y2="222" stroke="#047857" stroke-width="2.5" marker-end="url(#ah-green)"/>
+<text x="577.5" y="236.0" font-size="12" text-anchor="middle" font-weight="600" fill="#047857" dominant-baseline="middle">3. Accept + privilege 15</text>
+<line x1="345" y1="222" x2="115" y2="222" stroke="#047857" stroke-width="2.5" marker-end="url(#ah-green)"/>
+<text x="230.0" y="236.0" font-size="12" text-anchor="middle" font-weight="600" fill="#047857" dominant-baseline="middle">4. prompt R1#</text>
+<rect x="60" y="300" width="250" height="80" rx="10" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+<text x="185" y="325" font-size="16" text-anchor="middle" font-weight="700" fill="#1D4ED8" dominant-baseline="middle">Authentication</text>
+<text x="185" y="355" font-size="14" text-anchor="middle" font-weight="400" fill="#0F172A" dominant-baseline="middle">WHO are you?</text>
+<rect x="330" y="300" width="250" height="80" rx="10" fill="#D1FAE5" stroke="#047857" stroke-width="2"/>
+<text x="455" y="325" font-size="16" text-anchor="middle" font-weight="700" fill="#047857" dominant-baseline="middle">Authorization</text>
+<text x="455" y="355" font-size="14" text-anchor="middle" font-weight="400" fill="#0F172A" dominant-baseline="middle">WHAT may you do?</text>
+<rect x="600" y="300" width="250" height="80" rx="10" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
+<text x="725" y="325" font-size="16" text-anchor="middle" font-weight="700" fill="#B45309" dominant-baseline="middle">Accounting</text>
+<text x="725" y="355" font-size="14" text-anchor="middle" font-weight="400" fill="#0F172A" dominant-baseline="middle">WHAT did you do?</text>
+</svg>

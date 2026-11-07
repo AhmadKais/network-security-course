@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="470" viewBox="0 0 900 470" font-family="Segoe UI, Arial, Helvetica, sans-serif" xml:space="preserve" style="white-space:pre">
+<defs><marker id="ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F172A"/></marker><marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D4ED8"/></marker><marker id="ah-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#047857"/></marker><marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B91C1C"/></marker><marker id="ah-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B45309"/></marker><marker id="ah-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6D28D9"/></marker><marker id="ah-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748B"/></marker><marker id="ah-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F766E"/></marker></defs>
+<rect x="1" y="1" width="898" height="468" rx="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+<text x="450.0" y="34" font-size="20" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Risk matrix: Risk = Likelihood x Impact</text>
+<rect x="220" y="90" width="164" height="89" rx="10" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
+<text x="302.0" y="126" font-size="15" text-anchor="middle" font-weight="700" fill="#B45309" dominant-baseline="middle">HIGH</text>
+<text x="302.0" y="152" font-size="12" text-anchor="middle" font-weight="400" fill="#0F172A" dominant-baseline="middle">Mitigate</text>
+<rect x="390" y="90" width="164" height="89" rx="10" fill="#FEE2E2" stroke="#B91C1C" stroke-width="2"/>
+<text x="472.0" y="126" font-size="15" text-anchor="middle" font-weight="700" fill="#B91C1C" dominant-baseline="middle">HIGH</text>
+<text x="472.0" y="152" font-size="12" text-anchor="middle" font-weight="400" fill="#0F172A" dominant-baseline="middle">Transfer / Mitigate</text>
+<rect x="560" y="90" width="164" height="89" rx="10" fill="#FEE2E2" stroke="#B91C1C" stroke-width="2"/>
+<text x="642.0" y="126" font-size="15" text-anchor="middle" font-weight="700" fill="#B91C1C" dominant-baseline="middle">CRITICAL</text>
+<text x="642.0" y="152" font-size="12" text-anchor="middle" font-weight="400" fill="#0F172A" dominant-baseline="middle">AVOID</text>
+<text x="205" y="137.5" font-size="14" text-anchor="end" font-weight="700" fill="#0F172A" dominant-baseline="middle">High</text>
+<rect x="220" y="185" width="164" height="89" rx="10" fill="#D1FAE5" stroke="#047857" stroke-width="2"/>
+<text x="302.0" y="221" font-size="15" text-anchor="middle" font-weight="700" fill="#047857" dominant-baseline="middle">MEDIUM</text>
+<text x="302.0" y="247" font-size="12" text-anchor="middle" font-weight="400" fill="#0F172A" dominant-baseline="middle">Accept</text>
+<rect x="390" y="185" width="164" height="89" rx="10" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
+<text x="472.0" y="221" font-size="15" text-anchor="middle" font-weight="700" fill="#B45309" dominant-baseline="middle">HIGH</text>
+<text x="472.0" y="247" font-size="12" text-anchor="middle" font-weight="400" fill="#0F172A" dominant-baseline="middle">Mitigate</text>
+<rect x="560" y="185" width="164" height="89" rx="10" fill="#FEE2E2" stroke="#B91C1C" stroke-width="2"/>
+<text x="642.0" y="221" font-size="15" text-anchor="middle" font-weight="700" fill="#B91C1C" dominant-baseline="middle">HIGH</text>
+<text x="642.0" y="247" font-size="12" text-anchor="middle" font-weight="400" fill="#0F172A" dominant-baseline="middle">Mitigate / Transfer</text>
+<text x="205" y="232.5" font-size="14" text-anchor="end" font-weight="700" fill="#0F172A" dominant-baseline="middle">Medium</text>
+<rect x="220" y="280" width="164" height="89" rx="10" fill="#D1FAE5" stroke="#047857" stroke-width="2"/>
+<text x="302.0" y="316" font-size="15" text-anchor="middle" font-weight="700" fill="#047857" dominant-baseline="middle">LOW</text>
+<text x="302.0" y="342" font-size="12" text-anchor="middle" font-weight="400" fill="#0F172A" dominant-baseline="middle">Accept</text>
+<rect x="390" y="280" width="164" height="89" rx="10" fill="#D1FAE5" stroke="#047857" stroke-width="2"/>
+<text x="472.0" y="316" font-size="15" text-anchor="middle" font-weight="700" fill="#047857" dominant-baseline="middle">MEDIUM</text>
+<text x="472.0" y="342" font-size="12" text-anchor="middle" font-weight="400" fill="#0F172A" dominant-baseline="middle">Accept</text>
+<rect x="560" y="280" width="164" height="89" rx="10" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
+<text x="642.0" y="316" font-size="15" text-anchor="middle" font-weight="700" fill="#B45309" dominant-baseline="middle">HIGH</text>
+<text x="642.0" y="342" font-size="12" text-anchor="middle" font-weight="400" fill="#0F172A" dominant-baseline="middle">Mitigate</text>
+<text x="205" y="327.5" font-size="14" text-anchor="end" font-weight="700" fill="#0F172A" dominant-baseline="middle">Low</text>
+<text x="305.0" y="393" font-size="14" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Low</text>
+<text x="475.0" y="393" font-size="14" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Medium</text>
+<text x="645.0" y="393" font-size="14" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">High</text>
+<text x="475.0" y="423" font-size="15" text-anchor="middle" font-weight="700" fill="#64748B" dominant-baseline="middle">IMPACT (damage)  -&gt;</text>
+<text x="70" y="232.5" font-size="15" font-weight="700" fill="#64748B" text-anchor="middle" transform="rotate(-90 70 232.5)">LIKELIHOOD  -></text><rect x="740" y="100" width="135" height="250" rx="10" fill="#F8FAFC" stroke="#334155" stroke-width="2"/>
+<text x="807" y="128" font-size="14" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Mitigate</text>
+<text x="807" y="148" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" dominant-baseline="middle">add controls</text>
+<text x="807" y="186" font-size="14" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Transfer</text>
+<text x="807" y="206" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" dominant-baseline="middle">insurance</text>
+<text x="807" y="244" font-size="14" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Avoid</text>
+<text x="807" y="264" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" dominant-baseline="middle">stop activity</text>
+<text x="807" y="302" font-size="14" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Accept</text>
+<text x="807" y="322" font-size="12" text-anchor="middle" font-weight="400" fill="#64748B" dominant-baseline="middle">live with it</text>
+</svg>

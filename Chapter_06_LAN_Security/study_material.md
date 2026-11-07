@@ -83,6 +83,10 @@ S1# show port-security interface f0/1
 S1# show port-security address
 </pre>
 
+<p align="center"><img src="../assets/img/s6_mac_flooding.svg" alt="MAC flooding" width="760"></p>
+
+_🖼️ הצפת ⁦MAC⁩: התוקף שולח אלפי מסגרות עם כתובות מקור מזויפות עד שטבלת המתג מתמלאת. מאותו רגע המתג מציף כל מסגרת לכל הפורטים – והתוקף מאזין לכל התעבורה. ההגנה: ⁦Port Security.⁩_
+
 ### שלושה מצבי הפרה (⁦violation)⁩
 
 | **מצב** | **מה קורה בהפרה** | **התראה** | **מונה** |
@@ -98,6 +102,26 @@ S1# show port-security address
 > ⚠️ **טעות נפוצה**
 >
 > מגדירים ⁦port security⁩ ושוכחים `⁦switchport mode access⁩`. אם הפורט במצב ⁦dynamic, port security⁩ לא נכנס לתוקף כראוי. וגם: ⁦maximum 1⁩ עם טלפון ⁦IP⁩ + מחשב מאחוריו ⇒ הפרות מיידיות; להגדיר ⁦maximum 2⁩ או להשתמש ב-⁦voice VLAN.⁩
+
+> 🧩 **דוגמה מהחיים: הגדרת ⁦Port Security⁩ לכיתת מחשבים**
+>
+> בכל שולחן בכיתה מחובר מחשב אחד. רוצים שאם תלמיד יחבר מתג קטן או מחשב פרטי – הפורט ייסגר.
+
+
+<div dir="ltr" align="left">
+
+```
+SW1(config)# interface range fa0/1 - 24
+SW1(config-if-range)# switchport mode access
+SW1(config-if-range)# switchport port-security
+SW1(config-if-range)# switchport port-security maximum 1
+SW1(config-if-range)# switchport port-security mac-address sticky
+SW1(config-if-range)# switchport port-security violation shutdown
+```
+
+</div>
+
+> `⁦sticky⁩` לומד את המחשב הראשון ושומר אותו בהגדרות. מכשיר שני ← הפורט עובר ל-⁦err-disabled⁩ ונרשמת הודעה ביומן.
 
 ## ⁦6.4 VLAN⁩ – והתקפת ⁦VLAN Hopping⁩
 
@@ -193,6 +217,10 @@ S1(config-if-range)# ip dhcp snooping limit rate 6   ! against starvation
 S1# show ip dhcp snooping binding
 </pre>
 
+<p align="center"><img src="../assets/img/s6_dhcp_snooping.svg" alt="DHCP snooping" width="760"></p>
+
+_🖼️ ⁦DHCP Snooping⁩: רק פורט מסומן כ-⁦trusted⁩ (לכיוון שרת ה-⁦DHCP⁩ האמיתי) רשאי לשלוח ⁦OFFER⁩ ו-⁦ACK.⁩ תשובת ⁦DHCP⁩ מפורט לא מהימן נזרקת._
+
 ## ⁦6.7 ARP Spoofing⁩ ו-⁦Dynamic ARP Inspection (DAI)⁩
 
 **⁦ARP⁩** ממפה ⁦IP⁩ ל-⁦MAC⁩, וחסר כל אימות: כל מחשב יכול לשלוח "⁦Gratuitous ARP"⁩ שאומר "אני ה-⁦gateway"⁩ – והקורבנות יעדכנו את הטבלה שלהם ויתחילו לשלוח את התעבורה לתוקף (⁦MITM).⁩ **⁦DAI⁩** בודק כל הודעת ⁦ARP⁩ מול טבלת ה-⁦DHCP Snooping⁩: אם ה-⁦IP⁩↔⁦MAC⁩ לא תואם לרשומה – ההודעה נזרקת.
@@ -208,6 +236,10 @@ S1# show ip arp inspection
 </pre>
 
 המשלים: **⁦IP Source Guard⁩** – מוודא שכתובת ה-⁦IP⁩ במסגרת תואמת לפורט לפי טבלת ה-⁦snooping⁩ (נגד ⁦IP spoofing).⁩
+
+<p align="center"><img src="../assets/img/s6_arp_spoofing.svg" alt="ARP spoofing" width="760"></p>
+
+_🖼️ הרעלת ⁦ARP⁩: התוקף משקר לקורבן ("השער נמצא אצלי") ולשער ("הקורבן נמצא אצלי"). כל התעבורה עוברת דרכו – ⁦Man-in-the-Middle.⁩ ההגנה: ⁦DAI⁩, שנשען על טבלת ה-⁦DHCP Snooping.⁩_
 
 ## ⁦6.8 Storm Control⁩
 
@@ -354,6 +386,90 @@ S1(config-if)# switchport voice vlan 20       ! voice - tagged separately
 3. ⁦Root bridge: 3⁩ מתגים בטבעת; הגדירו את המרכזי כ-`⁦root primary⁩`; `⁦show spanning-tree⁩` – ודאו מי ⁦root⁩ ואיזה פורט ⁦blocking.⁩
 4. ⁦DTP⁩: הגדירו ⁦trunk⁩ מפורש + ⁦nonegotiate⁩ בין המתגים; פורטי קצה ⁦access + nonegotiate.⁩
 5. ⁦DHCP snooping⁩: הפעילו, סמנו את פורט השרת ⁦trusted⁩; הוסיפו "שרת ⁦DHCP"⁩ תוקף על פורט ⁦untrusted⁩ וראו שההצעות שלו נחסמות.
+
+## ❓ חידון רב-ברירה – בדקו את עצמכם
+
+_עשר שאלות. בחרו תשובה אחת, ורק אז פתחו את התשובה._
+
+**⁦1.⁩** איזו הגנה עוצרת התקפת הצפת ⁦MAC⁩?
+- א. ⁦DHCP Snooping⁩
+- ב. ⁦Port Security⁩
+- ג. ⁦BPDU Guard⁩
+- ד. ⁦Root Guard⁩
+
+<details><summary>תשובה</summary>**ב** – הגבלת מספר הכתובות לפורט מונעת את מילוי הטבלה.</details>
+
+**⁦2.⁩** באיזה מצב הפרה הפורט נסגר ועובר ל-⁦err-disabled⁩?
+- א. ⁦protect⁩
+- ב. ⁦restrict⁩
+- ג. ⁦shutdown⁩
+- ד. ⁦sticky⁩
+
+<details><summary>תשובה</summary>**ג** – ⁦shutdown⁩ הוא ברירת המחדל וגם המחמיר ביותר.</details>
+
+**⁦3.⁩** התקפת ⁦Double Tagging⁩ מנצלת:
+- א. את ⁦VTP⁩
+- ב. את ה-⁦Native VLAN⁩ ב-⁦Trunk⁩
+- ג. את ⁦STP⁩
+- ד. את ⁦ARP⁩
+
+<details><summary>תשובה</summary>**ב** – התווית החיצונית מוסרת ב-⁦Native VLAN⁩, והפנימית מובילה ל-⁦VLAN⁩ של הקורבן.</details>
+
+**⁦4.⁩** מה עושה ⁦BPDU Guard⁩?
+- א. מגביר את עדיפות המתג
+- ב. סוגר פורט ⁦PortFast⁩ שמקבל ⁦BPDU⁩
+- ג. מצפין ⁦BPDU⁩
+- ד. מכבה ⁦STP⁩
+
+<details><summary>תשובה</summary>**ב** – פורט של מחשב לא אמור לקבל ⁦BPDU⁩ – אם קיבל, מישהו חיבר מתג.</details>
+
+**⁦5.⁩** ב-⁦DHCP Snooping⁩, איזה פורט מוגדר כ-⁦trusted⁩?
+- א. כל פורטי המחשבים
+- ב. הפורט לכיוון שרת ה-⁦DHCP⁩ האמיתי (או ה-⁦uplink)⁩
+- ג. פורט הקונסולה
+- ד. אף פורט
+
+<details><summary>תשובה</summary>**ב** – כל השאר ⁦untrusted⁩ כברירת מחדל.</details>
+
+**⁦6.** DAI⁩ בודק הודעות ⁦ARP⁩ מול:
+- א. טבלת הניתוב
+- ב. טבלת ה-⁦DHCP Snooping binding⁩
+- ג. טבלת ⁦STP⁩
+- ד. רשימת ⁦VLAN⁩
+
+<details><summary>תשובה</summary>**ב** – לכן חובה להפעיל ⁦DHCP Snooping⁩ לפני ⁦DAI⁩.</details>
+
+**⁦7.⁩** התקפת ⁦DHCP Starvation⁩ נועדה:
+- א. לגנוב סיסמאות
+- ב. לרוקן את מאגר הכתובות של השרת
+- ג. להאט את ⁦STP⁩
+- ד. לשנות ⁦VLAN⁩
+
+<details><summary>תשובה</summary>**ב** – לאחר מכן התוקף מפעיל שרת ⁦DHCP⁩ מזויף.</details>
+
+**⁦8.⁩** כיצד מונעים ⁦Switch Spoofing⁩?
+- א. `⁦switchport mode access⁩` + `⁦switchport nonegotiate⁩`
+- ב. `⁦spanning-tree portfast⁩`
+- ג. `⁦ip dhcp snooping⁩`
+- ד. `⁦vtp mode server⁩`
+
+<details><summary>תשובה</summary>**א** – מבטלים את ⁦DTP⁩ כך שהפורט לא יהפוך ל-⁦Trunk⁩.</details>
+
+**⁦9.⁩** לאיזה מתג כדאי להגדיר ⁦Root Guard⁩?
+- א. על פורטי ⁦uplink⁩ לכיוון השורש
+- ב. על פורטים שלעולם לא אמור להגיע מהם ⁦Root⁩ טוב יותר
+- ג. על כל פורט ⁦Trunk⁩
+- ד. על פורט הקונסולה
+
+<details><summary>תשובה</summary>**ב** – מונע ממתג זר להשתלט על תפקיד ה-⁦Root Bridge⁩.</details>
+
+**⁦10.⁩** מה ההגנה העיקרית מפני ⁦Evil Twin⁩ ברשת ⁦Wi-Fi⁩?
+- א. ⁦WEP⁩
+- ב. ⁦WPA2/WPA3-Enterprise⁩ עם ⁦802.1X⁩ ואימות תעודת השרת
+- ג. הסתרת ה-⁦SSID⁩
+- ד. סינון ⁦MAC⁩
+
+<details><summary>תשובה</summary>**ב** – הלקוח מוודא שהוא מתחבר לשרת האמיתי לפי התעודה.</details>
 
 ## בנק שאלות שתלמידים שואלים – ותשובות מוכנות
 

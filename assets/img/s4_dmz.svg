@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="475" viewBox="0 0 900 475" font-family="Segoe UI, Arial, Helvetica, sans-serif" xml:space="preserve" style="white-space:pre">
+<defs><marker id="ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F172A"/></marker><marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D4ED8"/></marker><marker id="ah-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#047857"/></marker><marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B91C1C"/></marker><marker id="ah-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B45309"/></marker><marker id="ah-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6D28D9"/></marker><marker id="ah-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748B"/></marker><marker id="ah-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0F766E"/></marker></defs>
+<rect x="1" y="1" width="898" height="473" rx="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+<text x="450.0" y="34" font-size="20" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Three zones: inside, DMZ, outside</text>
+<rect x="420" y="172" width="60" height="56" rx="4" fill="#FEE2E2" stroke="#B91C1C" stroke-width="2.5"/><line x1="420" y1="172" x2="480" y2="172" stroke="#B91C1C" stroke-width="1.5"/>
+<line x1="450" y1="172" x2="450" y2="186" stroke="#B91C1C" stroke-width="1.5"/>
+<line x1="420" y1="186" x2="480" y2="186" stroke="#B91C1C" stroke-width="1.5"/>
+<line x1="435" y1="186" x2="435" y2="200" stroke="#B91C1C" stroke-width="1.5"/>
+<line x1="465" y1="186" x2="465" y2="200" stroke="#B91C1C" stroke-width="1.5"/>
+<line x1="420" y1="200" x2="480" y2="200" stroke="#B91C1C" stroke-width="1.5"/>
+<line x1="450" y1="200" x2="450" y2="214" stroke="#B91C1C" stroke-width="1.5"/>
+<line x1="420" y1="214" x2="480" y2="214" stroke="#B91C1C" stroke-width="1.5"/>
+<line x1="435" y1="214" x2="435" y2="228" stroke="#B91C1C" stroke-width="1.5"/>
+<line x1="465" y1="214" x2="465" y2="228" stroke="#B91C1C" stroke-width="1.5"/>
+
+<text x="450" y="156" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Firewall</text>
+<rect x="30" y="90" width="260" height="230" rx="10" fill="#F0FDF4" stroke="#047857" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="160" y="112" font-size="14" text-anchor="middle" font-weight="700" fill="#047857" dominant-baseline="middle">INSIDE (trusted)</text>
+<rect x="74" y="166" width="52" height="36" rx="4" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2.5"/><rect x="80" y="172" width="40" height="24" rx="2" fill="#FFFFFF" stroke="#1D4ED8" stroke-width="1"/><rect x="95" y="202" width="10" height="8" fill="#1D4ED8"/><rect x="82" y="210" width="36" height="5" rx="2" fill="#1D4ED8"/>
+<text x="100" y="230" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">PC</text>
+<rect x="188" y="160" width="44" height="60" rx="5" fill="#F1F5F9" stroke="#334155" stroke-width="2.5"/><rect x="194" y="168" width="32" height="11" rx="2" fill="#FFFFFF" stroke="#334155" stroke-width="1.2"/><circle cx="220" cy="173.5" r="2.2" fill="#22C55E"/><rect x="194" y="185" width="32" height="11" rx="2" fill="#FFFFFF" stroke="#334155" stroke-width="1.2"/><circle cx="220" cy="190.5" r="2.2" fill="#22C55E"/><rect x="194" y="202" width="32" height="11" rx="2" fill="#FFFFFF" stroke="#334155" stroke-width="1.2"/><circle cx="220" cy="207.5" r="2.2" fill="#22C55E"/>
+<text x="210" y="236" font-size="13" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">File srv</text>
+<rect x="330" y="330" width="240" height="130" rx="10" fill="#FFFBEB" stroke="#B45309" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="345" y="348" font-size="14" text-anchor="start" font-weight="700" fill="#B45309" dominant-baseline="middle">DMZ (semi-trusted)</text>
+<rect x="378" y="370" width="44" height="60" rx="5" fill="#F1F5F9" stroke="#334155" stroke-width="2.5"/><rect x="384" y="378" width="32" height="11" rx="2" fill="#FFFFFF" stroke="#334155" stroke-width="1.2"/><circle cx="410" cy="383.5" r="2.2" fill="#22C55E"/><rect x="384" y="395" width="32" height="11" rx="2" fill="#FFFFFF" stroke="#334155" stroke-width="1.2"/><circle cx="410" cy="400.5" r="2.2" fill="#22C55E"/><rect x="384" y="412" width="32" height="11" rx="2" fill="#FFFFFF" stroke="#334155" stroke-width="1.2"/><circle cx="410" cy="417.5" r="2.2" fill="#22C55E"/>
+<rect x="478" y="370" width="44" height="60" rx="5" fill="#F1F5F9" stroke="#334155" stroke-width="2.5"/><rect x="484" y="378" width="32" height="11" rx="2" fill="#FFFFFF" stroke="#334155" stroke-width="1.2"/><circle cx="510" cy="383.5" r="2.2" fill="#22C55E"/><rect x="484" y="395" width="32" height="11" rx="2" fill="#FFFFFF" stroke="#334155" stroke-width="1.2"/><circle cx="510" cy="400.5" r="2.2" fill="#22C55E"/><rect x="484" y="412" width="32" height="11" rx="2" fill="#FFFFFF" stroke="#334155" stroke-width="1.2"/><circle cx="510" cy="417.5" r="2.2" fill="#22C55E"/>
+<text x="450" y="446" font-size="12" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">Web + Mail servers</text>
+<path d="M706.0,222.5 C674.5,222.5 674.5,182.0 707.8,183.8 C710.5,155.0 755.5,153.2 764.5,174.8 C782.5,155.0 823.0,164.0 815.8,191.0 C845.5,192.8 845.5,225.2 814.0,222.5 Z" stroke="#B91C1C" fill="#FEE2E2" stroke-width="2.5"/>
+<text x="760" y="200" font-size="15" text-anchor="middle" font-weight="700" fill="#0F172A" dominant-baseline="middle">OUTSIDE</text>
+<line x1="290" y1="200" x2="418" y2="200" stroke="#047857" stroke-width="3"/>
+<line x1="482" y1="200" x2="680" y2="200" stroke="#B91C1C" stroke-width="3"/>
+<line x1="450" y1="230" x2="450" y2="330" stroke="#B45309" stroke-width="3"/>
+<text x="355" y="185" font-size="11.5" text-anchor="middle" font-weight="700" fill="#047857" dominant-baseline="middle">inside -&gt; any: ALLOW</text>
+<text x="585" y="182" font-size="11.5" text-anchor="middle" font-weight="700" fill="#B45309" dominant-baseline="middle">outside -&gt; DMZ web 80/443: ALLOW</text>
+<text x="580" y="235" font-size="11.5" text-anchor="middle" font-weight="700" fill="#B91C1C" dominant-baseline="middle">outside -&gt; inside: DENY</text>
+<text x="720" y="330" font-size="12" text-anchor="middle" font-weight="700" fill="#B91C1C" dominant-baseline="middle">DMZ -&gt; inside: DENY</text>
+<text x="720" y="350" font-size="11.5" text-anchor="middle" font-weight="400" fill="#64748B" dominant-baseline="middle">(a hacked web server</text>
+<text x="720" y="366" font-size="11.5" text-anchor="middle" font-weight="400" fill="#64748B" dominant-baseline="middle">cannot reach the LAN)</text>
+</svg>
