@@ -85,6 +85,11 @@ def convert_latex(force=False):
         write(tex, PREAMBLE+convert_body(dom.root)+'\n\\end{document}\n')
         print(f"convert {folder}: WROTE study_material.tex{' (forced overwrite)' if force else ''}")
 
+# extra decks that live outside the chapter folders: (output folder, slide-stem)
+EXTRA_SLIDES = [
+ ("Part_1_Networking/02_Addressing_and_Subnetting", "p1-02-subnetting"),
+]
+
 # ---------- slides ----------
 def build_slides():
     css=read(os.path.join(SS,'slides.css')); js=read(os.path.join(SS,'slides.js'))
@@ -93,7 +98,7 @@ def build_slides():
         if not m: return default
         t=re.sub(r"<br\s*/?>"," ",m.group(1))
         return re.sub(r"\s+"," ",re.sub("<[^>]+>","",t)).strip()
-    for folder,_,slide,_ in CH:
+    for folder,slide in [(f,s) for f,_,s,_ in CH]+EXTRA_SLIDES:
         if not slide: continue
         body=read(os.path.join(SS,slide+'.html')); t=title_of(body,slide)
         page=f'''<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">

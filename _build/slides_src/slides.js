@@ -16,7 +16,7 @@
   function next(){const f=fragsOf(slides[i]).find(x=>!x.classList.contains('visible')); if(f){f.classList.add('visible');return;} show(i+1,false);}
   function prev(){const v=fragsOf(slides[i]).filter(x=>x.classList.contains('visible')); if(v.length){v[v.length-1].classList.remove('visible');return;} show(i-1,true);}
   document.addEventListener('keydown',e=>{
-    if(e.target.tagName==='INPUT')return;
+    if(/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName))return;
     switch(e.key){
       case 'ArrowRight': case ' ': case 'PageDown': case 'Enter': case 'ArrowDown': e.preventDefault(); next(); break;
       case 'ArrowLeft': case 'PageUp': case 'Backspace': case 'ArrowUp': e.preventDefault(); prev(); break;
@@ -29,7 +29,7 @@
   document.getElementById('next').onclick=next; document.getElementById('prev').onclick=prev;
   document.getElementById('fsBtn').onclick=toggleFS; document.getElementById('notesBtn').onclick=()=>notesEl.classList.toggle('show');
   // click on slide: left third = prev, right third = next (works for RTL as "forward = left" too via keys)
-  document.getElementById('deck').addEventListener('click',e=>{ if(e.target.closest('a,button'))return; const x=e.clientX/innerWidth; if(x>0.66)next(); else if(x<0.33)prev(); });
+  document.getElementById('deck').addEventListener('click',e=>{ if(e.target.closest('a,button,input,select,textarea,.interactive'))return; const x=e.clientX/innerWidth; if(x>0.66)next(); else if(x<0.33)prev(); });
   // touch swipe
   let tx=null; addEventListener('touchstart',e=>tx=e.touches[0].clientX); addEventListener('touchend',e=>{ if(tx===null)return; const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50){ dx<0?next():prev(); } tx=null; });
   const h=parseInt(location.hash.slice(1)); show(isNaN(h)?0:h-1,false);

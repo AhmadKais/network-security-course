@@ -19,7 +19,7 @@
 | | פרק | נושאים | מצגת |
 |---|---|---|:---:|
 | 🌐 | [רשת — איך היא עובדת](Part_1_Networking/01_How_Networks_Work/study_material.md) | שכבות · מסגרת/חבילה · מתג · ⁦ARP⁩ · ניתוב | — |
-| 🌐 | [כתובות ⁦IP⁩ וחלוקה לרשתות](Part_1_Networking/02_Addressing_and_Subnetting/study_material.md) | בינארי · מסכה · ⁦Subnetting⁩ · ⁦VLSM⁩ · ⁦Wildcard⁩ | — |
+| 🌐 | [כתובות ⁦IP⁩ וחלוקה לרשתות](Part_1_Networking/02_Addressing_and_Subnetting/study_material.md) | בינארי · מסכה · ⁦Subnetting⁩ · ⁦VLSM⁩ · ⁦Wildcard⁩ | [📊](https://ahmadkais.github.io/network-security-course/Part_1_Networking/02_Addressing_and_Subnetting/presentation.html) |
 | 🔐 | [מבוא לאיומי רשת](Chapter_01_Network_Threats/study_material.md) | ⁦CIA⁩ · נוזקות · ⁦DoS⁩ · הנדסה חברתית · בקרות | [📊](https://ahmadkais.github.io/network-security-course/Chapter_01_Network_Threats/presentation.html) |
 
 > ה-🔐 כאן הוא ה"למה" של כל הקורס: אחרי שיודעים מה זו רשת, מבינים על מה בכלל מגנים ומפני מי.
